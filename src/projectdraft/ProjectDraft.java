@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package projectdraft;
 
 /**
@@ -21,5 +20,5 @@ public class ProjectDraft {
         project.classes.database d = new project.classes.database();
         System.out.println(d.DBConnection);
     }
-    
+
 }

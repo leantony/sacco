@@ -310,6 +310,7 @@ public class Member {
 
     public void DisplayAllMembers(JTextArea jt) throws SQLException {
         if (isAdmin()) {
+            jt.setText("");
             try {
                 String sql = "SELECT * FROM sacco.members";
                 stmt = conn.prepareStatement(sql);

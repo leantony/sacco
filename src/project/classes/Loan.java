@@ -17,10 +17,16 @@ public class Loan {
     private long id;
     private double LoanAmount;
     private double TotalAmount;
+
     // value is in months
     private int PaybackPeriod;
     private String LoanPurpose;
     private String LoanType;
+
+    // amounts
+    private double AmountToPay;
+    private double AmountPaid;
+
     // loan constants
     protected double LOAN_INTEREST = 5.5 / 100;
     PreparedStatement stmt = null;
@@ -33,6 +39,11 @@ public class Loan {
         this.m = new Member();
         database d = new database();
         conn = d.getConnection();
+    }
+
+    // allow the user to know their pending loan amount to pay, after making a payment to their loan
+    public double getPendingAmount() {
+        return TotalAmount - getAmountPaid();
     }
 
     /**
@@ -64,6 +75,10 @@ public class Loan {
         // interest + 100 * amount
         double interest = this.LoanAmount * LOAN_INTEREST * PaybackPeriod / 12;
         this.TotalAmount = interest + this.LoanAmount;
+    }
+
+    public double getTotalAmntFromDB() {
+        return TotalAmount;
     }
 
     /**
@@ -146,6 +161,61 @@ public class Loan {
         }
     }
 
+    // loan payback function
+    public boolean PayBackLoan() throws SQLException {
+        getLoanInfo();
+        // implies a loan id couldn't be found
+        if (getId() <= 0) {
+            return false;
+        }
+        try {
+            // the user input shouldn't be greater than the total amount
+            if (getAmountToPay() > TotalAmount) {
+                double x = getAmountToPay() - TotalAmount;
+                throw new SQLException("you are trying to pay ksh " + x + " above your total and that's not allowed");
+            }
+
+            // a member shouldn't be allowed to pay up above their total. so we bail
+            if (getAmountPaid() > TotalAmount) {
+                double x = getAmountPaid() - TotalAmount;
+                throw new SQLException("You loan is already fully paid. You have an overpayment of ksh" + x);
+            }
+
+            // UPDATE `sacco`.`loans` SET `paidAmount`= `paidAmount` + 5000 WHERE `id`=15
+            String sql = "UPDATE `sacco`.`loans` SET `paidAmount`= `paidAmount + ? WHERE  `id`=?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setDouble(1, getAmountToPay());
+            stmt.setLong(2, getId());
+            int rows = stmt.executeUpdate();
+            return rows == 0;
+
+        } finally {
+            // close resources
+            close();
+        }
+    }
+
+    // get loan id for current member
+    public void getLoanInfo() throws SQLException {
+        // SELECT `id`, `member_id`, `LoanType`, `LoanAmount`, `TotalAmount`, `PaybackDate`, `LoanPurpose`, `paidAmount` FROM `sacco`.`loans` WHERE  `id`=15;
+        try {
+            String sql = "SELECT `id`, `LoanAmount`, `TotalAmount`, `LoanPurpose`, `paidAmount` FROM `sacco`.`loans` WHERE  `member_id`=?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setLong(1, Member.getId());
+            result = stmt.executeQuery();
+            if (result.next()) {
+                // set the loan id
+                setId(result.getLong("id"));
+                // get the amount total/ paid
+                TotalAmount = result.getDouble("TotalAmount");
+                setAmountPaid(result.getDouble("paidAmount"));
+            }
+
+        } finally {
+            close();
+        }
+    }
+
     // the current member should be free to update their payback date
     public boolean ChangeLoanPayBackDate() throws SQLException {
         try {
@@ -157,12 +227,7 @@ public class Loan {
             stmt.setLong(2, getId());
 
             int rows = stmt.executeUpdate();
-            if (rows == 0) {
-                // maybe the member has no loan to pay or etc
-                throw new SQLException("Unable to update the loan paybak date");
-            } else {
-                return true;
-            }
+            return rows == 0;
 
         } finally {
             // close resources
@@ -192,7 +257,6 @@ public class Loan {
     }
 
     // the current member should also be able to check thir loan status
-
     public void checkLoanStatus(JTextArea jt) throws SQLException {
         try {
             //System.out.println(conn);
@@ -232,12 +296,7 @@ public class Loan {
 
             // PreparedStatement.setString(8, getPassword());
             int rows = stmt.executeUpdate();
-            if (rows == 0) {
-                // the loan want't deleted
-                throw new SQLException("Deletion failed");
-            } else {
-                return true;
-            }
+            return rows == 0;
 
         } finally {
             // close resources
@@ -280,17 +339,39 @@ public class Loan {
             } catch (SQLException e) {
             }
         }
-        if (result != null) {
+        if (stmt != null) {
             try {
-                result.close();
+                stmt.close();
             } catch (SQLException e) {
             }
         }
-        if (result != null) {
-            try {
-                result.close();
-            } catch (SQLException e) {
-            }
-        }
+    }
+
+    /**
+     * @return the AmountToPay
+     */
+    public double getAmountToPay() {
+        return AmountToPay;
+    }
+
+    /**
+     * @param AmountToPay the AmountToPay to set
+     */
+    public void setAmountToPay(double AmountToPay) {
+        this.AmountToPay = AmountToPay;
+    }
+
+    /**
+     * @return the AmountPaid
+     */
+    public double getAmountPaid() {
+        return AmountPaid;
+    }
+
+    /**
+     * @param AmountPaid the AmountPaid to set
+     */
+    private void setAmountPaid(double AmountPaid) {
+        this.AmountPaid = AmountPaid;
     }
 }

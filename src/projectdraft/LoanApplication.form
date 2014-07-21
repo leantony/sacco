@@ -280,7 +280,7 @@
                     <StringItem index="23" value="24"/>
                   </StringArray>
                 </Property>
-                <Property name="toolTipText" type="java.lang.String" value="The time you expect to pay back the loan"/>
+                <Property name="toolTipText" type="java.lang.String" value="The time you expect to pay back the loan, in months"/>
               </Properties>
             </Component>
           </SubComponents>

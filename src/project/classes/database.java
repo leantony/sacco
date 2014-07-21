@@ -30,10 +30,10 @@ public class database {
             DBConnection = DriverManager.getConnection(DB_URL, USER, PASS);
             //System.out.println(getConnect());
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Fatal Error!. A database connection could not be established");
+            JOptionPane.showMessageDialog(null, "Fatal Error!. A database connection could not be established", "Error", JOptionPane.ERROR_MESSAGE);
             Application.Exit(-1);
         } catch (ClassNotFoundException e) {
-            JOptionPane.showMessageDialog(null, "Fatal Error!. The specified driver could not be loaded");
+            JOptionPane.showMessageDialog(null, "Fatal Error!. The specified driver could not be loaded", "Error", JOptionPane.ERROR_MESSAGE);
             Application.Exit(-1);
         }
 

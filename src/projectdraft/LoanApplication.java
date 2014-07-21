@@ -100,7 +100,7 @@ public class LoanApplication extends javax.swing.JFrame {
         jComboBoxLoanType.setToolTipText("Type of loan you require. We offer both secured and unsecured loans");
 
         jComboBoxPeriod.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24" }));
-        jComboBoxPeriod.setToolTipText("The time you expect to pay back the loan");
+        jComboBoxPeriod.setToolTipText("The time you expect to pay back the loan, in months");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -232,12 +232,13 @@ public class LoanApplication extends javax.swing.JFrame {
     private void jButtonSubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSubmitActionPerformed
         // TODO add your handling code here:
         // validate for didgits
-        try {
-            l.setLoanAmount(Integer.parseInt(jTextFieldLoanAmnt.getText()));
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "please enter valid value for phone number", "wrong input type", JOptionPane.ERROR_MESSAGE);
+        int amnt = Application.CheckIfNumber(jTextFieldLoanAmnt.getText());
+        if (amnt == -1) {
+            JOptionPane.showMessageDialog(null, "please enter valid value for the amount", "wrong input type", JOptionPane.ERROR_MESSAGE);
             jTextFieldLoanAmnt.requestFocus();
             return;
+        } else {
+            l.setLoanAmount(amnt);
         }
 
         // set the loan type
@@ -262,15 +263,14 @@ public class LoanApplication extends javax.swing.JFrame {
 
         // save the loan
         try {
-            long v = l.SaveMemberLoan();
-            if (v == -1) {
+            if (l.SaveMemberLoan() == -1) {
                 JOptionPane.showMessageDialog(null, "Your loan submission was not successful\nReason: You have a pending loan to pay", "Pending loan", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(null, "Your loan submission was successful", "Success", JOptionPane.INFORMATION_MESSAGE);
             }
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Your loan submission wasn't successful. Please retry " + e.getMessage(), "Error submitting loan", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Error submitting loan", JOptionPane.ERROR_MESSAGE);
             // set focus on the first field
             jTextFieldLoanAmnt.requestFocus();
         }

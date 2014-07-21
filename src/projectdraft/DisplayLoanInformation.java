@@ -16,6 +16,8 @@ import project.classes.Member;
  */
 public class DisplayLoanInformation extends javax.swing.JFrame {
 
+    Loan l = new Loan();
+
     /**
      * Creates new form ChangeLoanPaybackDate
      */
@@ -103,11 +105,11 @@ public class DisplayLoanInformation extends javax.swing.JFrame {
 
     private void jButtonDisplayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDisplayActionPerformed
         // TODO add your handling code here:
-        Loan l = new Loan();
+        //jTextAreaLoanInfo.setText("");
         try {
             l.checkLoanStatus(jTextAreaLoanInfo);
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Encountered an error when trying to display your loan information " + ex.getMessage());
+            JOptionPane.showMessageDialog(null, "Encountered an error when trying to display your loan information", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButtonDisplayActionPerformed
 

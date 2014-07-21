@@ -91,6 +91,10 @@ public class Application {
     // check if a string input is a number
     public static int CheckIfNumber(String s) {
         try {
+            // disallow negative number input
+            if (Integer.parseInt(s) <= 0) {
+                return -1;
+            }
             return Integer.parseInt(s);
         } catch (NumberFormatException e) {
             return -1;

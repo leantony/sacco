@@ -128,12 +128,15 @@ public class AllMembers extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> {
-            if (Member.isAdmin()) {
-                new AllMembers().setVisible(true);
-            } else {
-                JOptionPane.showMessageDialog(null, "Administrator access only", "Access denied", JOptionPane.ERROR_MESSAGE);
-                new LoginScreen().setVisible(true);
+        java.awt.EventQueue.invokeLater(new Runnable() {
+
+            public void run() {
+                if (Member.isAdmin()) {
+                    new AllMembers().setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Administrator access only", "Access denied", JOptionPane.ERROR_MESSAGE);
+                    new LoginScreen().setVisible(true);
+                }
             }
         });
     }

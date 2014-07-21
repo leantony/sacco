@@ -14,7 +14,7 @@ import project.classes.Member;
  * @author CJ
  */
 public class MembersIndex extends javax.swing.JFrame {
-
+    
     Member m = new Member();
 
     /**
@@ -25,7 +25,7 @@ public class MembersIndex extends javax.swing.JFrame {
 
         // disable administrative controls
         jMenuAdministrator.setVisible(false);
-
+        
         try {
             // check if a user is an admin
             if (m.checkIfUserIsAdmin()) {
@@ -194,6 +194,11 @@ public class MembersIndex extends javax.swing.JFrame {
         jMenu2.add(jSeparator7);
 
         jMenuItemRepayLoan.setText("Repay Loan");
+        jMenuItemRepayLoan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemRepayLoanActionPerformed(evt);
+            }
+        });
         jMenu2.add(jMenuItemRepayLoan);
         jMenu2.add(jSeparator8);
 
@@ -211,6 +216,11 @@ public class MembersIndex extends javax.swing.JFrame {
         jMenu10.setText("Contributions");
 
         jMenuItemMakeContrib.setText("Make Contribution");
+        jMenuItemMakeContrib.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemMakeContribActionPerformed(evt);
+            }
+        });
         jMenu10.add(jMenuItemMakeContrib);
         jMenu10.add(jSeparator6);
 
@@ -254,20 +264,20 @@ public class MembersIndex extends javax.swing.JFrame {
     private void jMenuItemMembersListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemMembersListActionPerformed
         new AllMembers().setVisible(true);
     }//GEN-LAST:event_jMenuItemMembersListActionPerformed
-
+    
     private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jMenuItem8ActionPerformed
-
+    
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jMenuItem6ActionPerformed
-
+    
     private void jMenuItemApplyLoanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemApplyLoanActionPerformed
         // TODO add your handling code here:
         new LoanApplication().setVisible(true);
     }//GEN-LAST:event_jMenuItemApplyLoanActionPerformed
-
+    
     private void jMenuItemLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemLogoutActionPerformed
         // TODO add your handling code here:
         if (Member.Logout(Member.getId())) {
@@ -278,16 +288,26 @@ public class MembersIndex extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "System is experiencing problems. please try again");
         }
     }//GEN-LAST:event_jMenuItemLogoutActionPerformed
-
+    
     private void jMenuItemNewMemberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemNewMemberActionPerformed
         // TODO add your handling code here:
         new AddMember().setVisible(true);
     }//GEN-LAST:event_jMenuItemNewMemberActionPerformed
-
+    
     private void jMenuItemCheckLoanStatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCheckLoanStatusActionPerformed
         // TODO add your handling code here:
         new DisplayLoanInformation().setVisible(true);
     }//GEN-LAST:event_jMenuItemCheckLoanStatusActionPerformed
+    
+    private void jMenuItemMakeContribActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemMakeContribActionPerformed
+        // TODO add your handling code here:
+        new AddContribution().setVisible(true);
+    }//GEN-LAST:event_jMenuItemMakeContribActionPerformed
+    
+    private void jMenuItemRepayLoanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemRepayLoanActionPerformed
+        // TODO add your handling code here:
+        new RepayLoan().setVisible(true);
+    }//GEN-LAST:event_jMenuItemRepayLoanActionPerformed
 
     /**
      * @param args the command line arguments
@@ -317,13 +337,16 @@ public class MembersIndex extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> {
-            // force a user to login before viewing the form
-            if (!Member.CheckLoggedIn()) {
-                JOptionPane.showMessageDialog(null, "Please login first", "Access denied", JOptionPane.ERROR_MESSAGE);
-                new LoginScreen().setVisible(true);
-            } else {
-                new MembersIndex().setVisible(true);
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            
+            @Override
+            public void run() {
+                if (!Member.CheckLoggedIn()) {
+                    JOptionPane.showMessageDialog(null, "Please login first", "Access denied", JOptionPane.ERROR_MESSAGE);
+                    new LoginScreen().setVisible(true);
+                } else {
+                    new MembersIndex().setVisible(true);
+                }
             }
         });
     }

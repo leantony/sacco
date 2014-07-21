@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package projectdraft;
 
 import javax.swing.JOptionPane;
@@ -137,11 +136,11 @@ public class WelcomeScreen extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void exitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButtonActionPerformed
-    // TODO add your handling code here:
-        int reply = JOptionPane.showConfirmDialog(this.getContentPane(), "Are you sure you want to exit?","prompt",JOptionPane.OK_CANCEL_OPTION);
-        
-        if (reply == JOptionPane.CANCEL_OPTION | reply == JOptionPane.NO_OPTION){
-            return ;
+        // TODO add your handling code here:
+        int reply = JOptionPane.showConfirmDialog(this.getContentPane(), "Are you sure you want to exit?", "prompt", JOptionPane.OK_CANCEL_OPTION);
+
+        if (reply == JOptionPane.CANCEL_OPTION | reply == JOptionPane.NO_OPTION) {
+            return;
         } else {
             dispose();
             Application.Exit(0);
@@ -153,7 +152,7 @@ public class WelcomeScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void LoginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoginButtonActionPerformed
-     // launch  the login form
+        // launch  the login form
         this.dispose();
         new LoginScreen().setVisible(true);
     }//GEN-LAST:event_LoginButtonActionPerformed
