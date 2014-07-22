@@ -1,7 +1,7 @@
 /*
  * this class contains various utility functions that will be used across the application
  */
-package project.classes;
+package com.sacco.classes;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -92,7 +92,7 @@ public class Application {
     public static int CheckIfNumber(String s) {
         try {
             // disallow negative number input
-            if (Integer.parseInt(s) <= 0) {
+            if (Integer.parseInt(s.trim()) <= 0) {
                 return -1;
             }
             return Integer.parseInt(s);

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package projectdraft;
+package com.Projectdraft;
 
 /**
  *
@@ -17,7 +17,7 @@ public class ProjectDraft {
      */
     public static void main(String[] args) throws Exception {
         // TODO code application logic here
-        project.classes.database d = new project.classes.database();
+        com.sacco.classes.database d = new com.sacco.classes.database();
         System.out.println(d.DBConnection);
     }
 

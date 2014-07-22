@@ -1,10 +1,13 @@
 /*
  * contains loan functions
  */
-package project.classes;
+package com.sacco.classes;
 
-import java.sql.*;
-import java.util.Formatter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import javax.swing.JTextArea;
 
 /**
@@ -28,7 +31,7 @@ public class Loan {
     private double AmountPaid;
 
     // loan constants
-    protected double LOAN_INTEREST = 5.5 / 100;
+    private double LOAN_INTEREST = 30.5 / 100;
     PreparedStatement stmt = null;
     Connection conn;
     ResultSet result = null;
@@ -73,7 +76,7 @@ public class Loan {
      */
     private void setTotalAmount() {
         // interest + 100 * amount
-        double interest = this.LoanAmount * LOAN_INTEREST * PaybackPeriod / 12;
+        double interest = this.LoanAmount * getLOAN_INTEREST() * PaybackPeriod / 12;
         this.TotalAmount = interest + this.LoanAmount;
     }
 
@@ -85,14 +88,15 @@ public class Loan {
      * @return the LoanInterest
      */
     protected double getLoanInterest() {
-        return LOAN_INTEREST;
+        return getLOAN_INTEREST();
     }
 
     /**
      * @param LoanInterest the LoanInterest to set
+     * @throws java.lang.IllegalAccessException
      */
-    protected void setLoanInterest(double LoanInterest) {
-        this.LOAN_INTEREST = LoanInterest;
+    protected void setLoanInterest(double LoanInterest) throws IllegalAccessException {
+        this.setLOAN_INTEREST(LoanInterest);
     }
 
     /**
@@ -123,7 +127,64 @@ public class Loan {
         this.LoanPurpose = LoanPurpose;
     }
 
-    public long SaveMemberLoan() throws SQLException {
+    /**
+     * @return the LoanType
+     */
+    public String getLoanType() {
+        return LoanType;
+    }
+
+    /**
+     * @param LoanType the LoanType to set
+     */
+    public void setLoanType(String LoanType) {
+        this.LoanType = LoanType;
+    }
+
+    /**
+     * @return the id
+     */
+    public long getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    private void setId(long id) {
+        this.id = id;
+    }
+
+    /**
+     * @return the AmountToPay
+     */
+    public double getAmountToPay() {
+        return AmountToPay;
+    }
+
+    /**
+     * @param AmountToPay the AmountToPay to set
+     */
+    public void setAmountToPay(double AmountToPay) {
+        this.AmountToPay = AmountToPay;
+    }
+
+    /**
+     * @return the AmountPaid
+     */
+    public double getAmountPaid() {
+        return AmountPaid;
+    }
+
+    /**
+     * @param AmountPaid the AmountPaid to set
+     */
+    private void setAmountPaid(double AmountPaid) {
+        this.AmountPaid = AmountPaid;
+    }
+
+    // allow members to request loans
+    public long RequestLoan() throws SQLException {
         // a user can only have a single loan as per program specs
         if (MyloanCount() == 1) {
             return -1;
@@ -195,11 +256,11 @@ public class Loan {
         }
     }
 
-    // get loan id for current member
+    // get loan info for current member. change this one coz ka hujanotice you are being redudant
     public void getLoanInfo() throws SQLException {
         // SELECT `id`, `member_id`, `LoanType`, `LoanAmount`, `TotalAmount`, `PaybackDate`, `LoanPurpose`, `paidAmount` FROM `sacco`.`loans` WHERE  `id`=15;
         try {
-            String sql = "SELECT `id`, `LoanAmount`, `TotalAmount`, `LoanPurpose`, `paidAmount` FROM `sacco`.`loans` WHERE  `member_id`=?";
+            String sql = "SELECT * FROM `sacco`.`loans` WHERE  `member_id`=?";
             stmt = conn.prepareStatement(sql);
             stmt.setLong(1, Member.getId());
             result = stmt.executeQuery();
@@ -257,79 +318,44 @@ public class Loan {
     }
 
     // the current member should also be able to check thir loan status
-    public void checkLoanStatus(JTextArea jt) throws SQLException {
+    public void PrintLoanStatus(JTextArea jt) throws SQLException {
         try {
+            double la, pa = 0, ta = 0;
+            jt.setText("");
             //System.out.println(conn);
             // SELECT LoanAmount, TotalAmount, PaybackPeriod, LoanType, LoanPurpose FROM sacco.loans WHERE member_id = 5
-            String sql = "SELECT member_id, LoanAmount, TotalAmount, PaybackDate, LoanType, LoanPurpose FROM sacco.loans WHERE member_id = ?";
+            String sql = "SELECT member_id, LoanAmount, TotalAmount, PaybackDate, LoanType, LoanPurpose, paidAmount FROM sacco.loans WHERE member_id = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setLong(1, Member.getId());
             result = stmt.executeQuery();
+            jt.append("MEMBER ID \t LOAN_AMOUNT \t TOTAL_AMOUNT \t LOAN_PERIOD \t LOAN_TYPE \t LOAN_PURPOSE \t \t PAID_AMOUNT\n \n");
             while (result.next()) {
+                la = result.getDouble("LoanAmount");
+                pa = result.getDouble("paidAmount");
+                ta = result.getDouble("TotalAmount");
                 // display the info
-                //Formatter f = new Formatter();
-                //jt.append(f.format("%s %s %s %s", "Total", "Period", "Type", "purpose").toString());
                 jt.append(Long.toString(result.getLong("member_id")));
-                jt.append(Double.toString(result.getDouble("LoanAmount")));
-                jt.append(Double.toString(result.getDouble("TotalAmount")));
+                jt.append("\t");
+                jt.append(la + "");
+                jt.append("\t\t");
+                jt.append(ta + "");
+                jt.append("\t\t");
                 jt.append(result.getString("PaybackDate"));
-
+                jt.append("\t\t");
                 jt.append(result.getString("LoanType"));
+                jt.append("\t");
                 jt.append(result.getString("LoanPurpose"));
-
+                jt.append("\t\t");
+                jt.append(pa + "");
             }
             // display extra info
-            jt.append("\n\n\n");
-            jt.append("*********************************************");
-            jt.append("You have " + MyloanCount() + " loans");
+            jt.append("\n\n");
+            jt.append("You have " + MyloanCount() + " loans to pay up\n");
+            jt.append("You owe the sacco ksh " + (ta - pa) + "\n");
+            jt.append("You have currently paid ksh " + pa + "\n");
         } finally {
             close();
         }
-    }
-
-    protected boolean DestroyMemberLoan(long id) throws SQLException {
-        try {
-            //System.out.println(conn);
-            String sql = "DELETE FROM sacco.Loans WHERE member_id = ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setLong(1, id);
-
-            // PreparedStatement.setString(8, getPassword());
-            int rows = stmt.executeUpdate();
-            return rows == 0;
-
-        } finally {
-            // close resources
-            close();
-        }
-    }
-
-    /**
-     * @return the LoanType
-     */
-    public String getLoanType() {
-        return LoanType;
-    }
-
-    /**
-     * @param LoanType the LoanType to set
-     */
-    public void setLoanType(String LoanType) {
-        this.LoanType = LoanType;
-    }
-
-    /**
-     * @return the id
-     */
-    public long getId() {
-        return id;
-    }
-
-    /**
-     * @param id the id to set
-     */
-    private void setId(long id) {
-        this.id = id;
     }
 
     private void close() {
@@ -348,30 +374,23 @@ public class Loan {
     }
 
     /**
-     * @return the AmountToPay
+     * @return the LOAN_INTEREST
      */
-    public double getAmountToPay() {
-        return AmountToPay;
+    private double getLOAN_INTEREST() {
+        return LOAN_INTEREST;
     }
 
     /**
-     * @param AmountToPay the AmountToPay to set
+     * @param LOAN_INTEREST the LOAN_INTEREST to set
+     * @throws java.lang.IllegalAccessException
      */
-    public void setAmountToPay(double AmountToPay) {
-        this.AmountToPay = AmountToPay;
+    public void setLOAN_INTEREST(double LOAN_INTEREST) throws IllegalAccessException {
+        if (Member.isAdmin()){
+            this.LOAN_INTEREST = LOAN_INTEREST;
+        }
+        else {
+            throw new IllegalAccessException("You are not allowed to perform this action");
+        }
     }
 
-    /**
-     * @return the AmountPaid
-     */
-    public double getAmountPaid() {
-        return AmountPaid;
-    }
-
-    /**
-     * @param AmountPaid the AmountPaid to set
-     */
-    private void setAmountPaid(double AmountPaid) {
-        this.AmountPaid = AmountPaid;
-    }
 }

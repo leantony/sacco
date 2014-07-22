@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package project.classes;
+package com.sacco.classes;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
-import javax.swing.JTextArea;
+import com.sacco.classes.vendor.Bcrypt.BCrypt;
 
 /**
  *
@@ -22,31 +22,17 @@ import javax.swing.JTextArea;
 public class Member {
 
     // define member datatypes as potrayed in the db
-    private static long id;
-    private String firstname;
-    private String gender;
-    private String lastname;
-    private Date dob;
-    private int mobileno;
-    private String address;
-    private String email;
-    private String password;
-
+    // store a logged in user. ive chosen a hashset it coz it won't allow duplicate keys. so a user can't login twice
+    static Set<Long> hs = new HashSet<>();
+    protected static long id;
     // for admin functions
     private static boolean admin = false;
 
-    PreparedStatement stmt = null;
-    database d = new database();
-    Connection conn = d.DBConnection;
-    ResultSet result = null;
-    // store a logged in user. ive chosen a hashset it coz it won't allow duplicate keys. so a user can't login twice
-    static Set<Long> hs = new HashSet<>();
-
-    // get a DBConnection to the database via constructor
-    public void Member() {
-        this.conn = null;
-        d = new database();
-        conn = d.getConnection();
+    /**
+     * @param aAdmin the admin to set
+     */
+    protected static void setAdmin(boolean aAdmin) {
+        admin = aAdmin;
     }
 
     /**
@@ -61,6 +47,49 @@ public class Member {
      */
     public static boolean isAdmin() {
         return admin;
+    }
+
+    /**
+     * @param userid
+     */
+    protected static void setId(long userid) {
+        id = userid;
+    }
+
+    public static boolean CheckLoggedIn() {
+        return hs.contains(Member.getId());
+    }
+
+    // logout the current member
+    public static boolean Logout() {
+        // incase the usr was an admin, unset the admin variable
+        if (isAdmin()) {
+            setAdmin(false);
+        }
+        // JOptionPane.showMessageDialog(null, hs.contains(Member.getId()));
+        return hs.remove(Member.getId());
+    }
+
+    private String firstname;
+    private String gender;
+    private String lastname;
+    private Date dob;
+    private int mobileno;
+    private String address;
+    private String email;
+    private String password;
+
+    // for database stuff
+    PreparedStatement stmt = null;
+    database d = new database();
+    Connection conn = d.DBConnection;
+    ResultSet result = null;
+
+    // get a DBConnection to the database via constructor
+    public void Member() {
+        this.conn = null;
+        d = new database();
+        conn = d.getConnection();
     }
 
     /**
@@ -162,13 +191,6 @@ public class Member {
     }
 
     /**
-     * @param id the id to set
-     */
-    private void setId(long userid) {
-        id = userid;
-    }
-
-    /**
      * @return the password
      */
     public String getPassword() {
@@ -179,21 +201,27 @@ public class Member {
      * @param password the password to set
      */
     public void setPassword(String password) {
-        this.password = password;
+        // hash the password. optional
+        this.password = BCrypt.Hash(password, BCrypt.generateSalt());
     }
 
-    public boolean LoginMember(long id, String password) throws SQLException {
+    public boolean LoginMember(long id, String password) throws SQLException, IllegalArgumentException {
         try {
-            String sql = "SELECT * FROM sacco.members WHERE id=? AND password=?";
+            String sql = "SELECT password, firstname FROM sacco.members WHERE id=?";
             stmt = conn.prepareStatement(sql);
             stmt.setLong(1, id);
-            stmt.setString(2, password);
             result = stmt.executeQuery();
-            while (result.next()) {
-                // store logged in userID in mem
-                setId(id);
-                setFirstname(result.getString("firstname"));
-                return hs.add(id);
+            if (result.next()) {
+                // we validate their hash
+                if (BCrypt.CheckPassword(password, result.getString("password"))) {
+                    // store logged in userID in mem
+                    Member.setId(id);
+                    // this will be used to get the user's name and display it in the logged in user's index page
+                    setFirstname(result.getString("firstname"));
+                    // a successful addition of the user id to the hashset will indicate a valid login
+                    return hs.add(id);
+                }
+
             }
         } finally {
             close();
@@ -202,31 +230,13 @@ public class Member {
 
     }
 
-    // check login status. for administrative use since any id can be passed,
-    // and a basic user shouldn't be able to see other user's status
-    protected static boolean CheckIfLoggedIn(long id) {
-        return hs.contains(id);
-    }
-
-    public static boolean CheckLoggedIn() {
-        return hs.contains(Member.getId());
-    }
-
-    // logout a user
-    public static boolean Logout(long id) {
-        // incase the usr was an admin, unset the admin variable
-        if (admin) {
-            admin = false;
-        }
-        return hs.remove(id);
-    }
-
     // adds a member to the database
     public long AddMember() throws SQLException {
         try {
             //System.out.println(conn);
             //INSERT INTO `sacco`.`members` (`firstname`, `lastname`, `gender`, `dob`, `mobileno`, `address`, `email`, `password`) VALUES ('6666', '6666', 'Female', '2014-07-21', 666, '666', '666', '123456');
-            String sql = "INSERT INTO `sacco`.`members` (`firstname`, `lastname`, `gender`, `dob`, `mobileno`, `address`, `email`, `password`) "
+            String sql
+                    = "INSERT INTO `sacco`.`members` (`firstname`, `lastname`, `gender`, `dob`, `mobileno`, `address`, `email`, `password`) "
                     + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, getFirstname());
@@ -247,7 +257,8 @@ public class Member {
             // get the returned inserted id
             result = stmt.getGeneratedKeys();
             if (result.next()) {
-                this.setId(result.getLong(1));
+                Member.setId(result.getLong(1));
+                // login the member automatically
                 LoginMember(id, password);
                 return Member.getId();
             } else {
@@ -281,95 +292,6 @@ public class Member {
             close();
         }
     }
-
-    // an admin task. of course
-    protected boolean DeleteMember(long id) throws SQLException {
-        if (isAdmin()) {
-            try {
-                //System.out.println(conn);
-                String sql = "DELETE FROM sacco.members WHERE id = ?";
-                stmt = conn.prepareStatement(sql);
-                stmt.setLong(1, id);
-
-                // PreparedStatement.setString(8, getPassword());
-                int rows = stmt.executeUpdate();
-                if (rows == 0) {
-                    // a user wasn't removed
-                    throw new SQLException("Deletion failed");
-                } else {
-                    return true;
-                }
-
-            } finally {
-                // close resources
-                close();
-            }
-        }
-        return false;
-    }
-
-    public void DisplayAllMembers(JTextArea jt) throws SQLException {
-        if (isAdmin()) {
-            jt.setText("");
-            try {
-                String sql = "SELECT * FROM sacco.members";
-                stmt = conn.prepareStatement(sql);
-                result = stmt.executeQuery();
-
-                jt.append("HERE are all the members in the sacco \n");
-
-                while (result.next()) {
-                    // store logged in userID in mem
-                    setId(id);
-                    jt.append(result.getString("firstname"));
-                    jt.append("\n");
-                    jt.append(result.getString("firstname"));
-                    jt.append("\n");
-                    jt.append(result.getString("gender"));
-                    jt.append("\n");
-                    jt.append(result.getDate("dob").toString());
-                    jt.append("\n");
-                    jt.append(result.getString("address"));
-                    jt.append("\n");
-                    jt.append(result.getString("email"));
-                    jt.append("\n");
-                }
-            } finally {
-                close();
-            }
-        }
-    }
-
-    protected long makeMemberAdmin(long id) throws SQLException {
-        if (isAdmin()) {
-            try {
-                //System.out.println(conn);
-                String sql = "INSERT INTO sacco.admins (member_id) VALUES (?)";
-                stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                stmt.setLong(1, id);
-                int rows = stmt.executeUpdate();
-                if (rows == 0) {
-                    // a user wasn't added
-                    throw new SQLException("operation failed");
-                }
-
-                // get the returned inserted id
-                result = stmt.getGeneratedKeys();
-                if (result.next()) {
-                    setId(result.getLong(1));
-                    return getId();
-                } else {
-                    throw new SQLException("Operation failed. an ID wasn't obtained");
-                }
-            } finally {
-                // close resources
-                close();
-            }
-        }
-        return -1;
-
-    }
-
     public boolean checkIfUserIsAdmin() throws SQLException {
         try {
             // SELECT `id`, `member_id` FROM `sacco`.`admins` WHERE  `id`=2;
@@ -379,7 +301,7 @@ public class Member {
             result = stmt.executeQuery();
 
             while (result.next()) {
-                admin = true;
+                setAdmin(true);
                 return isAdmin();
             }
         } finally {
@@ -402,5 +324,6 @@ public class Member {
             }
         }
     }
+
 
 }

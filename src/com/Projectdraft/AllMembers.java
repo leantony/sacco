@@ -3,25 +3,28 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package projectdraft;
+package com.Projectdraft;
 
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import project.classes.Loan;
-import project.classes.Member;
+import com.sacco.classes.Member;
+import com.sacco.classes.Admin;
 
 /**
  *
  * @author Antony
  */
-public class DisplayLoanInformation extends javax.swing.JFrame {
+public class AllMembers extends javax.swing.JFrame {
 
-    Loan l = new Loan();
+    Member m = new Member();
+    Admin a = new Admin();
 
     /**
-     * Creates new form ChangeLoanPaybackDate
+     * Creates new form AllMembers
      */
-    public DisplayLoanInformation() {
+    public AllMembers() {
         initComponents();
     }
 
@@ -35,29 +38,22 @@ public class DisplayLoanInformation extends javax.swing.JFrame {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextAreaLoanInfo = new javax.swing.JTextArea();
-        jButtonClose = new javax.swing.JButton();
+        jTextAreaAllMembers = new javax.swing.JTextArea();
         jLabel1 = new javax.swing.JLabel();
         jButtonDisplay = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Loan Info");
+        setTitle("Registred Sacco Members");
 
-        jTextAreaLoanInfo.setColumns(20);
-        jTextAreaLoanInfo.setRows(5);
-        jScrollPane1.setViewportView(jTextAreaLoanInfo);
-
-        jButtonClose.setText("Exit");
-        jButtonClose.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonCloseActionPerformed(evt);
-            }
-        });
+        jTextAreaAllMembers.setColumns(20);
+        jTextAreaAllMembers.setRows(5);
+        jScrollPane1.setViewportView(jTextAreaAllMembers);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabel1.setText("Your Loan Information");
+        jLabel1.setText("Sacco Members");
 
-        jButtonDisplay.setText("Display Information");
+        jButtonDisplay.setText("Members");
+        jButtonDisplay.setActionCommand("Display");
         jButtonDisplay.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonDisplayActionPerformed(evt);
@@ -71,33 +67,26 @@ public class DisplayLoanInformation extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(165, 165, 165)
-                                .addComponent(jLabel1))
-                            .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(jButtonClose)
-                                .addGap(152, 152, 152)
-                                .addComponent(jButtonDisplay)))
-                        .addGap(0, 151, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jScrollPane1)))
-                .addContainerGap())
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 622, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(246, 246, 246)
+                        .addComponent(jLabel1))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(276, 276, 276)
+                        .addComponent(jButtonDisplay)))
+                .addContainerGap(18, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(12, 12, 12)
+                .addGap(6, 6, 6)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButtonClose)
-                    .addComponent(jButtonDisplay))
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addComponent(jButtonDisplay)
+                .addContainerGap(27, Short.MAX_VALUE))
         );
 
         pack();
@@ -105,18 +94,13 @@ public class DisplayLoanInformation extends javax.swing.JFrame {
 
     private void jButtonDisplayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDisplayActionPerformed
         // TODO add your handling code here:
-        //jTextAreaLoanInfo.setText("");
+
         try {
-            l.checkLoanStatus(jTextAreaLoanInfo);
+            a.DisplayAllMembers(jTextAreaAllMembers);
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Encountered an error when trying to display your loan information", "Error", JOptionPane.ERROR_MESSAGE);
+            Logger.getLogger(AllMembers.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButtonDisplayActionPerformed
-
-    private void jButtonCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCloseActionPerformed
-        // TODO add your handling code here:
-        this.dispose();
-    }//GEN-LAST:event_jButtonCloseActionPerformed
 
     /**
      * @param args the command line arguments
@@ -135,32 +119,34 @@ public class DisplayLoanInformation extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(DisplayLoanInformation.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AllMembers.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(DisplayLoanInformation.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AllMembers.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(DisplayLoanInformation.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AllMembers.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(DisplayLoanInformation.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AllMembers.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> {
-            if (!Member.CheckLoggedIn()) {
-                JOptionPane.showMessageDialog(null, "Please login first", "Access denied", JOptionPane.ERROR_MESSAGE);
-                new LoginScreen().setVisible(true);
-            } else {
-                new DisplayLoanInformation().setVisible(true);
+        java.awt.EventQueue.invokeLater(new Runnable() {
+
+            public void run() {
+                if (Member.isAdmin()) {
+                    new AllMembers().setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Administrator access only", "Access denied", JOptionPane.ERROR_MESSAGE);
+                    new LoginScreen().setVisible(true);
+                }
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButtonClose;
     private javax.swing.JButton jButtonDisplay;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea jTextAreaLoanInfo;
+    private javax.swing.JTextArea jTextAreaAllMembers;
     // End of variables declaration//GEN-END:variables
 }

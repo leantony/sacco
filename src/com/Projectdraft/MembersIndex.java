@@ -3,18 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package projectdraft;
+package com.Projectdraft;
 
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
-import project.classes.Member;
+import com.sacco.classes.Member;
 
 /**
  *
  * @author CJ
  */
 public class MembersIndex extends javax.swing.JFrame {
-    
+
     Member m = new Member();
 
     /**
@@ -25,7 +25,7 @@ public class MembersIndex extends javax.swing.JFrame {
 
         // disable administrative controls
         jMenuAdministrator.setVisible(false);
-        
+
         try {
             // check if a user is an admin
             if (m.checkIfUserIsAdmin()) {
@@ -264,46 +264,46 @@ public class MembersIndex extends javax.swing.JFrame {
     private void jMenuItemMembersListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemMembersListActionPerformed
         new AllMembers().setVisible(true);
     }//GEN-LAST:event_jMenuItemMembersListActionPerformed
-    
+
     private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jMenuItem8ActionPerformed
-    
+
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jMenuItem6ActionPerformed
-    
+
     private void jMenuItemApplyLoanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemApplyLoanActionPerformed
         // TODO add your handling code here:
         new LoanApplication().setVisible(true);
     }//GEN-LAST:event_jMenuItemApplyLoanActionPerformed
-    
+
     private void jMenuItemLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemLogoutActionPerformed
         // TODO add your handling code here:
-        if (Member.Logout(Member.getId())) {
-            JOptionPane.showMessageDialog(null, "Youve logged out");
+        if (Member.Logout()) {
+            JOptionPane.showMessageDialog(null, "Youve logged out", "Bye", JOptionPane.INFORMATION_MESSAGE);
             this.dispose();
-            new WelcomeScreen().setVisible(true);
+            new LoginScreen().setVisible(true);
         } else {
             JOptionPane.showMessageDialog(null, "System is experiencing problems. please try again");
         }
     }//GEN-LAST:event_jMenuItemLogoutActionPerformed
-    
+
     private void jMenuItemNewMemberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemNewMemberActionPerformed
         // TODO add your handling code here:
         new AddMember().setVisible(true);
     }//GEN-LAST:event_jMenuItemNewMemberActionPerformed
-    
+
     private void jMenuItemCheckLoanStatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCheckLoanStatusActionPerformed
         // TODO add your handling code here:
         new DisplayLoanInformation().setVisible(true);
     }//GEN-LAST:event_jMenuItemCheckLoanStatusActionPerformed
-    
+
     private void jMenuItemMakeContribActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemMakeContribActionPerformed
         // TODO add your handling code here:
         new AddContribution().setVisible(true);
     }//GEN-LAST:event_jMenuItemMakeContribActionPerformed
-    
+
     private void jMenuItemRepayLoanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemRepayLoanActionPerformed
         // TODO add your handling code here:
         new RepayLoan().setVisible(true);
@@ -338,7 +338,7 @@ public class MembersIndex extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
-            
+
             @Override
             public void run() {
                 if (!Member.CheckLoggedIn()) {

@@ -1,7 +1,7 @@
 /*
  * this class initializes the database DBConnection
  */
-package project.classes;
+package com.sacco.classes;
 
 import java.sql.*;
 import javax.swing.JOptionPane;
@@ -14,10 +14,10 @@ public class database {
 
     public Connection DBConnection = null;
     private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    private static final String DB_URL = "jdbc:mysql://localhost/";
+    private static final String DB_URL = "jdbc:mysql://192.168.4.1/";
     // you can change this here
-    private static final String USER = "root";
-    private static final String PASS = "zx 0Anto9;;";
+    private static final String USER = "sacco";
+    private static final String PASS = "sacco";
     // private static final String DB_NAME = "Sacco";
 
     /**

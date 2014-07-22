@@ -3,15 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package projectdraft;
+package com.Projectdraft;
 
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import project.classes.Application;
-import project.classes.Loan;
-import project.classes.Member;
+import com.sacco.classes.Application;
+import com.sacco.classes.Loan;
+import com.sacco.classes.Member;
 
 /**
  *

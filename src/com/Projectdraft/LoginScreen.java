@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package projectdraft;
+package com.Projectdraft;
 
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
-import project.classes.Application;
-import project.classes.Member;
+import com.sacco.classes.Application;
+import com.sacco.classes.Member;
 
 /**
  *
@@ -161,8 +161,8 @@ public class LoginScreen extends javax.swing.JFrame {
                 this.dispose();
                 new MembersIndex().setVisible(true);
             }
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Encountered an error when trying to log you in. Try again later ", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (SQLException | IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(null, "Encountered an error when trying to log you in. Try again later " +ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             jPasswordPassword.setText("");
         }
     }//GEN-LAST:event_jButtonLoginActionPerformed

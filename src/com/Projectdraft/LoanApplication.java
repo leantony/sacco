@@ -3,15 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package projectdraft;
+package com.Projectdraft;
 
 import java.sql.Date;
 import java.sql.SQLException;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
-import project.classes.Application;
-import project.classes.Loan;
-import project.classes.Member;
+import com.sacco.classes.Application;
+import com.sacco.classes.Loan;
+import com.sacco.classes.Member;
 
 /**
  *
@@ -87,9 +87,9 @@ public class LoanApplication extends javax.swing.JFrame {
         jTextAreaLoanPurpose.setRows(5);
         jScrollPane2.setViewportView(jTextAreaLoanPurpose);
 
-        jLabel4.setText("Amount");
+        jLabel4.setText("Amount (Ksh)");
 
-        jLabel5.setText("Payback Period");
+        jLabel5.setText("Payback Period (Months)");
 
         jTextFieldLoanAmnt.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jTextFieldLoanAmnt.setToolTipText("The amount you need as a loan");
@@ -116,12 +116,12 @@ public class LoanApplication extends javax.swing.JFrame {
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel5))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jComboBoxPeriod, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextFieldLoanAmnt, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(18, 29, Short.MAX_VALUE))
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jTextFieldLoanAmnt, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jComboBoxPeriod, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(18, 27, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -263,7 +263,7 @@ public class LoanApplication extends javax.swing.JFrame {
 
         // save the loan
         try {
-            if (l.SaveMemberLoan() == -1) {
+            if (l.RequestLoan() == -1) {
                 JOptionPane.showMessageDialog(null, "Your loan submission was not successful\nReason: You have a pending loan to pay", "Pending loan", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(null, "Your loan submission was successful", "Success", JOptionPane.INFORMATION_MESSAGE);

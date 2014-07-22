@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package projectdraft;
+package com.Projectdraft;
 
 import javax.swing.JOptionPane;
-import project.classes.Application;
+import com.sacco.classes.Application;
 
 /**
  *
