@@ -9,6 +9,9 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import com.sacco.classes.Application;
 import com.sacco.classes.Member;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.security.auth.login.AccountException;
 
 /**
  *
@@ -156,14 +159,19 @@ public class LoginScreen extends javax.swing.JFrame {
             if (!m.LoginMember(id, password)) {
                 JOptionPane.showMessageDialog(null, "Invalid user ID or password. please try again", "Login failed", JOptionPane.INFORMATION_MESSAGE);
                 Application.clearTextFields(this.getContentPane());
+                jTextFieldMemberID.requestFocus();
             } else {
                 JOptionPane.showMessageDialog(null, "Successfully logged In!", "Success", JOptionPane.INFORMATION_MESSAGE);
                 this.dispose();
                 new MembersIndex().setVisible(true);
             }
-        } catch (SQLException | IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(null, "Encountered an error when trying to log you in. Try again later " +ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            jPasswordPassword.setText("");
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Encountered an error when trying to log you in. Try again later ", "Error", JOptionPane.ERROR_MESSAGE);
+            Application.clearTextFields(this.getContentPane());
+            jTextFieldMemberID.requestFocus();
+        } catch (AccountException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            this.dispose();
         }
     }//GEN-LAST:event_jButtonLoginActionPerformed
 

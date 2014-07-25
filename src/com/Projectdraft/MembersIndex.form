@@ -63,79 +63,33 @@
             <Property name="text" type="java.lang.String" value="Members"/>
           </Properties>
           <SubComponents>
-            <Menu class="javax.swing.JMenu" name="jMenuAdministrator">
+            <Menu class="javax.swing.JMenu" name="jMenuMember">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Administrator"/>
+                <Property name="text" type="java.lang.String" value="My Profile"/>
               </Properties>
               <SubComponents>
-                <MenuItem class="javax.swing.JMenuItem" name="jMenuItemMembersList">
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuItemMemberInfo">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Members List"/>
+                    <Property name="text" type="java.lang.String" value="Edit My Info"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemMembersListActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemMemberInfoActionPerformed"/>
                   </Events>
                 </MenuItem>
-                <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator13">
+                <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator17">
                 </MenuItem>
-                <MenuItem class="javax.swing.JMenuItem" name="jMenuItemNewMember">
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuItemMyPassword">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="New Member"/>
+                    <Property name="text" type="java.lang.String" value="Edit My Password"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemNewMemberActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemMyPasswordActionPerformed"/>
                   </Events>
                 </MenuItem>
-                <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator14">
+                <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator18">
                 </MenuItem>
-                <MenuItem class="javax.swing.JMenuItem" name="jMenuItemViewContrib">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" value="View Contributions"/>
-                  </Properties>
-                </MenuItem>
-                <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator4">
-                </MenuItem>
-                <Menu class="javax.swing.JMenu" name="jMenuReports">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" value="Reports"/>
-                  </Properties>
-                  <SubComponents>
-                    <MenuItem class="javax.swing.JMenuItem" name="jMenuItem8">
-                      <Properties>
-                        <Property name="text" type="java.lang.String" value="Trial Balance"/>
-                      </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem8ActionPerformed"/>
-                      </Events>
-                    </MenuItem>
-                    <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator15">
-                    </MenuItem>
-                    <MenuItem class="javax.swing.JMenuItem" name="jMenuItem6">
-                      <Properties>
-                        <Property name="text" type="java.lang.String" value="Income Statement"/>
-                      </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem6ActionPerformed"/>
-                      </Events>
-                    </MenuItem>
-                    <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator16">
-                    </MenuItem>
-                    <MenuItem class="javax.swing.JMenuItem" name="jMenuItem7">
-                      <Properties>
-                        <Property name="text" type="java.lang.String" value="Balance Sheet"/>
-                      </Properties>
-                    </MenuItem>
-                  </SubComponents>
-                </Menu>
               </SubComponents>
             </Menu>
-            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator2">
-            </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItemEditMemberInfo">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Edit My Information"/>
-              </Properties>
-            </MenuItem>
             <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator12">
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItemQueries">
@@ -182,6 +136,72 @@
             </MenuItem>
             <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator9">
             </MenuItem>
+          </SubComponents>
+        </Menu>
+        <Menu class="javax.swing.JMenu" name="jMenuAdministrator">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Administrator"/>
+          </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItemMembersList">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Members List"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemMembersListActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator13">
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItemNewMember">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="New Member"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemNewMemberActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator14">
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItemViewContrib">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="View Contributions"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator4">
+            </MenuItem>
+            <Menu class="javax.swing.JMenu" name="jMenuReports">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Reports"/>
+              </Properties>
+              <SubComponents>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuItem8">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Trial Balance"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem8ActionPerformed"/>
+                  </Events>
+                </MenuItem>
+                <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator15">
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuItem6">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Income Statement"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem6ActionPerformed"/>
+                  </Events>
+                </MenuItem>
+                <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator16">
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuItem7">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Balance Sheet"/>
+                  </Properties>
+                </MenuItem>
+              </SubComponents>
+            </Menu>
           </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="jMenu10">
@@ -264,13 +284,23 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <EmptySpace min="0" pref="641" max="32767" attributes="0"/>
+          <EmptySpace min="0" pref="1920" max="32767" attributes="0"/>
+          <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
+              <Component id="jLabel1" alignment="0" max="32767" attributes="0"/>
+          </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <EmptySpace min="0" pref="279" max="32767" attributes="0"/>
+          <EmptySpace min="0" pref="1200" max="32767" attributes="0"/>
+          <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
+              <Component id="jLabel1" alignment="0" max="32767" attributes="0"/>
+          </Group>
       </Group>
     </DimensionLayout>
   </Layout>
+  <SubComponents>
+    <Component class="javax.swing.JLabel" name="jLabel1">
+    </Component>
+  </SubComponents>
 </Form>

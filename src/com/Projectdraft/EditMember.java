@@ -10,13 +10,15 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import com.sacco.classes.Application;
 import com.sacco.classes.Member;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.security.auth.login.AccountException;
 
 /**
  *
  * @author CJ
  */
-public class AddMember extends javax.swing.JFrame {
+public class EditMember extends javax.swing.JFrame {
 
     // initialize member object
     Member m = new Member();
@@ -24,18 +26,27 @@ public class AddMember extends javax.swing.JFrame {
     /**
      * Creates new form AddMember
      */
-    public AddMember() {
-        initComponents();
-        if (Member.CheckLoggedIn()) {
-            jButtonBack.setEnabled(false);
-            jButtonCancel.setEnabled(false);
-        }
-        // default to false for obvious reasons
-        jPanelAdminTask.setVisible(false);
-        if (Member.isAdmin()) {
-            jPanelAdminTask.setVisible(true);
-        } else {
-            jPanelAdminTask.setVisible(false);
+    public EditMember() {
+        try {
+            initComponents();
+            m.getMemberInfo(m);
+            jTextFieldFname.setText(m.getFirstname());
+            jTextFieldLname.setText(m.getLastname());
+
+            // auto mark the gender
+            if (m.getGender().equals("Male")) {
+                jRadioButtonMale.setSelected(true);
+            } else {
+                jRadioButtonFemale.setSelected(true);
+            }
+
+            jTextFieldDob.setText(m.getDob().toLocalDate().toString());
+            jTextFieldMobileNo.setText(String.valueOf(m.getMobileno()));
+            jTextFieldAddress.setText(m.getAddress());
+            jTextFieldEmail.setText(m.getEmail());
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Encountered an error while trying to get your data. Please try again", "Error", JOptionPane.ERROR_MESSAGE);
+            this.dispose();
         }
     }
 
@@ -68,22 +79,13 @@ public class AddMember extends javax.swing.JFrame {
         jButtonSubmit = new javax.swing.JButton();
         jButtonCancel = new javax.swing.JButton();
         jButtonReset = new javax.swing.JButton();
-        jButtonBack = new javax.swing.JButton();
-        jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
-        jPasswordPassword = new javax.swing.JPasswordField();
-        jPasswordRepeatedPass = new javax.swing.JPasswordField();
-        jPanelAdminTask = new javax.swing.JPanel();
-        jLabel11 = new javax.swing.JLabel();
-        jCheckBoxAddToAdmins = new javax.swing.JCheckBox();
-        jCheckBoxAddToAdmins1 = new javax.swing.JCheckBox();
         jPanel2 = new javax.swing.JPanel();
         jRadioButtonFemale = new javax.swing.JRadioButton();
         jLabel5 = new javax.swing.JLabel();
         jRadioButtonMale = new javax.swing.JRadioButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Add Sacco Member");
+        setTitle("Edit you Information Here");
         setMinimumSize(new java.awt.Dimension(500, 500));
 
         jLabel1.setText("First Name");
@@ -94,7 +96,7 @@ public class AddMember extends javax.swing.JFrame {
         jLabel4.setToolTipText("");
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabel3.setText("Enter your information here. All fields are required");
+        jLabel3.setText("Your current data is displayed. You can edit any and submit");
 
         jLabel7.setText("Mobile Number");
 
@@ -174,7 +176,7 @@ public class AddMember extends javax.swing.JFrame {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(137, Short.MAX_VALUE)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -184,51 +186,6 @@ public class AddMember extends javax.swing.JFrame {
                 .addContainerGap(40, Short.MAX_VALUE)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
-        );
-
-        jButtonBack.setText("<< Back");
-        jButtonBack.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonBackActionPerformed(evt);
-            }
-        });
-
-        jLabel9.setText("Repeat Password");
-
-        jLabel10.setText("Password");
-
-        jLabel11.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel11.setText("Member Position-> Default: none");
-
-        jCheckBoxAddToAdmins.setText("Administrator");
-
-        jCheckBoxAddToAdmins1.setText("Secretary");
-
-        javax.swing.GroupLayout jPanelAdminTaskLayout = new javax.swing.GroupLayout(jPanelAdminTask);
-        jPanelAdminTask.setLayout(jPanelAdminTaskLayout);
-        jPanelAdminTaskLayout.setHorizontalGroup(
-            jPanelAdminTaskLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelAdminTaskLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanelAdminTaskLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, 228, Short.MAX_VALUE)
-                    .addGroup(jPanelAdminTaskLayout.createSequentialGroup()
-                        .addGroup(jPanelAdminTaskLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jCheckBoxAddToAdmins)
-                            .addComponent(jCheckBoxAddToAdmins1))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-        jPanelAdminTaskLayout.setVerticalGroup(
-            jPanelAdminTaskLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelAdminTaskLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel11)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jCheckBoxAddToAdmins)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jCheckBoxAddToAdmins1)
-                .addContainerGap(126, Short.MAX_VALUE))
         );
 
         buttonGroup1.add(jRadioButtonFemale);
@@ -251,14 +208,12 @@ public class AddMember extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(88, 88, 88)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jRadioButtonMale)
-                            .addComponent(jRadioButtonFemale)))
-                    .addComponent(jLabel5))
-                .addContainerGap(59, Short.MAX_VALUE))
+                .addComponent(jLabel5)
+                .addGap(166, 166, 166)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jRadioButtonFemale)
+                    .addComponent(jRadioButtonMale))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -278,60 +233,42 @@ public class AddMember extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(46, 46, 46)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(1, 1, 1)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                .addComponent(jLabel6)
-                                                .addComponent(jLabel8))
-                                            .addGap(22, 22, 22))
-                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                            .addComponent(jLabel7)
-                                            .addGap(18, 18, 18)))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel4)
-                                        .addGap(27, 27, 27)))
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jTextFieldDob)
-                                    .addComponent(jTextFieldMobileNo)
-                                    .addComponent(jTextFieldAddress)
-                                    .addComponent(jTextFieldEmail)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel1)
-                                    .addComponent(jLabel2))
-                                .addGap(37, 37, 37)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jTextFieldLname)
-                                    .addComponent(jTextFieldFname)))
-                            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jTextFieldDob, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addGap(105, 105, 105)
+                        .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 1, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addGap(1, 1, 1)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(193, 193, 193)
-                                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel6)
+                                    .addComponent(jLabel8))
+                                .addGap(22, 22, 22))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 134, Short.MAX_VALUE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING))
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jPanelAdminTask, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addComponent(jPasswordPassword, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 234, Short.MAX_VALUE)
-                                        .addComponent(jPasswordRepeatedPass, javax.swing.GroupLayout.Alignment.LEADING)))
-                                .addContainerGap())))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButtonBack)
-                        .addGap(116, 116, 116)
+                                .addComponent(jLabel7)
+                                .addGap(18, 18, 18)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jTextFieldAddress, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 264, Short.MAX_VALUE)
+                            .addComponent(jTextFieldMobileNo, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jTextFieldEmail)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 1, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3)))))
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jTextFieldFname, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
+                            .addComponent(jTextFieldLname)))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -339,10 +276,8 @@ public class AddMember extends javax.swing.JFrame {
                 .addGap(10, 10, 10)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 1, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel3)
-                        .addComponent(jButtonBack)))
-                .addGap(37, 37, 37)
+                    .addComponent(jLabel3))
+                .addGap(40, 40, 40)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextFieldFname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1))
@@ -352,20 +287,17 @@ public class AddMember extends javax.swing.JFrame {
                     .addComponent(jTextFieldLname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(49, 49, 49)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(jTextFieldDob, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(35, 35, 35)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextFieldMobileNo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(4, 4, 4)
-                                .addComponent(jLabel4))
-                            .addComponent(jTextFieldDob, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(30, 30, 30)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel7)
-                            .addComponent(jTextFieldMobileNo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(39, 39, 39)
-                        .addComponent(jTextFieldAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextFieldAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6))
                 .addGap(28, 28, 28)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -373,17 +305,7 @@ public class AddMember extends javax.swing.JFrame {
                     .addComponent(jLabel8))
                 .addGap(28, 28, 28))
             .addGroup(layout.createSequentialGroup()
-                .addGap(67, 67, 67)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel10)
-                    .addComponent(jPasswordPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel9)
-                    .addComponent(jPasswordRepeatedPass, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addComponent(jPanelAdminTask, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(70, 357, Short.MAX_VALUE)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -394,24 +316,17 @@ public class AddMember extends javax.swing.JFrame {
     private void jTextFieldLnameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldLnameActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextFieldLnameActionPerformed
-    
+
     private void jRadioButtonMaleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButtonMaleActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jRadioButtonMaleActionPerformed
-    
-    private void jButtonBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBackActionPerformed
-        // TODO add your handling code here:
-        this.dispose();
-        new WelcomeScreen().setVisible(true);
-    }//GEN-LAST:event_jButtonBackActionPerformed
-    
+
     private void jButtonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        new WelcomeScreen().setVisible(true);
-        
+
     }//GEN-LAST:event_jButtonCancelActionPerformed
-    
+
     private void jButtonSubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSubmitActionPerformed
 
         // the member names. we check if user input is ok
@@ -434,7 +349,7 @@ public class AddMember extends javax.swing.JFrame {
             m.setGender(jRadioButtonMale.getText());
         }
 
-        // the date of birth.
+        // the date of birth. please bear with this one. I couldn't find a better way that worked
         Date d = Application.CheckDateInput(jTextFieldDob.getText());
         if (d == null) {
             JOptionPane.showMessageDialog(null, "please enter a date in the format of yyyy-mm-dd", "Invalid date", JOptionPane.ERROR_MESSAGE);
@@ -468,41 +383,20 @@ public class AddMember extends javax.swing.JFrame {
             return;
         }
 
-        //check if password strings are the same. common logic
-        if (!Application.CheckPasswordEquality(jPasswordPassword, jPasswordRepeatedPass)) {
-            JOptionPane.showMessageDialog(null, "Your passwords don't match", "Misimatching passwords", JOptionPane.ERROR_MESSAGE);
-            jPasswordPassword.requestFocus();
-            return;
-        } else {
-            String passString = new String(jPasswordPassword.getPassword());
-            if (passString.length() <= 5) {
-                JOptionPane.showMessageDialog(null, "Please specify a password length of 6 or more chracters", "Wrong password length", JOptionPane.ERROR_MESSAGE);
-                jPasswordPassword.requestFocus();
-                return;
-            }
-            m.setPassword(passString);
-        }
-
-        // finally, insert a new user
         try {
-            if (Member.isAdmin()) {
-                JOptionPane.showMessageDialog(null, "Operation was successful. The new member id is " + m.AddMember() + "", "Success", JOptionPane.INFORMATION_MESSAGE);
-                return;
+            // edit the info
+            if (m.EditMemberInfo(m)) {
+                JOptionPane.showMessageDialog(rootPane, "Success ", "Error", JOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(null, "You have successfully registered for the sacco\nYour new user ID is " + m.AddMember() + ". Use it to login", "Success", JOptionPane.INFORMATION_MESSAGE);
-                this.dispose();
-                new LoginScreen().setVisible(true);
+                JOptionPane.showMessageDialog(rootPane, "No update was made", "Warning", JOptionPane.INFORMATION_MESSAGE);
             }
-            
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Could not add the member to the database. Try again", "Error", JOptionPane.ERROR_MESSAGE);
-            // set focus on the first field
-            jTextFieldFname.requestFocus();
         } catch (AccountException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Access denied", JOptionPane.ERROR_MESSAGE);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(rootPane, "Operation failed " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButtonSubmitActionPerformed
-    
+
     private void jButtonResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonResetActionPerformed
         // TODO add your handling code here:
         Application.clearTextFields(this.getContentPane());
@@ -525,33 +419,33 @@ public class AddMember extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(AddMember.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EditMember.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(AddMember.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EditMember.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AddMember.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EditMember.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(AddMember.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EditMember.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
-            new AddMember().setVisible(true);
+            if (Member.CheckLoggedIn()) {
+                new EditMember().setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(null, "Please login first", "Access denied", JOptionPane.ERROR_MESSAGE);
+                new LoginScreen().setVisible(true);
+            }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JButton jButtonBack;
     private javax.swing.JButton jButtonCancel;
     private javax.swing.JButton jButtonReset;
     private javax.swing.JButton jButtonSubmit;
-    private javax.swing.JCheckBox jCheckBoxAddToAdmins;
-    private javax.swing.JCheckBox jCheckBoxAddToAdmins1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -559,13 +453,9 @@ public class AddMember extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanelAdminTask;
-    private javax.swing.JPasswordField jPasswordPassword;
-    private javax.swing.JPasswordField jPasswordRepeatedPass;
     private javax.swing.JRadioButton jRadioButtonFemale;
     private javax.swing.JRadioButton jRadioButtonMale;
     private javax.swing.JSeparator jSeparator2;

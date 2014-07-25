@@ -5,7 +5,7 @@ package com.sacco.classes;
 
 import java.awt.Component;
 import java.awt.Container;
-import java.sql.Date;
+import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -13,31 +13,21 @@ import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DocumentFilter;
 
-/**
- *
- * @author Antony
- */
 public class Application {
 
-    /**
-     * Exit the application
-     *
-     * @param status
-     */
+    // exit the app
     public static void Exit(int status) {
         System.exit(status);
     }
 
-    // check & parse user date input. doesn't work
-    public static Date CheckDateInput(String date) {
+    // check & parse user date input
+    public static java.sql.Date CheckDateInput(String date) {
         // sql date input
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-M-dd");
         try {
-            Date date1 = (Date) simpleDateFormat.parse(date);
-            return date1;
+            Date d = simpleDateFormat.parse(date);
+            return new java.sql.Date(d.getTime());
         } catch (ParseException ex) {
             return null;
         }
@@ -45,9 +35,11 @@ public class Application {
 
     // clear all textual input
     public static void clearTextFields(Container container) {
-
         for (Component c : container.getComponents()) {
-            if (c instanceof JTextField) {
+            if (c instanceof JTextArea) {
+                JTextArea jt = (JTextArea) c;
+                jt.setText("");
+            } else if (c instanceof JTextField) {
                 JTextField f = (JTextField) c;
                 f.setText("");
             } else if (c instanceof Container) {
@@ -58,10 +50,10 @@ public class Application {
 
     // check if a text box is empty
     public static boolean ValidateEmptyTextBox(JTextField a, String errorMsg) {
-        if (errorMsg == null || errorMsg.isEmpty()) {
-            errorMsg = "Please enter a value.";
+        if (errorMsg.isEmpty()) {
+            errorMsg = "Please enter a value for " + a.getName();
         }
-        if (a.getText() == null || a.getText().isEmpty()) {
+        if (a.getText().trim().isEmpty()) {
             a.requestFocus();
             JOptionPane.showMessageDialog(null, errorMsg, "Empty value", JOptionPane.ERROR_MESSAGE);
             return false;
@@ -69,18 +61,12 @@ public class Application {
         return true;
     }
 
-    /**
-     * // check if a text area is empty
-     *
-     * @param a
-     * @param errorMsg
-     * @return
-     */
+    // check if a text area is empty
     public static boolean ValidateEmptyTextArea(JTextArea a, String errorMsg) {
-        if (errorMsg == null || errorMsg.isEmpty()) {
-            errorMsg = "Please enter a value.";
+        if (errorMsg.isEmpty()) {
+            errorMsg = "Please enter a value for " + a.getName();
         }
-        if (a.getText() == null || a.getText().isEmpty()) {
+        if (a.getText().trim().isEmpty()) {
             a.requestFocus();
             JOptionPane.showMessageDialog(null, errorMsg, "Empty value", JOptionPane.ERROR_MESSAGE);
             return false;
@@ -101,16 +87,11 @@ public class Application {
         }
     }
 
-    // check if a two strings are equal
-    public static boolean CheckStringEquality(String a, String b) {
-        return a.equals(b);
-    }
-
     // check if passwords match
     public static boolean CheckPasswordEquality(JPasswordField a, JPasswordField b) {
         char[] inputA = a.getPassword();
         char[] inputB = b.getPassword();
-        if (inputA == null && inputB == null) {
+        if (inputA.length == 0 && inputB.length == 0) {
             return false;
         }
         if (Arrays.equals(inputA, inputB)) {
@@ -122,9 +103,4 @@ public class Application {
             return false;
         }
     }
-
-    public static void remove(DocumentFilter.FilterBypass fb, int offset, int length) throws BadLocationException {
-        fb.remove(offset, length);
-    }
-
 }

@@ -367,7 +367,6 @@ public class BCrypt {
         51, 52, 53, -1, -1, -1, -1, -1
     };
 
-
     /**
      * Encode a byte array using bcrypt's slightly-modified base64 encoding
      * scheme. Note that this is *not* compatible with the standard MIME-base64
@@ -495,12 +494,12 @@ public class BCrypt {
         int i;
         int word = 0;
         int off = offp[0];
-        
+
         for (i = 0; i < 4; i++) {
             word = (word << 8) | (data[off] & 0xff);
             off = (off + 1) % data.length;
         }
-        
+
         offp[0] = off;
         return word;
     }
@@ -520,7 +519,7 @@ public class BCrypt {
         char minor = (char) 0;
         int rounds, off = 0;
         StringBuilder rs = new StringBuilder();
-        
+
         if (salt.charAt(0) != '$' || salt.charAt(1) != '2') {
             throw new IllegalArgumentException("Invalid salt version");
         }
@@ -533,25 +532,25 @@ public class BCrypt {
             }
             off = 4;
         }
-        
+
         // Extract number of rounds
         if (salt.charAt(off + 2) > '$') {
             throw new IllegalArgumentException("Missing salt rounds");
         }
         rounds = Integer.parseInt(salt.substring(off, off + 2));
-        
+
         real_salt = salt.substring(off + 3, off + 25);
         try {
             passwordb = (password + (minor >= 'a' ? "\000" : "")).getBytes("UTF-8");
         } catch (UnsupportedEncodingException uee) {
             throw new AssertionError("UTF-8 is not supported");
         }
-        
+
         saltb = decode_base64(real_salt, BCRYPT_SALT_LEN);
-        
+
         B = new BCrypt();
         hashed = B.crypt_raw(passwordb, saltb, rounds);
-        
+
         rs.append("$2");
         if (minor >= 'a') {
             rs.append(minor);
@@ -579,9 +578,9 @@ public class BCrypt {
     public static String generateSalt(int log_rounds, SecureRandom random) {
         StringBuilder rs = new StringBuilder();
         byte rnd[] = new byte[BCRYPT_SALT_LEN];
-        
+
         random.nextBytes(rnd);
-        
+
         rs.append("$2a$");
         if (log_rounds < 10) {
             rs.append("0");

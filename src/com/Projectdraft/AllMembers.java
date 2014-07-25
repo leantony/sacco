@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import com.sacco.classes.Member;
 import com.sacco.classes.Admin;
+import javax.security.auth.login.AccountException;
 
 /**
  *
@@ -18,13 +19,17 @@ import com.sacco.classes.Admin;
  */
 public class AllMembers extends javax.swing.JFrame {
 
-    Member m = new Member();
-    Admin a = new Admin();
+    Member m;
+    Admin a;
 
     /**
      * Creates new form AllMembers
+     *
+     * @throws javax.security.auth.login.AccountException
      */
-    public AllMembers() {
+    public AllMembers() throws AccountException {
+        this.m = new Member();
+        this.a = new Admin();
         initComponents();
     }
 
@@ -41,10 +46,14 @@ public class AllMembers extends javax.swing.JFrame {
         jTextAreaAllMembers = new javax.swing.JTextArea();
         jLabel1 = new javax.swing.JLabel();
         jButtonDisplay = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jButtonBack = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Registred Sacco Members");
 
+        jTextAreaAllMembers.setEditable(false);
         jTextAreaAllMembers.setColumns(20);
         jTextAreaAllMembers.setRows(5);
         jScrollPane1.setViewportView(jTextAreaAllMembers);
@@ -57,6 +66,18 @@ public class AllMembers extends javax.swing.JFrame {
         jButtonDisplay.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonDisplayActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("jButton1");
+
+        jButton2.setText("jButton2");
+
+        jButtonBack.setText("<< Back");
+        jButtonBack.setActionCommand("Display");
+        jButtonBack.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonBackActionPerformed(evt);
             }
         });
 
@@ -74,8 +95,20 @@ public class AllMembers extends javax.swing.JFrame {
                         .addComponent(jLabel1))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(276, 276, 276)
-                        .addComponent(jButtonDisplay)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jButtonBack)
+                            .addComponent(jButtonDisplay))))
                 .addContainerGap(18, Short.MAX_VALUE))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(jButton1)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(jButton2)
+                    .addGap(0, 0, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -86,7 +119,19 @@ public class AllMembers extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jButtonDisplay)
-                .addContainerGap(27, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jButtonBack)
+                .addContainerGap(18, Short.MAX_VALUE))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(jButton1)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(jButton2)
+                    .addGap(0, 0, Short.MAX_VALUE)))
         );
 
         pack();
@@ -99,8 +144,14 @@ public class AllMembers extends javax.swing.JFrame {
             a.DisplayAllMembers(jTextAreaAllMembers);
         } catch (SQLException ex) {
             Logger.getLogger(AllMembers.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (AccountException ex) {
+            JOptionPane.showMessageDialog(this.getParent(), ex.getMessage(), "Access Denied", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButtonDisplayActionPerformed
+
+    private void jButtonBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBackActionPerformed
+        dispose();
+    }//GEN-LAST:event_jButtonBackActionPerformed
 
     /**
      * @param args the command line arguments
@@ -134,7 +185,11 @@ public class AllMembers extends javax.swing.JFrame {
 
             public void run() {
                 if (Member.isAdmin()) {
-                    new AllMembers().setVisible(true);
+                    try {
+                        new AllMembers().setVisible(true);
+                    } catch (AccountException ex) {
+                        JOptionPane.showMessageDialog(null, ex.getMessage(), "Access denied", JOptionPane.ERROR_MESSAGE);
+                    }
                 } else {
                     JOptionPane.showMessageDialog(null, "Administrator access only", "Access denied", JOptionPane.ERROR_MESSAGE);
                     new LoginScreen().setVisible(true);
@@ -144,6 +199,9 @@ public class AllMembers extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButtonBack;
     private javax.swing.JButton jButtonDisplay;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;

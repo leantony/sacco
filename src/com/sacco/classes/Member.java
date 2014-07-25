@@ -1,10 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.sacco.classes;
 
+import com.sacco.classes.vendor.Bcrypt.BCrypt;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -13,45 +9,33 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
-import com.sacco.classes.vendor.Bcrypt.BCrypt;
+import javax.security.auth.login.AccountException;
 
-/**
- *
- * @author Antony
- */
 public class Member {
 
     // define member datatypes as potrayed in the db
     // store a logged in user. ive chosen a hashset it coz it won't allow duplicate keys. so a user can't login twice
     static Set<Long> hs = new HashSet<>();
+    // for account active/ not. by default, a created account is active
+    public static final short ACTIVE = 1;
+    public static final short INACTIVE = 0;
+    // the member id
     protected static long id;
     // for admin functions
     private static boolean admin = false;
 
-    /**
-     * @param aAdmin the admin to set
-     */
-    protected static void setAdmin(boolean aAdmin) {
-        admin = aAdmin;
+    protected static void setAdmin(boolean status) {
+        admin = status;
     }
 
-    /**
-     * @return the id
-     */
     public static long getId() {
         return id;
     }
 
-    /**
-     * @return the admin
-     */
     public static boolean isAdmin() {
         return admin;
     }
 
-    /**
-     * @param userid
-     */
     protected static void setId(long userid) {
         id = userid;
     }
@@ -70,6 +54,7 @@ public class Member {
         return hs.remove(Member.getId());
     }
 
+    // the variables
     private String firstname;
     private String gender;
     private String lastname;
@@ -162,56 +147,46 @@ public class Member {
         this.mobileno = mobileno;
     }
 
-    /**
-     * @return the address
-     */
     public String getAddress() {
         return address;
     }
 
-    /**
-     * @param address the address to set
-     */
     public void setAddress(String address) {
         this.address = address;
     }
 
-    /**
-     * @return the email
-     */
     public String getEmail() {
         return email;
     }
 
-    /**
-     * @param email the email to set
-     */
     public void setEmail(String email) {
         this.email = email;
     }
 
-    /**
-     * @return the password
-     */
     public String getPassword() {
         return password;
     }
 
-    /**
-     * @param password the password to set
-     */
     public void setPassword(String password) {
         // hash the password. optional
         this.password = BCrypt.Hash(password, BCrypt.generateSalt());
     }
 
-    public boolean LoginMember(long id, String password) throws SQLException, IllegalArgumentException {
+    public boolean LoginMember(long id, String password) throws SQLException, AccountException {
+        // makes sense to prevent double logins, even if the hashset won't allow that
+        if (Member.CheckLoggedIn()) {
+            throw new AccountException("You are already logged in");
+        }
         try {
-            String sql = "SELECT password, firstname FROM sacco.members WHERE id=?";
+            String sql = "SELECT password, firstname, active FROM sacco.members WHERE id=?";
             stmt = conn.prepareStatement(sql);
             stmt.setLong(1, id);
             result = stmt.executeQuery();
-            if (result.next()) {
+            while (result.next()) {
+                // check if the account is active
+                if (result.getShort("active") == 0) {
+                    throw new AccountException("Your account is not activated. Please contact the administrator to fix this");
+                }
                 // we validate their hash
                 if (BCrypt.CheckPassword(password, result.getString("password"))) {
                     // store logged in userID in mem
@@ -231,7 +206,7 @@ public class Member {
     }
 
     // adds a member to the database
-    public long AddMember() throws SQLException {
+    public long AddMember() throws SQLException, AccountException {
         try {
             //System.out.println(conn);
             //INSERT INTO `sacco`.`members` (`firstname`, `lastname`, `gender`, `dob`, `mobileno`, `address`, `email`, `password`) VALUES ('6666', '6666', 'Female', '2014-07-21', 666, '666', '666', '123456');
@@ -259,7 +234,7 @@ public class Member {
             if (result.next()) {
                 Member.setId(result.getLong(1));
                 // login the member automatically
-                LoginMember(id, password);
+                // LoginMember(id, password);
                 return Member.getId();
             } else {
                 throw new SQLException("The specified user wasn't created. an ID wasn't obtained");
@@ -271,27 +246,95 @@ public class Member {
 
     }
 
-    // the current user should be able to delete their account
-    public boolean CloseAccount() throws SQLException {
+    // popultes all variables with member data to be used afterwards
+    public void getMemberInfo(Member m) throws SQLException {
         try {
-            //System.out.println(conn);
-            String sql = "DELETE FROM sacco.members WHERE id = ?";
+            // SELECT `id`, `member_id` FROM `sacco`.`admins` WHERE  `id`=2;
+            String sql = "SELECT * FROM `sacco`.`members` WHERE  `id`=?";
             stmt = conn.prepareStatement(sql);
             stmt.setLong(1, Member.getId());
+            result = stmt.executeQuery();
 
-            int rows = stmt.executeUpdate();
-            if (rows == 0) {
-                // a user wasn't removed
-                throw new SQLException("Deletion failed");
-            } else {
-                return true;
+            while (result.next()) {
+                m.lastname = result.getString("lastname");
+                m.address = result.getString("address");
+                m.firstname = result.getString("firstname");
+                m.gender = result.getString("gender");
+                m.email = result.getString("email");
+                m.dob = result.getDate("dob");
+                m.mobileno = result.getInt("mobileno");
+                m.password = result.getString("password");
             }
-
         } finally {
-            // close resources
             close();
         }
+
     }
+
+    // edit member password
+    public boolean EditPassword(Member m, String password) throws AccountException, SQLException {
+        if (CheckLoggedIn()) {
+            try {
+                getMemberInfo(m);
+                // retrieve hash from the database.
+                // if bcrypt realizes that the hashes match, then alert the user
+                // boolean force will allow the user to override the exception thrown
+                if (BCrypt.CheckPassword(password, m.password)) {
+                    throw new AccountException("Please try another password?. Your password is similar to the one in the database");
+                }
+                // bcrypt the password
+                password = BCrypt.Hash(password, BCrypt.generateSalt());
+
+                // now comes the sql part of the activity
+                String sql = "UPDATE `sacco`.`members` SET `password`=? WHERE  `id`= ?";
+                stmt = conn.prepareStatement(sql);
+                stmt.setString(1, password);
+                stmt.setLong(2, Member.getId());
+
+                int rows = stmt.executeUpdate();
+                // we need exactly one row updated
+                return rows == 1;
+
+            } finally {
+                // close resources
+                close();
+            }
+        } else {
+            throw new AccountException("You aren't allowed to perform this action");
+        }
+    }
+
+    // edit member data
+    public boolean EditMemberInfo(Member m) throws AccountException, SQLException {
+        if (CheckLoggedIn()) {
+            try {
+                //getMemberInfo(m);
+                // the sql
+                // UPDATE `sacco`.`members` SET `firstname`='rgrgs', `lastname`='rgrgs', `gender`='Females', `dob`='2015-07-25', `mobileno`=343443, `address`='343434', `email`='a@b.c.no\'\'\'', `password`='556465' WHERE  `id`=11;
+                String sql = "UPDATE `sacco`.`members` SET `firstname`=?, `lastname`=?, `gender`=?, `dob`=?, `mobileno`=?, `address`=?, `email`=? WHERE  `id`=?";
+                stmt = conn.prepareStatement(sql);
+                stmt.setString(1, m.firstname);
+                stmt.setString(2, m.lastname);
+                stmt.setString(3, m.gender);
+                stmt.setDate(4, m.dob);
+                stmt.setInt(5, m.mobileno);
+                stmt.setString(6, m.address);
+                stmt.setString(7, m.email);
+                stmt.setLong(8, Member.getId());
+
+                int rows = stmt.executeUpdate();
+                // we need exactly one row updated
+                return rows == 1;
+
+            } finally {
+                // close resources
+                close();
+            }
+        } else {
+            throw new AccountException("You aren't allowed to perform this action");
+        }
+    }
+
     public boolean checkIfUserIsAdmin() throws SQLException {
         try {
             // SELECT `id`, `member_id` FROM `sacco`.`admins` WHERE  `id`=2;
@@ -324,6 +367,4 @@ public class Member {
             }
         }
     }
-
-
 }

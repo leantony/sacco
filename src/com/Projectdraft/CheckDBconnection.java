@@ -9,7 +9,7 @@ package com.Projectdraft;
  *
  * @author CJ
  */
-public class ProjectDraft {
+public class CheckDBconnection {
 
     /**
      * @param args the command line arguments

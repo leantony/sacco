@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import javax.security.auth.login.AccountException;
 import javax.swing.JTextArea;
 
 /**
@@ -15,6 +16,9 @@ import javax.swing.JTextArea;
  * @author Antony
  */
 public class Loan {
+
+    private static final short LOAN_CLEARED = 1;
+    private static final short LOAN_NOT_CLEARED = 0;
 
     // define loan table datatypes as potrayed by the database
     private long id;
@@ -31,7 +35,7 @@ public class Loan {
     private double AmountPaid;
 
     // loan constants
-    private double LOAN_INTEREST = 30.5 / 100;
+    private double LOAN_INTEREST = 30.0;
     PreparedStatement stmt = null;
     Connection conn;
     ResultSet result = null;
@@ -88,14 +92,14 @@ public class Loan {
      * @return the LoanInterest
      */
     protected double getLoanInterest() {
-        return getLOAN_INTEREST();
+        return getLOAN_INTEREST() / 100;
     }
 
     /**
      * @param LoanInterest the LoanInterest to set
-     * @throws java.lang.IllegalAccessException
+     * @throws javax.security.auth.login.AccountException
      */
-    protected void setLoanInterest(double LoanInterest) throws IllegalAccessException {
+    protected void setLoanInterest(double LoanInterest) throws AccountException {
         this.setLOAN_INTEREST(LoanInterest);
     }
 
@@ -186,7 +190,7 @@ public class Loan {
     // allow members to request loans
     public long RequestLoan() throws SQLException {
         // a user can only have a single loan as per program specs
-        if (MyloanCount() == 1) {
+        if (GetLoanCount() == 1) {
             return -1;
         }
         try {
@@ -223,7 +227,7 @@ public class Loan {
     }
 
     // loan payback function
-    public boolean PayBackLoan() throws SQLException {
+    public boolean PayBackLoan() throws SQLException, AccountException {
         getLoanInfo();
         // implies a loan id couldn't be found
         if (getId() <= 0) {
@@ -233,27 +237,54 @@ public class Loan {
             // the user input shouldn't be greater than the total amount
             if (getAmountToPay() > TotalAmount) {
                 double x = getAmountToPay() - TotalAmount;
-                throw new SQLException("you are trying to pay ksh " + x + " above your total and that's not allowed");
+                throw new AccountException("you are trying to pay ksh " + x + " above your total and that's not allowed");
             }
 
             // a member shouldn't be allowed to pay up above their total. so we bail
             if (getAmountPaid() > TotalAmount) {
                 double x = getAmountPaid() - TotalAmount;
-                throw new SQLException("You loan is already fully paid. You have an overpayment of ksh" + x);
+                throw new AccountException("You loan is already fully paid. \nYou will have an overpayment of " + x + " .Overpayments aren't allowed");
             }
 
             // UPDATE `sacco`.`loans` SET `paidAmount`= `paidAmount` + 5000 WHERE `id`=15
-            String sql = "UPDATE `sacco`.`loans` SET `paidAmount`= `paidAmount + ? WHERE  `id`=?";
+            String sql = "UPDATE `sacco`.`loans` SET `paidAmount`= `paidAmount` + ? WHERE  `id`=?";
             stmt = conn.prepareStatement(sql);
             stmt.setDouble(1, getAmountToPay());
             stmt.setLong(2, getId());
+            if (TotalAmount == getAmountPaid()) {
+                int rows = stmt.executeUpdate();
+                // clear the loan so that user's count is updated
+                if (clearLoan()) {
+                    return rows == 1;
+                } else {
+                    throw new AccountException("could not clear your loan");
+                }
+
+            }
             int rows = stmt.executeUpdate();
-            return rows == 0;
+            return rows == 1;
 
         } finally {
             // close resources
             close();
         }
+    }
+
+    private boolean clearLoan() throws SQLException {
+        try {
+            String sql = "UPDATE `sacco`.`loans` SET cleared = ? WHERE `id`=?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setDouble(1, LOAN_CLEARED);
+            stmt.setLong(2, getId());
+
+            int rows = stmt.executeUpdate();
+            return rows == 1;
+
+        } finally {
+            // close resources
+            close();
+        }
+
     }
 
     // get loan info for current member. change this one coz ka hujanotice you are being redudant
@@ -281,7 +312,7 @@ public class Loan {
     public boolean ChangeLoanPayBackDate() throws SQLException {
         try {
             //System.out.println(conn);
-            // UPDATE `sacco`.`loans` SET `PaybackPeriod`='2015-07-20' WHERE  `id`=1;  
+            // UPDATE `sacco`.`loans` SET `PaybackPeriod`='2015-07-20' WHERE  `id`=1;
             String sql = "UPDATE `sacco`.`loans` SET `PaybackDate`=? WHERE  `id`= ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, this.PaybackPeriod);
@@ -296,12 +327,12 @@ public class Loan {
         }
     }
 
-    public int MyloanCount() throws SQLException {
+    public int GetLoanCount() throws SQLException {
         try {
-            String sql = "SELECT COUNT('member_id') FROM sacco.loans WHERE member_id = ?";
+            String sql = "SELECT COUNT('member_id') FROM sacco.loans WHERE member_id = ? AND cleared = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setLong(1, Member.getId());
-
+            stmt.setShort(2, LOAN_NOT_CLEARED);
             result = stmt.executeQuery();
             int rows;
             if (result.next()) {
@@ -350,7 +381,7 @@ public class Loan {
             }
             // display extra info
             jt.append("\n\n");
-            jt.append("You have " + MyloanCount() + " loans to pay up\n");
+            jt.append("You have " + GetLoanCount() + " loans to pay up\n");
             jt.append("You owe the sacco ksh " + (ta - pa) + "\n");
             jt.append("You have currently paid ksh " + pa + "\n");
         } finally {
@@ -382,14 +413,13 @@ public class Loan {
 
     /**
      * @param LOAN_INTEREST the LOAN_INTEREST to set
-     * @throws java.lang.IllegalAccessException
+     * @throws javax.security.auth.login.AccountException
      */
-    public void setLOAN_INTEREST(double LOAN_INTEREST) throws IllegalAccessException {
-        if (Member.isAdmin()){
-            this.LOAN_INTEREST = LOAN_INTEREST;
-        }
-        else {
-            throw new IllegalAccessException("You are not allowed to perform this action");
+    public void setLOAN_INTEREST(double LOAN_INTEREST) throws AccountException {
+        if (Member.isAdmin()) {
+            this.LOAN_INTEREST = LOAN_INTEREST / 100;
+        } else {
+            throw new AccountException("You are not allowed to perform this action");
         }
     }
 
