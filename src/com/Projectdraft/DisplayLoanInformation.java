@@ -5,12 +5,10 @@
  */
 package com.Projectdraft;
 
-import java.sql.SQLException;
-import javax.swing.JOptionPane;
 import com.sacco.classes.Loan;
 import com.sacco.classes.Member;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -26,15 +24,22 @@ public class DisplayLoanInformation extends javax.swing.JFrame {
     public DisplayLoanInformation() {
         initComponents();
         try {
-            if (l.GetLoanCount() == 0) {
+            if (l.GetLoanCount(3) == 0) {
                 jLabel1.setText("You have not applied for any loans yet. Apply for one then the functions below will be available");
-                jPanel1.setVisible(false);
-                jButtonDisplay.setEnabled(false);
+                HideElements();
             }
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(rootPane, "could not determine your loan count", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "could not determine your loan information", "Error", JOptionPane.ERROR_MESSAGE);
             this.dispose();
         }
+    }
+
+    private void HideElements() {
+        jPanel1.setVisible(false);
+        jButtonDisplay.setEnabled(false);
+        jCheckBoxAll.setEnabled(false);
+        jCheckBoxCleared.setEnabled(false);
+        jCheckBoxUncleared.setEnabled(false);
     }
 
     /**
@@ -46,32 +51,21 @@ public class DisplayLoanInformation extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButtonClose = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
-        jButtonDisplay = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextAreaLoanInfo = new javax.swing.JTextArea();
+        jCheckBoxUncleared = new javax.swing.JCheckBox();
+        jCheckBoxCleared = new javax.swing.JCheckBox();
+        jCheckBoxAll = new javax.swing.JCheckBox();
+        jButtonDisplay = new javax.swing.JButton();
+        jButtonClose = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Loan Info");
 
-        jButtonClose.setText("Exit");
-        jButtonClose.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonCloseActionPerformed(evt);
-            }
-        });
-
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel1.setText("Your Loan Information");
-
-        jButtonDisplay.setText("Display Information");
-        jButtonDisplay.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonDisplayActionPerformed(evt);
-            }
-        });
 
         jTextAreaLoanInfo.setColumns(20);
         jTextAreaLoanInfo.setRows(5);
@@ -81,51 +75,79 @@ public class DisplayLoanInformation extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 784, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 340, Short.MAX_VALUE)
                 .addContainerGap())
         );
+
+        jCheckBoxUncleared.setText("Uncleared loans");
+
+        jCheckBoxCleared.setText("Cleared loans");
+
+        jCheckBoxAll.setText("All loans");
+
+        jButtonDisplay.setText("Display Information");
+        jButtonDisplay.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonDisplayActionPerformed(evt);
+            }
+        });
+
+        jButtonClose.setText("Exit");
+        jButtonClose.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonCloseActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jCheckBoxUncleared)
+                            .addComponent(jCheckBoxCleared)
+                            .addComponent(jCheckBoxAll)
+                            .addComponent(jButtonDisplay)
+                            .addComponent(jButtonClose))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jButtonClose)
-                        .addGap(245, 245, 245)
-                        .addComponent(jButtonDisplay)
-                        .addGap(0, 300, Short.MAX_VALUE)))
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(jLabel1)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(17, 17, 17)
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButtonClose)
-                    .addComponent(jButtonDisplay))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(jCheckBoxUncleared)
+                        .addGap(18, 18, 18)
+                        .addComponent(jCheckBoxCleared)
+                        .addGap(18, 18, 18)
+                        .addComponent(jCheckBoxAll)
+                        .addGap(31, 31, 31)
+                        .addComponent(jButtonDisplay)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButtonClose)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -134,12 +156,28 @@ public class DisplayLoanInformation extends javax.swing.JFrame {
 
     private void jButtonDisplayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDisplayActionPerformed
         // TODO add your handling code here:
-        //jTextAreaLoanInfo.setText("");
-        try {
-            l.PrintLoanStatus(jTextAreaLoanInfo);
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Encountered an error when trying to display your loan information", "Error", JOptionPane.ERROR_MESSAGE);
+        jTextAreaLoanInfo.setText("");
+        // set the gender
+        if (jCheckBoxCleared.isSelected()) {
+            try {
+                l.PrintLoanStatus(jTextAreaLoanInfo, 1);
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(null, "Encountered an error when trying to display your loan information " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else if (jCheckBoxUncleared.isSelected()) {
+            try {
+                l.PrintLoanStatus(jTextAreaLoanInfo, 0);
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(null, "Encountered an error when trying to display your loan information", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            try {
+                l.PrintLoanStatus(jTextAreaLoanInfo, 3);
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(null, "Encountered an error when trying to display your loan information", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
+
     }//GEN-LAST:event_jButtonDisplayActionPerformed
 
     private void jButtonCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCloseActionPerformed
@@ -188,6 +226,9 @@ public class DisplayLoanInformation extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonClose;
     private javax.swing.JButton jButtonDisplay;
+    private javax.swing.JCheckBox jCheckBoxAll;
+    private javax.swing.JCheckBox jCheckBoxCleared;
+    private javax.swing.JCheckBox jCheckBoxUncleared;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;

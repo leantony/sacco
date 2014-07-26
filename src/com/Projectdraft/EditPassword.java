@@ -41,8 +41,10 @@ public class EditPassword extends javax.swing.JFrame {
         jButtoncancel = new javax.swing.JButton();
         jPasswordNewPassword = new javax.swing.JPasswordField();
         jPasswordNewRptPass = new javax.swing.JPasswordField();
+        jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Edit your password");
         setAlwaysOnTop(true);
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -74,6 +76,9 @@ public class EditPassword extends javax.swing.JFrame {
 
         jPasswordNewRptPass.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
+        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel3.setText("The next time you login, you'll use the password you enter here");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -95,13 +100,16 @@ public class EditPassword extends javax.swing.JFrame {
                                 .addGap(37, 37, 37)))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jPasswordNewPassword)
-                            .addComponent(jPasswordNewRptPass, javax.swing.GroupLayout.DEFAULT_SIZE, 146, Short.MAX_VALUE))))
-                .addContainerGap(32, Short.MAX_VALUE))
+                            .addComponent(jPasswordNewRptPass, javax.swing.GroupLayout.DEFAULT_SIZE, 146, Short.MAX_VALUE)))
+                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(33, 33, 33)
+                .addContainerGap()
+                .addComponent(jLabel3)
+                .addGap(8, 8, 8)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(jPasswordNewPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -113,7 +121,7 @@ public class EditPassword extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonSave)
                     .addComponent(jButtoncancel))
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addContainerGap(17, Short.MAX_VALUE))
         );
 
         pack();
@@ -201,6 +209,7 @@ public class EditPassword extends javax.swing.JFrame {
     private javax.swing.JButton jButtoncancel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPasswordField jPasswordNewPassword;
     private javax.swing.JPasswordField jPasswordNewRptPass;
     // End of variables declaration//GEN-END:variables

@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.format.DateTimeFormatter;
 import javax.security.auth.login.AccountException;
 import javax.swing.JTextArea;
 
@@ -23,7 +24,7 @@ public class Loan {
     // define loan table datatypes as potrayed by the database
     private long id;
     private double LoanAmount;
-    private double TotalAmount;
+    private double TotalAmount; // loanAmount + interest
 
     // value is in months
     private int PaybackPeriod;
@@ -31,8 +32,8 @@ public class Loan {
     private String LoanType;
 
     // amounts
-    private double AmountToPay;
-    private double AmountPaid;
+    private double AmountToPay; // from the user
+    private double AmountPaid; // from db
 
     // loan constants
     private double LOAN_INTEREST = 30.0;
@@ -190,7 +191,7 @@ public class Loan {
     // allow members to request loans
     public long RequestLoan() throws SQLException {
         // a user can only have a single loan as per program specs
-        if (GetLoanCount() == 1) {
+        if (GetLoanCount(0) == 1) {
             return -1;
         }
         try {
@@ -228,45 +229,36 @@ public class Loan {
 
     // loan payback function
     public boolean PayBackLoan() throws SQLException, AccountException {
-        getLoanInfo();
+        getLoanInfo(0);
         // implies a loan id couldn't be found
         if (getId() <= 0) {
-            return false;
+            throw new SQLException("A loan id wasn't obtained");
         }
-        try {
-            // the user input shouldn't be greater than the total amount
-            if (getAmountToPay() > TotalAmount) {
-                double x = getAmountToPay() - TotalAmount;
-                throw new AccountException("you are trying to pay ksh " + x + " above your total and that's not allowed");
-            }
 
-            // a member shouldn't be allowed to pay up above their total. so we bail
-            if (getAmountPaid() > TotalAmount) {
-                double x = getAmountPaid() - TotalAmount;
-                throw new AccountException("You loan is already fully paid. \nYou will have an overpayment of " + x + " .Overpayments aren't allowed");
-            }
-
+        // a member shouldn't be allowed to pay up above their total. so we bail
+        if (getAmountPaid() >= TotalAmount) {
+            double x = getAmountPaid() - TotalAmount;
+            clearLoan();
+            throw new AccountException("You loan is now fully paid. \nYour overpayment of ksh" + x + " will be added to your contributions");
+        } else {
+            // implies that the user hasn't paid enough, so we allow them to pay up
             // UPDATE `sacco`.`loans` SET `paidAmount`= `paidAmount` + 5000 WHERE `id`=15
-            String sql = "UPDATE `sacco`.`loans` SET `paidAmount`= `paidAmount` + ? WHERE  `id`=?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setDouble(1, getAmountToPay());
-            stmt.setLong(2, getId());
-            if (TotalAmount == getAmountPaid()) {
+            try {
+                String sql = "UPDATE `sacco`.`loans` SET `paidAmount`= `paidAmount` + ? WHERE  `id`=?";
+                stmt = conn.prepareStatement(sql);
+                stmt.setDouble(1, getAmountToPay());
+                stmt.setLong(2, getId());
+
                 int rows = stmt.executeUpdate();
                 // clear the loan so that user's count is updated
-                if (clearLoan()) {
-                    return rows == 1;
-                } else {
-                    throw new AccountException("could not clear your loan");
-                }
 
+                return rows == 1;
+
+            } finally {
+                // close resources
+                close();
             }
-            int rows = stmt.executeUpdate();
-            return rows == 1;
 
-        } finally {
-            // close resources
-            close();
         }
     }
 
@@ -288,10 +280,17 @@ public class Loan {
     }
 
     // get loan info for current member. change this one coz ka hujanotice you are being redudant
-    public void getLoanInfo() throws SQLException {
+    public void getLoanInfo(int cleared) throws SQLException {
+        String sql;
+        if (cleared == 0) {
+            sql = "SELECT * FROM `sacco`.`loans` WHERE member_id = ? AND cleared = 0";
+        } else if (cleared == 1) {
+            sql = "SELECT * FROM `sacco`.`loans` WHERE member_id = ? AND cleared = 1";
+        } else {
+            sql = "SELECT * FROM `sacco`.`loans` WHERE member_id = ? AND cleared = 1 OR cleared = 0";
+        }
         // SELECT `id`, `member_id`, `LoanType`, `LoanAmount`, `TotalAmount`, `PaybackDate`, `LoanPurpose`, `paidAmount` FROM `sacco`.`loans` WHERE  `id`=15;
         try {
-            String sql = "SELECT * FROM `sacco`.`loans` WHERE  `member_id`=?";
             stmt = conn.prepareStatement(sql);
             stmt.setLong(1, Member.getId());
             result = stmt.executeQuery();
@@ -299,6 +298,8 @@ public class Loan {
                 // set the loan id
                 setId(result.getLong("id"));
                 // get the amount total/ paid
+                setLoanType(result.getString("LoanType"));
+                setLoanAmount(result.getDouble("LoanAmount"));
                 TotalAmount = result.getDouble("TotalAmount");
                 setAmountPaid(result.getDouble("paidAmount"));
             }
@@ -327,12 +328,20 @@ public class Loan {
         }
     }
 
-    public int GetLoanCount() throws SQLException {
+    public int GetLoanCount(int cleared) throws SQLException {
+        String sql;
+        if (cleared == 0) {
+            sql = "SELECT COUNT('member_id') FROM sacco.loans WHERE member_id = ? AND cleared = 0";
+        } else if (cleared == 1) {
+            sql = "SELECT COUNT('member_id') FROM sacco.loans WHERE member_id = ? AND cleared = 1";
+        } else {
+            sql = "SELECT COUNT('member_id') FROM sacco.loans WHERE member_id = ? AND cleared = 1 OR cleared = 0";
+        }
         try {
-            String sql = "SELECT COUNT('member_id') FROM sacco.loans WHERE member_id = ? AND cleared = ?";
+
             stmt = conn.prepareStatement(sql);
             stmt.setLong(1, Member.getId());
-            stmt.setShort(2, LOAN_NOT_CLEARED);
+
             result = stmt.executeQuery();
             int rows;
             if (result.next()) {
@@ -349,13 +358,19 @@ public class Loan {
     }
 
     // the current member should also be able to check thir loan status
-    public void PrintLoanStatus(JTextArea jt) throws SQLException {
+    public void PrintLoanStatus(JTextArea jt, int cleared) throws SQLException {
+        String sql;
+        if (cleared == 0) {
+            sql = "SELECT * FROM sacco.loans WHERE member_id = ? AND cleared = 0";
+        } else if (cleared == 1) {
+            sql = "SELECT * FROM sacco.loans WHERE member_id = ? AND cleared = 1";
+        } else {
+            sql = "SELECT * FROM sacco.loans WHERE member_id = ? AND cleared = 1 OR cleared = 0";
+        }
         try {
             double la, pa = 0, ta = 0;
+            java.sql.Date d = null;
             jt.setText("");
-            //System.out.println(conn);
-            // SELECT LoanAmount, TotalAmount, PaybackPeriod, LoanType, LoanPurpose FROM sacco.loans WHERE member_id = 5
-            String sql = "SELECT member_id, LoanAmount, TotalAmount, PaybackDate, LoanType, LoanPurpose, paidAmount FROM sacco.loans WHERE member_id = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setLong(1, Member.getId());
             result = stmt.executeQuery();
@@ -364,6 +379,7 @@ public class Loan {
                 la = result.getDouble("LoanAmount");
                 pa = result.getDouble("paidAmount");
                 ta = result.getDouble("TotalAmount");
+                d = result.getDate("DateSubmitted");
                 // display the info
                 jt.append(Long.toString(result.getLong("member_id")));
                 jt.append("\t");
@@ -377,13 +393,13 @@ public class Loan {
                 jt.append("\t");
                 jt.append(result.getString("LoanPurpose"));
                 jt.append("\t\t");
-                jt.append(pa + "");
+                jt.append(pa + "\n");
             }
             // display extra info
             jt.append("\n\n");
-            jt.append("You have " + GetLoanCount() + " loans to pay up\n");
-            jt.append("You owe the sacco ksh " + (ta - pa) + "\n");
-            jt.append("You have currently paid ksh " + pa + "\n");
+            jt.append("You currently have " + GetLoanCount(cleared) + " loans\n");
+            jt.append("You owe the sacco ksh " + (ta - pa) + ". \t Note: A negative value indicates an overpayment\n");
+            jt.append("Regarding your loan, you've paid ksh " + pa + " since " + d.toLocalDate().format(DateTimeFormatter.ISO_DATE) + "\n");
         } finally {
             close();
         }

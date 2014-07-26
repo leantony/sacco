@@ -26,17 +26,21 @@ public class RepayLoan extends javax.swing.JFrame {
     public RepayLoan() {
         this.l = new Loan();
         initComponents();
-        try {
-            l.getLoanInfo();
-            jLabelInitialAmnt.setText(Double.toString(l.getLoanAmount()));
-            jLabelLoanAndInterest.setText(Double.toString(l.getTotalAmntFromDB()));
-            jLabelPendingAmnt.setText(Double.toString(l.getAmountPaid()));
+        updateForm();
+    }
 
+    private void updateForm() {
+        try {
             // now, we don't need one viewing this form na hana loan zozote
-            if (l.GetLoanCount() == 0) {
+            if (l.GetLoanCount(0) == 0) {
                 jPanel1.setVisible(false);
                 jLabelStatus.setText("You have not applied for any loans yet. Apply for one then the functions below will be available");
                 // this.dispose();
+            } else {
+                l.getLoanInfo(0);
+                jLabelInitialAmnt.setText(Double.toString(l.getLoanAmount()));
+                jLabelLoanAndInterest.setText(Double.toString(l.getTotalAmntFromDB()));
+                jLabelPendingAmnt.setText(Double.toString(l.getAmountPaid()));
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage(), "wrong input type", JOptionPane.ERROR_MESSAGE);
@@ -206,6 +210,7 @@ public class RepayLoan extends javax.swing.JFrame {
 
     private void jButtonPayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPayActionPerformed
         // TODO add your handling code here:
+
         int amnt = Application.CheckIfNumber(jTextFieldAmount.getText());
         if (amnt == -1) {
             JOptionPane.showMessageDialog(null, "please enter valid value for the amount", "wrong input type", JOptionPane.ERROR_MESSAGE);
@@ -218,15 +223,17 @@ public class RepayLoan extends javax.swing.JFrame {
         try {
             // save
             if (l.PayBackLoan()) {
-                JOptionPane.showMessageDialog(null, "You have successfully contributed " + l.getAmountToPay() + " to the sacco\n"
-                        + "You have a pending amount of " + l.getPendingAmount(), "Success", JOptionPane.INFORMATION_MESSAGE);
+                // refresh the form page
+                updateForm();
+                JOptionPane.showMessageDialog(null, "You have successfully paid " + l.getAmountToPay() + " to your loan\n"
+                        + "You have a pending amount of " + (l.getTotalAmntFromDB() - l.getAmountPaid()), "Success", JOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(null, "Your contribution wasn't successful. Please try again", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "The operation wasn't successful. Please try again", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "Operation wasn't successful. Please try again", "Error", JOptionPane.ERROR_MESSAGE);
         } catch (AccountException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Operation not allowed", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Overpayment", JOptionPane.INFORMATION_MESSAGE);
         }
     }//GEN-LAST:event_jButtonPayActionPerformed
 

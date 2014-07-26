@@ -280,7 +280,7 @@ public class Member {
                 // if bcrypt realizes that the hashes match, then alert the user
                 // boolean force will allow the user to override the exception thrown
                 if (BCrypt.CheckPassword(password, m.password)) {
-                    throw new AccountException("Please try another password?. Your password is similar to the one in the database");
+                    throw new AccountException("Please try another password. Your password is similar to the one your currently using");
                 }
                 // bcrypt the password
                 password = BCrypt.Hash(password, BCrypt.generateSalt());

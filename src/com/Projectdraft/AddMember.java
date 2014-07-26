@@ -394,24 +394,24 @@ public class AddMember extends javax.swing.JFrame {
     private void jTextFieldLnameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldLnameActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextFieldLnameActionPerformed
-    
+
     private void jRadioButtonMaleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButtonMaleActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jRadioButtonMaleActionPerformed
-    
+
     private void jButtonBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBackActionPerformed
         // TODO add your handling code here:
         this.dispose();
         new WelcomeScreen().setVisible(true);
     }//GEN-LAST:event_jButtonBackActionPerformed
-    
+
     private void jButtonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelActionPerformed
         // TODO add your handling code here:
         this.dispose();
         new WelcomeScreen().setVisible(true);
-        
+
     }//GEN-LAST:event_jButtonCancelActionPerformed
-    
+
     private void jButtonSubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSubmitActionPerformed
 
         // the member names. we check if user input is ok
@@ -493,7 +493,7 @@ public class AddMember extends javax.swing.JFrame {
                 this.dispose();
                 new LoginScreen().setVisible(true);
             }
-            
+
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Could not add the member to the database. Try again", "Error", JOptionPane.ERROR_MESSAGE);
             // set focus on the first field
@@ -502,7 +502,7 @@ public class AddMember extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButtonSubmitActionPerformed
-    
+
     private void jButtonResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonResetActionPerformed
         // TODO add your handling code here:
         Application.clearTextFields(this.getContentPane());
