@@ -9,11 +9,6 @@ package com.sacco.classes;
  *
  * @author Antony
  */
-public class Secretary extends Member {
-// record minutes, forward member complaints to manager
+public class Treasurer extends Member {
 
-    public boolean ListAllQueries() {
-        return false;
-
-    }
 }

@@ -5,10 +5,10 @@ package com.sacco.classes;
 
 import java.awt.Component;
 import java.awt.Container;
-import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextArea;

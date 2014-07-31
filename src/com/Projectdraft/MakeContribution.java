@@ -5,26 +5,23 @@
  */
 package com.Projectdraft;
 
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JOptionPane;
 import com.sacco.classes.Application;
 import com.sacco.classes.Contribution;
-import com.sacco.classes.Member;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
 
 /**
  *
- * @author CJ
+ * @author Antony
  */
-public class AddContribution extends javax.swing.JFrame {
+public class MakeContribution extends javax.swing.JInternalFrame {
 
     Contribution c = new Contribution();
 
     /**
-     * Creates new form AddContribution
+     * Creates new form NewJInternalFrame
      */
-    public AddContribution() {
+    public MakeContribution() {
         initComponents();
     }
 
@@ -46,15 +43,25 @@ public class AddContribution extends javax.swing.JFrame {
         jButtonCancel = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Enter your loan contribituon");
+        setClosable(true);
+        setIconifiable(true);
+        setTitle("Make Contribution");
+        setToolTipText("");
+        setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        setName(""); // NOI18N
 
+        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel1.setText("Amount(kshs)");
 
+        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel2.setText("Payment");
 
+        jTextFieldAmnt.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+
+        jComboBoxPaymentMethod.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jComboBoxPaymentMethod.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Cash", "Cheque", "M-Pesa" }));
 
+        jButtonContribute.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jButtonContribute.setText("Submit");
         jButtonContribute.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -62,6 +69,7 @@ public class AddContribution extends javax.swing.JFrame {
             }
         });
 
+        jButtonCancel.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jButtonCancel.setText("Cancel");
         jButtonCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -83,19 +91,22 @@ public class AddContribution extends javax.swing.JFrame {
                         .addComponent(jLabel3)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                        .addGap(49, 49, 49)
+                        .addGap(28, 28, 28)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jButtonCancel))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jButtonContribute, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jComboBoxPaymentMethod, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jButtonContribute, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGap(198, 198, 198)
+                                        .addComponent(jComboBoxPaymentMethod, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 178, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 210, Short.MAX_VALUE)
                                 .addComponent(jTextFieldAmnt, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addGap(19, 19, 19))
         );
@@ -112,7 +123,7 @@ public class AddContribution extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jComboBoxPaymentMethod, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 97, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 117, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonCancel)
                     .addComponent(jButtonContribute))
@@ -126,7 +137,7 @@ public class AddContribution extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addGap(13, 13, 13))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -146,6 +157,10 @@ public class AddContribution extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "please enter valid value for the amount", "wrong input type", JOptionPane.ERROR_MESSAGE);
             jTextFieldAmnt.requestFocus();
             return;
+        } else if (amnt < Contribution.getContributionMin() || amnt > Contribution.getMaxContribution()) {
+            JOptionPane.showMessageDialog(null, "Currently we allow contributions of between " + Contribution.getContributionMin() + " and " + Contribution.getMaxContribution(), "wrong input range", JOptionPane.ERROR_MESSAGE);
+            jTextFieldAmnt.requestFocus();
+            return;
         } else {
             c.setAmount(amnt);
         }
@@ -156,10 +171,11 @@ public class AddContribution extends javax.swing.JFrame {
         try {
             // save contribution
             long contribution = c.makeContribution();
-            JOptionPane.showMessageDialog(null, "You have successfully contributed " + c.getAmount() + " to the sacco\n"
-                    + "The id is " + contribution, "Success", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "You have successfully contributed " + c.getAmount() + " to the sacco ", "Success", JOptionPane.INFORMATION_MESSAGE);
+            this.dispose();
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Your contribution wasn't successfully submitted. Please try again", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "SQL error caught", "Error", JOptionPane.ERROR_MESSAGE);
+            this.dispose();
         }
     }//GEN-LAST:event_jButtonContributeActionPerformed
 
@@ -167,47 +183,6 @@ public class AddContribution extends javax.swing.JFrame {
         // TODO add your handling code here:
         this.dispose();
     }//GEN-LAST:event_jButtonCancelActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(AddContribution.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(AddContribution.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AddContribution.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(AddContribution.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-
-            public void run() {
-                if (!Member.CheckLoggedIn()) {
-                    JOptionPane.showMessageDialog(null, "Please login first", "Access denied", JOptionPane.ERROR_MESSAGE);
-                    new LoginScreen().setVisible(true);
-                } else {
-                    new AddContribution().setVisible(true);
-                }
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonCancel;

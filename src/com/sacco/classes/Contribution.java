@@ -17,6 +17,38 @@ import java.sql.Statement;
  */
 public class Contribution {
 
+    // contribution constants which can only be changed by the admin
+    private static double MIN_CONTRIBUTION = 1000;
+    private static double MAX_CONTRIBUTION = 1000000;
+
+    /**
+     * @return the MIN_CONTRIBUTION
+     */
+    public static double getContributionMin() {
+        return MIN_CONTRIBUTION;
+    }
+
+    /**
+     * @param min
+     */
+    public static void setContributionMin(double min) {
+        MIN_CONTRIBUTION = min;
+    }
+
+    /**
+     * @return the MAX_CONTRIBUTION
+     */
+    public static double getMaxContribution() {
+        return MAX_CONTRIBUTION;
+    }
+
+    /**
+     * @param max
+     */
+    public static void setMaxContribution(double max) {
+        MAX_CONTRIBUTION = max;
+    }
+
     // member contributions
     private long id;
     private int amount;
@@ -89,6 +121,33 @@ public class Contribution {
             } else {
                 throw new SQLException("The contribution couldn't be saved. an ID wasn't obtained");
             }
+        } finally {
+            // close resources
+            close();
+        }
+    }
+
+    public int getMemberContributions(int ApprovedStatus) throws SQLException {
+        String sql;
+        if (ApprovedStatus == 0) {
+            sql = "SELECT COUNT('member_id') FROM contributions WHERE member_id = ? AND Approved = 0";
+        } else {
+            sql = "SELECT COUNT('member_id') FROM contributions WHERE member_id = ? AND Approved = 1";
+        }
+        try {
+
+            stmt = conn.prepareStatement(sql);
+            stmt.setLong(1, Member.getId());
+
+            result = stmt.executeQuery();
+            int rows;
+            if (result.next()) {
+                rows = result.getInt(1);
+                return rows;
+            } else {
+                throw new SQLException("a count could not be made");
+            }
+
         } finally {
             // close resources
             close();

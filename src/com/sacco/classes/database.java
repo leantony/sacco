@@ -14,11 +14,10 @@ public class database {
 
     public Connection DBConnection = null;
     private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    private static final String DB_URL = "jdbc:mysql://192.168.4.1/";
+    private static final String DB_URL = "jdbc:mysql://192.168.4.1/sacco";
     // you can change this here
     private static final String USER = "sacco";
     private static final String PASS = "sacco";
-    // private static final String DB_NAME = "Sacco";
 
     /**
      * initialize DBConnection
@@ -26,9 +25,8 @@ public class database {
     public database() {
         // load the MySQL driver
         try {
-            Class.forName(JDBC_DRIVER);// DBConnection
+            Class.forName(JDBC_DRIVER);
             DBConnection = DriverManager.getConnection(DB_URL, USER, PASS);
-            //System.out.println(getConnect());
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Fatal Error!. A database connection could not be established", "Error", JOptionPane.ERROR_MESSAGE);
             Application.Exit(-1);

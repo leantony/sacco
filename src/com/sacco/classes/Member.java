@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 import javax.security.auth.login.AccountException;
@@ -24,14 +25,26 @@ public class Member {
     // for admin functions
     private static boolean admin = false;
 
+    /**
+     *
+     * @param status
+     */
     protected static void setAdmin(boolean status) {
         admin = status;
     }
 
+    /**
+     *
+     * @return
+     */
     public static long getId() {
         return id;
     }
 
+    /**
+     *
+     * @return
+     */
     public static boolean isAdmin() {
         return admin;
     }
@@ -40,6 +53,10 @@ public class Member {
         id = userid;
     }
 
+    /**
+     *
+     * @return
+     */
     public static boolean CheckLoggedIn() {
         return hs.contains(Member.getId());
     }
@@ -63,6 +80,9 @@ public class Member {
     private String address;
     private String email;
     private String password;
+    private Timestamp RegisteredDate;
+    private Timestamp LastModifiedDate;
+    private boolean AccountStatus;
 
     // for database stuff
     PreparedStatement stmt = null;
@@ -147,38 +167,63 @@ public class Member {
         this.mobileno = mobileno;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getAddress() {
         return address;
     }
 
+    /**
+     *
+     * @param address
+     */
     public void setAddress(String address) {
         this.address = address;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getEmail() {
         return email;
     }
 
+    /**
+     *
+     * @param email
+     */
     public void setEmail(String email) {
         this.email = email;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getPassword() {
         return password;
     }
 
+    /**
+     *
+     * @param password
+     */
     public void setPassword(String password) {
         // hash the password. optional
         this.password = BCrypt.Hash(password, BCrypt.generateSalt());
     }
 
-    public boolean LoginMember(long id, String password) throws SQLException, AccountException {
+    // login a member
+    public boolean Login(long id, String password) throws SQLException, AccountException {
         // makes sense to prevent double logins, even if the hashset won't allow that
         if (Member.CheckLoggedIn()) {
             throw new AccountException("You are already logged in");
         }
         try {
-            String sql = "SELECT password, firstname, active FROM sacco.members WHERE id=?";
+            String sql = "SELECT password, firstname, active FROM members WHERE id=?";
             stmt = conn.prepareStatement(sql);
             stmt.setLong(1, id);
             result = stmt.executeQuery();
@@ -205,13 +250,19 @@ public class Member {
 
     }
 
-    // adds a member to the database
+    /**
+     *
+     * @return @throws SQLException
+     * @throws AccountException
+     */
     public long AddMember() throws SQLException, AccountException {
         try {
             //System.out.println(conn);
             //INSERT INTO `sacco`.`members` (`firstname`, `lastname`, `gender`, `dob`, `mobileno`, `address`, `email`, `password`) VALUES ('6666', '6666', 'Female', '2014-07-21', 666, '666', '666', '123456');
             String sql
-                    = "INSERT INTO `sacco`.`members` (`firstname`, `lastname`, `gender`, `dob`, `mobileno`, `address`, `email`, `password`) "
+                    = "INSERT INTO `members` "
+                    + "(`firstname`, `lastname`, `gender`, `dob`,"
+                    + " `mobileno`, `address`, `email`, `password`) "
                     + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, getFirstname());
@@ -232,10 +283,8 @@ public class Member {
             // get the returned inserted id
             result = stmt.getGeneratedKeys();
             if (result.next()) {
-                Member.setId(result.getLong(1));
-                // login the member automatically
-                // LoginMember(id, password);
-                return Member.getId();
+                return result.getLong(1);
+
             } else {
                 throw new SQLException("The specified user wasn't created. an ID wasn't obtained");
             }
@@ -246,13 +295,45 @@ public class Member {
 
     }
 
+    /**
+     *
+     * @param posname
+     * @return
+     * @throws SQLException
+     */
+    public long getPositionId(String posname) throws SQLException {
+        try {
+            String sql = "SELECT `id` FROM positions WHERE `name` LIKE ? LIMIT 1";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, "%" + posname + "%");
+            result = stmt.executeQuery();
+            if (result.next()) {
+                return result.getLong("id");
+            }
+
+        } finally {
+            // close resources
+            close();
+        }
+        return -1;
+    }
+
     // popultes all variables with member data to be used afterwards
-    public void getMemberInfo(Member m) throws SQLException {
+    /**
+     *
+     * @param m
+     * @param id
+     * @throws SQLException
+     */
+    public void getMemberInfo(Member m, long id) throws SQLException {
+        if (!isAdmin()) {
+            id = Member.getId();
+        }
         try {
             // SELECT `id`, `member_id` FROM `sacco`.`admins` WHERE  `id`=2;
-            String sql = "SELECT * FROM `sacco`.`members` WHERE  `id`=?";
+            String sql = "SELECT * FROM `members` WHERE  `id`=?";
             stmt = conn.prepareStatement(sql);
-            stmt.setLong(1, Member.getId());
+            stmt.setLong(1, id);
             result = stmt.executeQuery();
 
             while (result.next()) {
@@ -264,6 +345,9 @@ public class Member {
                 m.dob = result.getDate("dob");
                 m.mobileno = result.getInt("mobileno");
                 m.password = result.getString("password");
+                m.RegisteredDate = result.getTimestamp("DateRegistered");
+                m.LastModifiedDate = result.getTimestamp("DateModified");
+                m.AccountStatus = result.getBoolean("active");
             }
         } finally {
             close();
@@ -272,24 +356,36 @@ public class Member {
     }
 
     // edit member password
-    public boolean EditPassword(Member m, String password) throws AccountException, SQLException {
+    /**
+     *
+     * @param m
+     * @param password
+     * @param id
+     * @return
+     * @throws AccountException
+     * @throws SQLException
+     */
+    public boolean EditPassword(Member m, String password, long id) throws AccountException, SQLException {
+        if (!isAdmin()) {
+            id = Member.getId();
+        }
         if (CheckLoggedIn()) {
             try {
-                getMemberInfo(m);
+                getMemberInfo(m, id);
                 // retrieve hash from the database.
                 // if bcrypt realizes that the hashes match, then alert the user
                 // boolean force will allow the user to override the exception thrown
                 if (BCrypt.CheckPassword(password, m.password)) {
-                    throw new AccountException("Please try another password. Your password is similar to the one your currently using");
+                    throw new AccountException("You can't reuse your old password");
                 }
                 // bcrypt the password
                 password = BCrypt.Hash(password, BCrypt.generateSalt());
 
                 // now comes the sql part of the activity
-                String sql = "UPDATE `sacco`.`members` SET `password`=? WHERE  `id`= ?";
+                String sql = "UPDATE `members` SET `password`=? WHERE  `id`= ?";
                 stmt = conn.prepareStatement(sql);
                 stmt.setString(1, password);
-                stmt.setLong(2, Member.getId());
+                stmt.setLong(2, id);
 
                 int rows = stmt.executeUpdate();
                 // we need exactly one row updated
@@ -305,13 +401,19 @@ public class Member {
     }
 
     // edit member data
+    /**
+     *
+     * @param m
+     * @return
+     * @throws AccountException
+     * @throws SQLException
+     */
     public boolean EditMemberInfo(Member m) throws AccountException, SQLException {
         if (CheckLoggedIn()) {
             try {
-                //getMemberInfo(m);
-                // the sql
-                // UPDATE `sacco`.`members` SET `firstname`='rgrgs', `lastname`='rgrgs', `gender`='Females', `dob`='2015-07-25', `mobileno`=343443, `address`='343434', `email`='a@b.c.no\'\'\'', `password`='556465' WHERE  `id`=11;
-                String sql = "UPDATE `sacco`.`members` SET `firstname`=?, `lastname`=?, `gender`=?, `dob`=?, `mobileno`=?, `address`=?, `email`=? WHERE  `id`=?";
+                String sql = "UPDATE `members` SET "
+                        + "`firstname`=?, `lastname`=?, `gender`=?, `dob`=?, "
+                        + "`mobileno`=?, `address`=?, `email`=? WHERE  `id`=?";
                 stmt = conn.prepareStatement(sql);
                 stmt.setString(1, m.firstname);
                 stmt.setString(2, m.lastname);
@@ -335,20 +437,30 @@ public class Member {
         }
     }
 
+    /**
+     *
+     * @return @throws SQLException
+     */
     public boolean checkIfUserIsAdmin() throws SQLException {
-        try {
-            // SELECT `id`, `member_id` FROM `sacco`.`admins` WHERE  `id`=2;
-            String sql = "SELECT `id`, `member_id` FROM `sacco`.`admins` WHERE  `member_id`=?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setLong(1, Member.getId());
-            result = stmt.executeQuery();
+        if (CheckLoggedIn()) {
+            try {
+                String sql = "SELECT id FROM positions JOIN members_positions ON positions.id = members_positions.position_id AND member_id = ?";
+                stmt = conn.prepareStatement(sql);
+                stmt.setLong(1, Member.getId());
+                result = stmt.executeQuery();
 
-            while (result.next()) {
-                setAdmin(true);
-                return isAdmin();
+                while (result.next()) {
+                    //JOptionPane.showMessageDialog(null, result.getLong("id"));
+                    if (result.getInt("id") == Admin.ADMIN_POS_ID) {
+                        setAdmin(true);
+                        return isAdmin();
+                    } else {
+                        return false;
+                    }
+                }
+            } finally {
+                close();
             }
-        } finally {
-            close();
         }
         return false;
     }
@@ -366,5 +478,33 @@ public class Member {
             } catch (SQLException e) {
             }
         }
+    }
+
+    /**
+     * @return the RegisteredDate
+     */
+    public Timestamp getRegisteredDate() {
+        return RegisteredDate;
+    }
+
+    /**
+     * @return the LastModifiedDate
+     */
+    public Timestamp getLastModifiedDate() {
+        return LastModifiedDate;
+    }
+
+    /**
+     * @return the AccountStatus
+     */
+    public boolean getAccountStatus() {
+        return AccountStatus;
+    }
+
+    /**
+     * @param AccountStatus the AccountStatus to set
+     */
+    private void setAccountStatus(boolean AccountStatus) {
+        this.AccountStatus = AccountStatus;
     }
 }

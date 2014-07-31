@@ -5,32 +5,33 @@
  */
 package com.Projectdraft;
 
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JOptionPane;
-import com.sacco.classes.Member;
 import com.sacco.classes.Admin;
+import com.sacco.classes.Member;
+import java.sql.SQLException;
 import javax.security.auth.login.AccountException;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author Antony
  */
-public class AllMembers extends javax.swing.JFrame {
+public class AllMembers extends javax.swing.JInternalFrame {
 
     Member m;
     Admin a;
 
     /**
-     * Creates new form AllMembers
-     *
-     * @throws javax.security.auth.login.AccountException
+     * Creates new form NewJInternalFrame
      */
-    public AllMembers() throws AccountException {
-        this.m = new Member();
-        this.a = new Admin();
-        initComponents();
+    public AllMembers() {
+        try {
+            this.m = new Member();
+            this.a = new Admin();
+            initComponents();
+        } catch (AccountException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Access denied", JOptionPane.ERROR_MESSAGE);
+            this.dispose();
+        }
     }
 
     /**
@@ -44,22 +45,19 @@ public class AllMembers extends javax.swing.JFrame {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextAreaAllMembers = new javax.swing.JTextArea();
-        jLabel1 = new javax.swing.JLabel();
         jButtonDisplay = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
         jButtonBack = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Registred Sacco Members");
+        setClosable(true);
+        setIconifiable(true);
+        setTitle("(Administrator) All Members");
+        setDoubleBuffered(true);
 
         jTextAreaAllMembers.setEditable(false);
         jTextAreaAllMembers.setColumns(20);
         jTextAreaAllMembers.setRows(5);
         jScrollPane1.setViewportView(jTextAreaAllMembers);
-
-        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabel1.setText("Sacco Members");
 
         jButtonDisplay.setText("Members");
         jButtonDisplay.setActionCommand("Display");
@@ -69,11 +67,7 @@ public class AllMembers extends javax.swing.JFrame {
             }
         });
 
-        jButton1.setText("jButton1");
-
-        jButton2.setText("jButton2");
-
-        jButtonBack.setText("<< Back");
+        jButtonBack.setText("Close");
         jButtonBack.setActionCommand("Display");
         jButtonBack.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -81,57 +75,38 @@ public class AllMembers extends javax.swing.JFrame {
             }
         });
 
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel1.setText("Sacco Members");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 622, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(246, 246, 246)
-                        .addComponent(jLabel1))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(276, 276, 276)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jButtonBack)
-                            .addComponent(jButtonDisplay))))
-                .addContainerGap(18, Short.MAX_VALUE))
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(jButton1)
-                    .addGap(0, 0, Short.MAX_VALUE)))
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(jButton2)
-                    .addGap(0, 0, Short.MAX_VALUE)))
+                .addGap(246, 246, 246)
+                .addComponent(jLabel1)
+                .addContainerGap(463, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButtonDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButtonBack, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(6, 6, 6)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jButtonDisplay)
-                .addGap(18, 18, 18)
-                .addComponent(jButtonBack)
-                .addContainerGap(18, Short.MAX_VALUE))
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(jButton1)
-                    .addGap(0, 0, Short.MAX_VALUE)))
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(jButton2)
-                    .addGap(0, 0, Short.MAX_VALUE)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButtonDisplay)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButtonBack))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pack();
@@ -143,7 +118,7 @@ public class AllMembers extends javax.swing.JFrame {
         try {
             a.DisplayAllMembers(jTextAreaAllMembers);
         } catch (SQLException ex) {
-            Logger.getLogger(AllMembers.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, "SQL error", "Error", JOptionPane.ERROR_MESSAGE);
         } catch (AccountException ex) {
             JOptionPane.showMessageDialog(this.getParent(), ex.getMessage(), "Access Denied", JOptionPane.ERROR_MESSAGE);
         }
@@ -153,54 +128,7 @@ public class AllMembers extends javax.swing.JFrame {
         dispose();
     }//GEN-LAST:event_jButtonBackActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(AllMembers.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(AllMembers.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AllMembers.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(AllMembers.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-
-            public void run() {
-                if (Member.isAdmin()) {
-                    try {
-                        new AllMembers().setVisible(true);
-                    } catch (AccountException ex) {
-                        JOptionPane.showMessageDialog(null, ex.getMessage(), "Access denied", JOptionPane.ERROR_MESSAGE);
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(null, "Administrator access only", "Access denied", JOptionPane.ERROR_MESSAGE);
-                    new LoginScreen().setVisible(true);
-                }
-            }
-        });
-    }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButtonBack;
     private javax.swing.JButton jButtonDisplay;
     private javax.swing.JLabel jLabel1;

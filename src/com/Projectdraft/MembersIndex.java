@@ -5,9 +5,9 @@
  */
 package com.Projectdraft;
 
+import com.sacco.classes.Application;
 import com.sacco.classes.Member;
 import java.sql.SQLException;
-import javax.security.auth.login.AccountException;
 import javax.swing.JOptionPane;
 
 /**
@@ -28,12 +28,15 @@ public class MembersIndex extends javax.swing.JFrame {
         jMenuAdministrator.setVisible(false);
 
         try {
+            //jLabel1.setText("Welcome. You are logged in as "+m.getFirstname()+" .The time now is "+Helper.dateFromLong(Long.MIN_VALUE));
             // check if a user is an admin
             if (m.checkIfUserIsAdmin()) {
                 // am an admin, so enable my menu
+                //JOptionPane.showMessageDialog(null, m.checkIfUserIsAdmin());
                 jMenuAdministrator.setVisible(true);
             }
         } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(rootPane, ex.getMessage());
             jMenuAdministrator.setVisible(false);
         }
     }
@@ -50,7 +53,10 @@ public class MembersIndex extends javax.swing.JFrame {
         jMenu3 = new javax.swing.JMenu();
         jMenu6 = new javax.swing.JMenu();
         jMenu1 = new javax.swing.JMenu();
-        jLabel1 = new javax.swing.JLabel();
+        jMenuItem3 = new javax.swing.JMenuItem();
+        jMenuItem5 = new javax.swing.JMenuItem();
+        jMenu7 = new javax.swing.JMenu();
+        jDesktopPane1 = new javax.swing.JDesktopPane();
         jMenuBar2 = new javax.swing.JMenuBar();
         jMenu4 = new javax.swing.JMenu();
         jMenuItem15 = new javax.swing.JMenuItem();
@@ -63,9 +69,9 @@ public class MembersIndex extends javax.swing.JFrame {
         jSeparator17 = new javax.swing.JPopupMenu.Separator();
         jMenuItemMyPassword = new javax.swing.JMenuItem();
         jSeparator18 = new javax.swing.JPopupMenu.Separator();
-        jSeparator12 = new javax.swing.JPopupMenu.Separator();
-        jMenuItemQueries = new javax.swing.JMenuItem();
         jSeparator3 = new javax.swing.JPopupMenu.Separator();
+        jMenuItem9 = new javax.swing.JMenuItem();
+        jSeparator12 = new javax.swing.JPopupMenu.Separator();
         jMenu2 = new javax.swing.JMenu();
         jMenuItemApplyLoan = new javax.swing.JMenuItem();
         jSeparator7 = new javax.swing.JPopupMenu.Separator();
@@ -74,12 +80,18 @@ public class MembersIndex extends javax.swing.JFrame {
         jMenuItemCheckLoanStatus = new javax.swing.JMenuItem();
         jSeparator9 = new javax.swing.JPopupMenu.Separator();
         jMenuAdministrator = new javax.swing.JMenu();
-        jMenuItemMembersList = new javax.swing.JMenuItem();
-        jSeparator13 = new javax.swing.JPopupMenu.Separator();
+        jMenu11 = new javax.swing.JMenu();
+        jMenuItemAllMembersMenu = new javax.swing.JMenuItem();
+        jSeparator4 = new javax.swing.JPopupMenu.Separator();
         jMenuItemNewMember = new javax.swing.JMenuItem();
         jSeparator14 = new javax.swing.JPopupMenu.Separator();
-        jMenuItemViewContrib = new javax.swing.JMenuItem();
-        jSeparator4 = new javax.swing.JPopupMenu.Separator();
+        jMenuItemMembersList = new javax.swing.JMenuItem();
+        jSeparator13 = new javax.swing.JPopupMenu.Separator();
+        jMenu5 = new javax.swing.JMenu();
+        jMenuItemEditInterest = new javax.swing.JMenuItem();
+        jSeparator19 = new javax.swing.JPopupMenu.Separator();
+        jMenu12 = new javax.swing.JMenu();
+        jSeparator20 = new javax.swing.JPopupMenu.Separator();
         jMenuReports = new javax.swing.JMenu();
         jMenuItem8 = new javax.swing.JMenuItem();
         jSeparator15 = new javax.swing.JPopupMenu.Separator();
@@ -102,8 +114,36 @@ public class MembersIndex extends javax.swing.JFrame {
 
         jMenu1.setText("jMenu1");
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        jMenuItem3.setText("jMenuItem3");
+
+        jMenuItem5.setText("jMenuItem5");
+
+        jMenu7.setText("jMenu7");
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Sacco Application");
+        setPreferredSize(new java.awt.Dimension(1024, 768));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
+
+        jDesktopPane1.setBackground(new java.awt.Color(204, 204, 204));
+        jDesktopPane1.setForeground(new java.awt.Color(204, 204, 204));
+        jDesktopPane1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jDesktopPane1.setPreferredSize(new java.awt.Dimension(800, 600));
+
+        javax.swing.GroupLayout jDesktopPane1Layout = new javax.swing.GroupLayout(jDesktopPane1);
+        jDesktopPane1.setLayout(jDesktopPane1Layout);
+        jDesktopPane1Layout.setHorizontalGroup(
+            jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 1920, Short.MAX_VALUE)
+        );
+        jDesktopPane1Layout.setVerticalGroup(
+            jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 1200, Short.MAX_VALUE)
+        );
 
         jMenu4.setText("File");
 
@@ -112,6 +152,7 @@ public class MembersIndex extends javax.swing.JFrame {
         jMenu4.add(jMenuItem15);
         jMenu4.add(jSeparator10);
 
+        jMenuItemLogout.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_L, java.awt.event.InputEvent.ALT_MASK));
         jMenuItemLogout.setText("Log Out");
         jMenuItemLogout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -127,6 +168,7 @@ public class MembersIndex extends javax.swing.JFrame {
 
         jMenuMember.setText("My Profile");
 
+        jMenuItemMemberInfo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_I, java.awt.event.InputEvent.ALT_MASK));
         jMenuItemMemberInfo.setText("Edit My Info");
         jMenuItemMemberInfo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -136,6 +178,7 @@ public class MembersIndex extends javax.swing.JFrame {
         jMenuMember.add(jMenuItemMemberInfo);
         jMenuMember.add(jSeparator17);
 
+        jMenuItemMyPassword.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.ALT_MASK));
         jMenuItemMyPassword.setText("Edit My Password");
         jMenuItemMyPassword.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -146,16 +189,22 @@ public class MembersIndex extends javax.swing.JFrame {
         jMenuMember.add(jSeparator18);
 
         jMenu8.add(jMenuMember);
-        jMenu8.add(jSeparator12);
-
-        jMenuItemQueries.setText("Queries");
-        jMenu8.add(jMenuItemQueries);
         jMenu8.add(jSeparator3);
+
+        jMenuItem9.setText("Login Info");
+        jMenuItem9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem9ActionPerformed(evt);
+            }
+        });
+        jMenu8.add(jMenuItem9);
+        jMenu8.add(jSeparator12);
 
         jMenuBar2.add(jMenu8);
 
         jMenu2.setText("Loans");
 
+        jMenuItemApplyLoan.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.ALT_MASK));
         jMenuItemApplyLoan.setText("Apply for Loan");
         jMenuItemApplyLoan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -165,6 +214,7 @@ public class MembersIndex extends javax.swing.JFrame {
         jMenu2.add(jMenuItemApplyLoan);
         jMenu2.add(jSeparator7);
 
+        jMenuItemRepayLoan.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.ALT_MASK));
         jMenuItemRepayLoan.setText("Repay Loan");
         jMenuItemRepayLoan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -174,6 +224,7 @@ public class MembersIndex extends javax.swing.JFrame {
         jMenu2.add(jMenuItemRepayLoan);
         jMenu2.add(jSeparator8);
 
+        jMenuItemCheckLoanStatus.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.ALT_MASK));
         jMenuItemCheckLoanStatus.setText("Loan Status");
         jMenuItemCheckLoanStatus.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -187,14 +238,16 @@ public class MembersIndex extends javax.swing.JFrame {
 
         jMenuAdministrator.setText("Administrator");
 
-        jMenuItemMembersList.setText("Members List");
-        jMenuItemMembersList.addActionListener(new java.awt.event.ActionListener() {
+        jMenu11.setText("Manage Members");
+
+        jMenuItemAllMembersMenu.setText("All Members");
+        jMenuItemAllMembersMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemMembersListActionPerformed(evt);
+                jMenuItemAllMembersMenuActionPerformed(evt);
             }
         });
-        jMenuAdministrator.add(jMenuItemMembersList);
-        jMenuAdministrator.add(jSeparator13);
+        jMenu11.add(jMenuItemAllMembersMenu);
+        jMenu11.add(jSeparator4);
 
         jMenuItemNewMember.setText("New Member");
         jMenuItemNewMember.addActionListener(new java.awt.event.ActionListener() {
@@ -202,12 +255,36 @@ public class MembersIndex extends javax.swing.JFrame {
                 jMenuItemNewMemberActionPerformed(evt);
             }
         });
-        jMenuAdministrator.add(jMenuItemNewMember);
-        jMenuAdministrator.add(jSeparator14);
+        jMenu11.add(jMenuItemNewMember);
+        jMenu11.add(jSeparator14);
 
-        jMenuItemViewContrib.setText("View Contributions");
-        jMenuAdministrator.add(jMenuItemViewContrib);
-        jMenuAdministrator.add(jSeparator4);
+        jMenuItemMembersList.setText("Members List");
+        jMenuItemMembersList.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemMembersListActionPerformed(evt);
+            }
+        });
+        jMenu11.add(jMenuItemMembersList);
+
+        jMenuAdministrator.add(jMenu11);
+        jMenuAdministrator.add(jSeparator13);
+
+        jMenu5.setText("Manage Loans");
+
+        jMenuItemEditInterest.setText("Edit Interest");
+        jMenuItemEditInterest.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemEditInterestActionPerformed(evt);
+            }
+        });
+        jMenu5.add(jMenuItemEditInterest);
+
+        jMenuAdministrator.add(jMenu5);
+        jMenuAdministrator.add(jSeparator19);
+
+        jMenu12.setText("Manage Contributions");
+        jMenuAdministrator.add(jMenu12);
+        jMenuAdministrator.add(jSeparator20);
 
         jMenuReports.setText("Reports");
 
@@ -238,6 +315,7 @@ public class MembersIndex extends javax.swing.JFrame {
 
         jMenu10.setText("Contributions");
 
+        jMenuItemMakeContrib.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.ALT_MASK));
         jMenuItemMakeContrib.setText("Make Contribution");
         jMenuItemMakeContrib.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -254,6 +332,11 @@ public class MembersIndex extends javax.swing.JFrame {
         jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
         jMenuItem2.setText("Report Issue");
         jMenuItem2.setRolloverEnabled(true);
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
         jMenu9.add(jMenuItem2);
         jMenu9.add(jSeparator1);
 
@@ -274,26 +357,20 @@ public class MembersIndex extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1920, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jDesktopPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1920, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1200, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jDesktopPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1200, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jMenuItemMembersListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemMembersListActionPerformed
-        try {
-            new AllMembers().setVisible(true);
-        } catch (AccountException ex) {
-
-        }
+        AllMembers app = new AllMembers();
+        jDesktopPane1.add(app);
+        app.setVisible(true);
     }//GEN-LAST:event_jMenuItemMembersListActionPerformed
 
     private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
@@ -306,7 +383,10 @@ public class MembersIndex extends javax.swing.JFrame {
 
     private void jMenuItemApplyLoanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemApplyLoanActionPerformed
         // TODO add your handling code here:
-        new LoanApplication().setVisible(true);
+        //new LoanApplication().setVisible(true);
+        ApplyForLoan app = new ApplyForLoan();
+        jDesktopPane1.add(app);
+        app.setVisible(true);
     }//GEN-LAST:event_jMenuItemApplyLoanActionPerformed
 
     private void jMenuItemLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemLogoutActionPerformed
@@ -327,28 +407,73 @@ public class MembersIndex extends javax.swing.JFrame {
 
     private void jMenuItemCheckLoanStatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCheckLoanStatusActionPerformed
         // TODO add your handling code here:
-        new DisplayLoanInformation().setVisible(true);
+        DisplayLoanInformation app = new DisplayLoanInformation();
+        jDesktopPane1.add(app);
+        app.setVisible(true);
     }//GEN-LAST:event_jMenuItemCheckLoanStatusActionPerformed
 
     private void jMenuItemMakeContribActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemMakeContribActionPerformed
         // TODO add your handling code here:
-        new AddContribution().setVisible(true);
+        MakeContribution app = new MakeContribution();
+        jDesktopPane1.add(app);
+        app.setVisible(true);
     }//GEN-LAST:event_jMenuItemMakeContribActionPerformed
 
     private void jMenuItemRepayLoanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemRepayLoanActionPerformed
         // TODO add your handling code here:
-        new RepayLoan().setVisible(true);
+        RepayLoan adm = new RepayLoan();
+        jDesktopPane1.add(adm);
+        adm.setVisible(true);
     }//GEN-LAST:event_jMenuItemRepayLoanActionPerformed
 
     private void jMenuItemMemberInfoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemMemberInfoActionPerformed
         // TODO add your handling code here:
-        new EditMember().setVisible(true);
+        EditMember adm = new EditMember();
+        jDesktopPane1.add(adm);
+        adm.setVisible(true);
     }//GEN-LAST:event_jMenuItemMemberInfoActionPerformed
 
     private void jMenuItemMyPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemMyPasswordActionPerformed
         // TODO add your handling code here:
-        new EditPassword().setVisible(true);
+        EditPassword adm = new EditPassword();
+        jDesktopPane1.add(adm);
+        adm.setVisible(true);
     }//GEN-LAST:event_jMenuItemMyPasswordActionPerformed
+
+    private void jMenuItemEditInterestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemEditInterestActionPerformed
+        // TODO add your handling code here:
+        EditLoanInterest app = new EditLoanInterest();
+        jDesktopPane1.add(app);
+        app.setVisible(true);
+    }//GEN-LAST:event_jMenuItemEditInterestActionPerformed
+
+    private void jMenuItemAllMembersMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAllMembersMenuActionPerformed
+        AdminEditMember adm = new AdminEditMember();
+        jDesktopPane1.add(adm);
+        adm.setVisible(true);
+    }//GEN-LAST:event_jMenuItemAllMembersMenuActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        // TODO add your handling code here:
+        new SubmittQuery().setVisible(true);
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        // TODO add your handling code here:
+        int reply = JOptionPane.showConfirmDialog(this.getContentPane(), "Are you sure you want to exit?", "prompt", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+
+        if (reply == JOptionPane.CANCEL_OPTION | reply == JOptionPane.NO_OPTION) {
+            return;
+        } else {
+            dispose();
+            Application.Exit(0);
+        }
+    }//GEN-LAST:event_formWindowClosing
+
+    private void jMenuItem9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem9ActionPerformed
+        // TODO add your handling code here:
+        JOptionPane.showMessageDialog(rootPane, "<html> <p>Your User Id is </p>" + Member.getId() + "<br><p> You are logged in as </p>" + m.getFirstname() + "</html>");
+    }//GEN-LAST:event_jMenuItem9ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -366,40 +491,34 @@ public class MembersIndex extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MembersIndex.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MembersIndex.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MembersIndex.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(MembersIndex.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-
-            @Override
-            public void run() {
-                if (!Member.CheckLoggedIn()) {
-                    JOptionPane.showMessageDialog(null, "Please login first", "Access denied", JOptionPane.ERROR_MESSAGE);
-                    new LoginScreen().setVisible(true);
-                } else {
-                    new MembersIndex().setVisible(true);
-                }
+        java.awt.EventQueue.invokeLater(() -> {
+            if (!Member.CheckLoggedIn()) {
+                JOptionPane.showMessageDialog(null, "Please login first", "Access denied", JOptionPane.ERROR_MESSAGE);
+                new LoginScreen().setVisible(true);
+            } else {
+                new MembersIndex().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu10;
+    private javax.swing.JMenu jMenu11;
+    private javax.swing.JMenu jMenu12;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
+    private javax.swing.JMenu jMenu5;
     private javax.swing.JMenu jMenu6;
+    private javax.swing.JMenu jMenu7;
     private javax.swing.JMenu jMenu8;
     private javax.swing.JMenu jMenu9;
     private javax.swing.JMenu jMenuAdministrator;
@@ -408,20 +527,23 @@ public class MembersIndex extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem14;
     private javax.swing.JMenuItem jMenuItem15;
     private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JMenuItem jMenuItem8;
+    private javax.swing.JMenuItem jMenuItem9;
+    private javax.swing.JMenuItem jMenuItemAllMembersMenu;
     private javax.swing.JMenuItem jMenuItemApplyLoan;
     private javax.swing.JMenuItem jMenuItemCheckLoanStatus;
+    private javax.swing.JMenuItem jMenuItemEditInterest;
     private javax.swing.JMenuItem jMenuItemLogout;
     private javax.swing.JMenuItem jMenuItemMakeContrib;
     private javax.swing.JMenuItem jMenuItemMemberInfo;
     private javax.swing.JMenuItem jMenuItemMembersList;
     private javax.swing.JMenuItem jMenuItemMyPassword;
     private javax.swing.JMenuItem jMenuItemNewMember;
-    private javax.swing.JMenuItem jMenuItemQueries;
     private javax.swing.JMenuItem jMenuItemRepayLoan;
-    private javax.swing.JMenuItem jMenuItemViewContrib;
     private javax.swing.JMenu jMenuMember;
     private javax.swing.JMenu jMenuReports;
     private javax.swing.JPopupMenu.Separator jSeparator1;
@@ -434,6 +556,8 @@ public class MembersIndex extends javax.swing.JFrame {
     private javax.swing.JPopupMenu.Separator jSeparator16;
     private javax.swing.JPopupMenu.Separator jSeparator17;
     private javax.swing.JPopupMenu.Separator jSeparator18;
+    private javax.swing.JPopupMenu.Separator jSeparator19;
+    private javax.swing.JPopupMenu.Separator jSeparator20;
     private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JPopupMenu.Separator jSeparator4;
     private javax.swing.JPopupMenu.Separator jSeparator5;

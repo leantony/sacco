@@ -1,22 +1,16 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.sacco.classes;
 
-import static com.sacco.classes.Member.getId;
 import static com.sacco.classes.Member.isAdmin;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import javax.security.auth.login.AccountException;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
 import javax.swing.JTextArea;
 
-/**
- *
- * @author Antony
- */
 public class Admin extends Member {
+
+    public static int ADMIN_POS_ID = 1;
 
     // handy, since it will be always checked on instance creation
     public Admin() throws AccountException {
@@ -26,62 +20,43 @@ public class Admin extends Member {
         }
     }
 
-    // check login status. for administrative use since any id can be passed,
-    // and a basic user shouldn't be able to see other user's status
-    protected static boolean CheckIfLoggedIn(long id) {
-        return hs.contains(id);
-    }
-
-    // logout a user by their id
-    public static boolean Logout(long id) {
-        // incase the usr was an Admin, unset the Admin variable
-        if (isAdmin()) {
-            setAdmin(false);
+    /**
+     *
+     * @param id
+     * @param status
+     * <p>
+     * Status code 0 -> Deactivate account </p>
+     * <p>
+     * Status code 1 -> delete an activated account </p>
+     * <p>
+     * Status code 2 -> Activate an account </p>
+     * <p>
+     * Status code Any -> Forcefully delete an account </p>
+     * @return
+     * @throws SQLException
+     * @throws AccountException
+     */
+    public boolean AlterMemberAccount(long id, int status) throws SQLException, AccountException {
+        String sql;
+        if (status == 0) {
+            // deactivate account
+            sql = "UPDATE members SET active = 0 WHERE id = ?";
+        } else if (status == 1) {
+            // delete only an acitvated account
+            sql = "DELETE FROM members WHERE id = ? AND active = 1";
+        } else if (status == 2) {
+            sql = "UPDATE members SET active = 1 WHERE id = ?";
+        } else {
+            // delete any
+            sql = "DELETE FROM members WHERE id = ?";
         }
-        return hs.remove(id);
-    }
-
-    // an Admin task. of course
-    public boolean DeleteMember(long id) throws SQLException, AccountException {
-        if (isAdmin()) {
-            try {
-                //System.out.println(conn);
-                String sql = "DELETE FROM sacco.members WHERE id = ?";
-                stmt = conn.prepareStatement(sql);
-                stmt.setLong(1, id);
-
-                // PreparedStatement.setString(8, getPassword());
-                int rows = stmt.executeUpdate();
-                if (rows == 0) {
-                    // a user wasn't removed
-                    throw new SQLException("Deletion failed");
-                } else {
-                    return true;
-                }
-
-            } finally {
-                // close resources
-                close();
-            }
-        }
-        throw new AccountException("You are not allowed to perform this action");
-    }
-
-    // the admin should be able to close another user's account
-    public boolean CloseAccount(long id) throws SQLException {
         try {
-            //System.out.println(conn);
-            String sql = "UPDATE sacco.members SET active = ? WHERE id = ?";
+
             stmt = conn.prepareStatement(sql);
-            stmt.setShort(1, Member.INACTIVE);
-            stmt.setLong(2, id);
+            stmt.setLong(1, id);
+
             int rows = stmt.executeUpdate();
-            if (rows == 0) {
-                // a user wasn't removed
-                throw new SQLException("Operation failed");
-            } else {
-                return true;
-            }
+            return rows == 1;
 
         } finally {
             // close resources
@@ -89,14 +64,44 @@ public class Admin extends Member {
         }
     }
 
-    public void DisplayAllMembers(JTextArea jt) throws SQLException, AccountException {
+    private ResultSet getAllMemberInfo() throws SQLException {
+        String sql = "SELECT * FROM members";
+        stmt = conn.prepareStatement(sql);
+        result = stmt.executeQuery();
+        return result;
+    }
 
+    /**
+     *
+     * @param combobox
+     * @throws SQLException
+     */
+    public void DisplayAllMembers(JComboBox combobox) throws SQLException {
+        DefaultComboBoxModel Model = new DefaultComboBoxModel();
+        try {
+            result = getAllMemberInfo();
+            while (result.next()) {
+                long memberID = result.getLong("id");
+                Model.addElement(memberID);
+
+            }
+            combobox.setModel(Model);
+        } finally {
+            close();
+        }
+
+    }
+
+    /**
+     *
+     * @param jt
+     * @throws SQLException
+     * @throws AccountException
+     */
+    public void DisplayAllMembers(JTextArea jt) throws SQLException, AccountException {
         jt.setText("");
         try {
-            String sql = "SELECT * FROM sacco.members";
-            stmt = conn.prepareStatement(sql);
-            result = stmt.executeQuery();
-
+            result = getAllMemberInfo();
             jt.append("Here are all the members in the sacco \n\n");
             jt.append("FIRSTNAME\t LASTNAME \t GENDER \t DATE_OF_BIRTH \t ADDRESS \t EMAIL\n\n");
             while (result.next()) {
@@ -121,45 +126,63 @@ public class Admin extends Member {
 
     }
 
-    public long makeMemberAdmin(long id) throws SQLException {
-        if (isAdmin()) {
-            try {
-                //System.out.println(conn);
-                String sql = "INSERT INTO sacco.admins (member_id) VALUES (?)";
-                stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                stmt.setLong(1, id);
-                int rows = stmt.executeUpdate();
-                if (rows == 0) {
-                    // a user wasn't added
-                    throw new SQLException("operation failed");
-                }
-
-                // get the returned inserted id
-                result = stmt.getGeneratedKeys();
-                if (result.next()) {
-                    Member.setId(result.getLong(1));
-                    return getId();
-                } else {
-                    throw new SQLException("Operation failed. an ID wasn't obtained");
-                }
-            } finally {
-                // close resources
-                close();
-            }
+    /**
+     *
+     * @param id
+     * <p>
+     * The member's id</p>
+     * @param posname
+     * <p>
+     * The position name. Type in any name and the function would try it's best
+     * to find it in the database </p>
+     * @param Action
+     * <p>
+     * Action code 1 -> New position (insert) </p>
+     * <p>
+     * Action code 2 or any -> Update existing member position </p>
+     * @return
+     * <p>
+     * True if any of the actions was successful </p>
+     * @throws SQLException
+     */
+    public boolean AlterMemeberPosition(long id, String posname, int Action) throws SQLException {
+        String sql;
+        long pid = getPositionId(posname);
+        if (Action == 1) {
+            sql = "INSERT INTO `members_positions` (`position_id`, `member_id`) VALUES (?, ?)";
+        } else if (Action == 2) {
+            sql = "UPDATE `members_positions` SET `position_id`=? WHERE  `member_id`=?";
+        } else {
+            sql = "UPDATE `members_positions` SET `position_id`=? WHERE  `member_id`=?";
         }
-        return -1;
+        try {
+            stmt = conn.prepareStatement(sql);
+            stmt.setLong(1, pid);
+            stmt.setLong(2, id);
+            int rows = stmt.executeUpdate();
+            return rows == 1;
 
+        } finally {
+            // close resources
+            close();
+        }
     }
 
-    public boolean ClearMemberLoan(long id) throws SQLException, AccountException {
+    /**
+     *
+     * @param id
+     * <p>
+     * The member's id</p>
+     * @return
+     * @throws SQLException
+     * @throws AccountException
+     */
+    public boolean DeleteMemberLoan(long id) throws SQLException, AccountException {
         if (isAdmin()) {
             try {
-                //System.out.println(conn);
-                String sql = "DELETE FROM sacco.Loans WHERE member_id = ?";
+                String sql = "DELETE FROM Loans WHERE member_id = ?";
                 stmt = conn.prepareStatement(sql);
                 stmt.setLong(1, id);
-
-                // PreparedStatement.setString(8, getPassword());
                 int rows = stmt.executeUpdate();
                 return rows == 0;
 
@@ -169,6 +192,53 @@ public class Admin extends Member {
             }
         } else {
             throw new AccountException("You are not allowed to perform this action");
+        }
+    }
+
+    /**
+     *
+     * @return @throws SQLException
+     */
+    public double getLoanInterest() throws SQLException {
+        try {
+            String sql = "SELECT value FROM settings WHERE name = 'interest'";
+            stmt = conn.prepareStatement(sql);
+            result = stmt.executeQuery();
+            if (result.next()) {
+                return result.getDouble("value");
+            }
+
+        } finally {
+            // close resources
+            close();
+        }
+        return -1;
+    }
+
+    /**
+     *
+     * @param l
+     * @param interest
+     * @return
+     * @throws SQLException
+     */
+    public boolean ChangeLoanInterest(Loan l, double interest) throws SQLException {
+        if (getLoanInterest() == -1) {
+            throw new SQLException("An error occured while trying to get the loan interest from db");
+        }
+        try {
+//            int loanCount = l.GetLoanCount(3);
+            String sql = "UPDATE settings SET value = ? WHERE name = 'interest'";
+            stmt = conn.prepareStatement(sql);
+            stmt.setDouble(1, interest);
+
+            int rows = stmt.executeUpdate();
+            // check if all rows of the table were updated. change should apply to all members
+            return rows == 1;
+
+        } finally {
+            // close resources
+            close();
         }
     }
 

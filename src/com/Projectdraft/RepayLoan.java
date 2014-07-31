@@ -7,21 +7,20 @@ package com.Projectdraft;
 
 import com.sacco.classes.Application;
 import com.sacco.classes.Loan;
-import com.sacco.classes.Member;
 import java.sql.SQLException;
 import javax.security.auth.login.AccountException;
 import javax.swing.JOptionPane;
 
 /**
  *
- * @author CJ
+ * @author Antony
  */
-public class RepayLoan extends javax.swing.JFrame {
+public class RepayLoan extends javax.swing.JInternalFrame {
 
     Loan l;
 
     /**
-     * Creates new form RepayLoan
+     * Creates new form NewJInternalFrame
      */
     public RepayLoan() {
         this.l = new Loan();
@@ -31,15 +30,19 @@ public class RepayLoan extends javax.swing.JFrame {
 
     private void updateForm() {
         try {
+            if (l.GetLoanCount(3) == 0) {
+                jPanel1.setVisible(false);
+                jLabelStatus.setText("You have not applied for any loans yet. Apply for one then the functions below will be available");
+            }
             // now, we don't need one viewing this form na hana loan zozote
             if (l.GetLoanCount(0) == 0) {
                 jPanel1.setVisible(false);
-                jLabelStatus.setText("You have not applied for any loans yet. Apply for one then the functions below will be available");
+                jLabelStatus.setText("You have cleared all your loans. Apply for one then the functions below will be available");
                 // this.dispose();
             } else {
                 l.getLoanInfo(0);
                 jLabelInitialAmnt.setText(Double.toString(l.getLoanAmount()));
-                jLabelLoanAndInterest.setText(Double.toString(l.getTotalAmntFromDB()));
+                jLabelLoanAndInterest.setText(Double.toString(l.getTotalAmount()));
                 jLabelPendingAmnt.setText(Double.toString(l.getAmountPaid()));
             }
         } catch (SQLException ex) {
@@ -56,6 +59,7 @@ public class RepayLoan extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jButtonCancel = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jTextFieldAmount = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
@@ -67,11 +71,22 @@ public class RepayLoan extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         jLabelInitialAmnt = new javax.swing.JLabel();
         jLabelLoanAndInterest = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
         jLabelStatus = new javax.swing.JLabel();
-        jButtonCancel = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setClosable(true);
+        setIconifiable(true);
+        setResizable(true);
+        setTitle("Loan Repayment");
+        setToolTipText("");
+        setDoubleBuffered(true);
+
+        jButtonCancel.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jButtonCancel.setText("cancel");
+        jButtonCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonCancelActionPerformed(evt);
+            }
+        });
 
         jPanel1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
@@ -97,9 +112,6 @@ public class RepayLoan extends javax.swing.JFrame {
         jLabel5.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel5.setText("Initial loan + interest");
 
-        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabel4.setText("Loan Repayment Form");
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -115,7 +127,7 @@ public class RepayLoan extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(57, 57, 57)
                         .addComponent(jLabel2)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 248, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jButtonPay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jTextFieldAmount, javax.swing.GroupLayout.Alignment.TRAILING)
@@ -128,25 +140,19 @@ public class RepayLoan extends javax.swing.JFrame {
                         .addComponent(jLabelPendingTotalAmnt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(129, 129, 129)))
                 .addGap(46, 46, 46))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(221, 221, 221)
-                .addComponent(jLabel4)
-                .addContainerGap(231, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(74, 74, 74)
+                        .addGap(29, 29, 29)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabelPendingTotalAmnt, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel0, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap(37, Short.MAX_VALUE)
                         .addComponent(jLabelInitialAmnt, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(46, 46, 46)))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -167,14 +173,8 @@ public class RepayLoan extends javax.swing.JFrame {
         );
 
         jLabelStatus.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-
-        jButtonCancel.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jButtonCancel.setText("cancel");
-        jButtonCancel.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonCancelActionPerformed(evt);
-            }
-        });
+        jLabelStatus.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabelStatus.setText("Loan Repayment Form");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -185,20 +185,21 @@ public class RepayLoan extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(10, 10, 10))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabelStatus)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(12, 12, 12))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jButtonCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(71, 71, 71)
+                .addComponent(jLabelStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 491, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
+            .addGroup(layout.createSequentialGroup()
+                .addGap(23, 23, 23)
                 .addComponent(jLabelStatus)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jButtonCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -207,6 +208,11 @@ public class RepayLoan extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButtonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+    }//GEN-LAST:event_jButtonCancelActionPerformed
 
     private void jButtonPayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPayActionPerformed
         // TODO add your handling code here:
@@ -226,63 +232,18 @@ public class RepayLoan extends javax.swing.JFrame {
                 // refresh the form page
                 updateForm();
                 JOptionPane.showMessageDialog(null, "You have successfully paid " + l.getAmountToPay() + " to your loan\n"
-                        + "You have a pending amount of " + (l.getTotalAmntFromDB() - l.getAmountPaid()), "Success", JOptionPane.INFORMATION_MESSAGE);
+                        + "You have a pending amount of " + (l.getTotalAmount() - l.getAmountPaid())
+                        + "\nYour payment id is " + l.getPaymentID(), "Success", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(null, "The operation wasn't successful. Please try again", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Operation wasn't successful. Please try again", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "SQL error" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } catch (AccountException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage(), "Overpayment", JOptionPane.INFORMATION_MESSAGE);
+            dispose();
         }
     }//GEN-LAST:event_jButtonPayActionPerformed
-
-    private void jButtonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelActionPerformed
-        // TODO add your handling code here:
-        this.dispose();
-    }//GEN-LAST:event_jButtonCancelActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(RepayLoan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(RepayLoan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(RepayLoan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(RepayLoan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                if (!Member.CheckLoggedIn()) {
-                    JOptionPane.showMessageDialog(null, "Please login first", "Access denied", JOptionPane.ERROR_MESSAGE);
-                    new LoginScreen().setVisible(true);
-                } else {
-                    new RepayLoan().setVisible(true);
-                }
-
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonCancel;
@@ -290,7 +251,6 @@ public class RepayLoan extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel0;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabelInitialAmnt;
     private javax.swing.JLabel jLabelLoanAndInterest;

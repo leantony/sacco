@@ -1,28 +1,63 @@
-/*
- * contains loan functions
- */
 package com.sacco.classes;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.security.auth.login.AccountException;
 import javax.swing.JTextArea;
 
-/**
- *
- * @author Antony
- */
 public class Loan {
 
     private static final short LOAN_CLEARED = 1;
     private static final short LOAN_NOT_CLEARED = 0;
+    // contribution values which can only be changed by the admin
+    private static double MIN_LOAN = 10000;
+    private static double MAX_LOAN = 1000000;
+    // format the cas
+    DecimalFormat df = new DecimalFormat("#.##");
+
+    /**
+     *
+     * @return
+     */
+    public static double getMIN_LOAN() {
+        return MIN_LOAN;
+    }
+
+    /**
+     *
+     * @param min
+     */
+    public static void setMinLoanAmount(double min) {
+        MIN_LOAN = min;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public static double getMaxLoanAmount() {
+        return MAX_LOAN;
+    }
+
+    /**
+     *
+     * @param max
+     */
+    public static void setMaxLoanAmount(double max) {
+        MAX_LOAN = max;
+    }
+    Contribution c = new Contribution();
 
     // define loan table datatypes as potrayed by the database
     private long id;
+    private long paymentID;
     private double LoanAmount;
     private double TotalAmount; // loanAmount + interest
 
@@ -36,168 +71,139 @@ public class Loan {
     private double AmountPaid; // from db
 
     // loan constants
-    private double LOAN_INTEREST = 30.0;
+    private double LOAN_INTEREST;
     PreparedStatement stmt = null;
     Connection conn;
     ResultSet result = null;
     Member m;
 
+    /**
+     * instatiating the loan class by establishing a db connection, getting the
+     * loan interest and instatiating the member class
+     */
     public Loan() {
         this.conn = null;
         this.m = new Member();
         database d = new database();
         conn = d.getConnection();
+        try {
+            this.LOAN_INTEREST = getLoanInterest();
+        } catch (SQLException ex) {
+            this.LOAN_INTEREST = 5;
+        }
     }
 
     // allow the user to know their pending loan amount to pay, after making a payment to their loan
     public double getPendingAmount() {
-        return TotalAmount - getAmountPaid();
+        return getTotalAmount() - getAmountPaid();
     }
 
-    /**
-     * @return the LoanAmount
-     */
     public double getLoanAmount() {
         return LoanAmount;
     }
 
-    /**
-     * @param LoanAmount the LoanAmount to set
-     */
     public void setLoanAmount(double LoanAmount) {
         this.LoanAmount = LoanAmount;
     }
 
-    /**
-     * @return the TotalAmount
-     */
-    private double getTotalAmount() {
-        setTotalAmount();
+    public double getTotalAmount() {
         return TotalAmount;
     }
 
-    /**
-     * @param TotalAmount the TotalAmount to set
-     */
+    public final double getLoanInterest() throws SQLException {
+        try {
+            String sql = "SELECT value FROM settings WHERE name = 'interest'";
+            stmt = conn.prepareStatement(sql);
+            result = stmt.executeQuery();
+            if (result.next()) {
+                return result.getDouble("value");
+            }
+
+        } finally {
+            // close resources
+            close();
+        }
+        return 1;
+    }
+
+    // get the total amount a loan shud have, using the formula I=PRT, A = I+P
     private void setTotalAmount() {
-        // interest + 100 * amount
-        double interest = this.LoanAmount * getLOAN_INTEREST() * PaybackPeriod / 12;
-        this.TotalAmount = interest + this.LoanAmount;
+        double interest = this.LoanAmount * LOAN_INTEREST / 100 * PaybackPeriod / 12;
+        this.setTotalAmount(interest + this.LoanAmount);
     }
 
-    public double getTotalAmntFromDB() {
-        return TotalAmount;
-    }
-
-    /**
-     * @return the LoanInterest
-     */
-    protected double getLoanInterest() {
-        return getLOAN_INTEREST() / 100;
-    }
-
-    /**
-     * @param LoanInterest the LoanInterest to set
-     * @throws javax.security.auth.login.AccountException
-     */
-    protected void setLoanInterest(double LoanInterest) throws AccountException {
-        this.setLOAN_INTEREST(LoanInterest);
-    }
-
-    /**
-     * @return the PaybackPeriod
-     */
     public int getPaybackPeriod() {
         return PaybackPeriod;
     }
 
-    /**
-     * @param PaybackDate the PaybackPeriod to set
-     */
     public void setPaybackPeriod(int PaybackDate) {
         this.PaybackPeriod = PaybackDate;
     }
 
-    /**
-     * @return the LoanPurpose
-     */
     public String getLoanPurpose() {
         return LoanPurpose;
     }
 
-    /**
-     * @param LoanPurpose the LoanPurpose to set
-     */
     public void setLoanPurpose(String LoanPurpose) {
         this.LoanPurpose = LoanPurpose;
     }
 
-    /**
-     * @return the LoanType
-     */
     public String getLoanType() {
         return LoanType;
     }
 
-    /**
-     * @param LoanType the LoanType to set
-     */
     public void setLoanType(String LoanType) {
         this.LoanType = LoanType;
     }
 
-    /**
-     * @return the id
-     */
     public long getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
     private void setId(long id) {
         this.id = id;
     }
 
-    /**
-     * @return the AmountToPay
-     */
     public double getAmountToPay() {
         return AmountToPay;
     }
 
-    /**
-     * @param AmountToPay the AmountToPay to set
-     */
     public void setAmountToPay(double AmountToPay) {
         this.AmountToPay = AmountToPay;
     }
 
-    /**
-     * @return the AmountPaid
-     */
     public double getAmountPaid() {
         return AmountPaid;
     }
 
-    /**
-     * @param AmountPaid the AmountPaid to set
-     */
     private void setAmountPaid(double AmountPaid) {
         this.AmountPaid = AmountPaid;
     }
 
+    public long getPaymentID() {
+        return paymentID;
+    }
+
+    private void setPaymentID(long paymentID) {
+        this.paymentID = paymentID;
+    }
+
     // allow members to request loans
-    public long RequestLoan() throws SQLException {
-        // a user can only have a single loan as per program specs
-        if (GetLoanCount(0) == 1) {
-            return -1;
+    public long RequestLoan() throws SQLException, AccountException {
+        // a user can only apply for a loan if they do't have any pending loans. so we get the count of their uncleared loans
+        // in the db, a loan is uncleared if it's cleared status is 0. implies it hasn't been fully paid
+        if (GetLoanCount(LOAN_NOT_CLEARED) == 1) {
+            throw new AccountException("You have pending loans to pay. Please clear them first to be able to continue");
+        }
+        // a member should only apply for a loan if they've at least contributed once
+        if (c.getMemberContributions(1) == 0) {
+            throw new AccountException("You are not elligible to apply for a loan since youve not yet contributed to the sacco");
         }
         try {
-            //System.out.println(conn);
-            // INSERT INTO `sacco`.`loans` (`member_id`, `LoanType`, `LoanAmount`, `TotalAmount`, `PaybackPeriod`, `LoanPurpose`) VALUES (5, 'tghgfh', 100, 100, '2014-07-20', '1gthytt');
-            String sql = "INSERT INTO `sacco`.`loans` (`member_id`, `LoanType`, `LoanAmount`, `TotalAmount`, `PaybackDate`, `LoanPurpose`) "
+            setTotalAmount();
+            String sql = "INSERT INTO `loans` "
+                    + "(`member_id`, `LoanType`, `LoanAmount`, "
+                    + "`TotalAmount`, `PaybackDate`, `LoanPurpose`) "
                     + "VALUES (?, ?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             stmt.setLong(1, Member.getId());
@@ -229,65 +235,120 @@ public class Loan {
 
     // loan payback function
     public boolean PayBackLoan() throws SQLException, AccountException {
-        getLoanInfo(0);
+        getLoanInfo(LOAN_NOT_CLEARED);
         // implies a loan id couldn't be found
         if (getId() <= 0) {
             throw new SQLException("A loan id wasn't obtained");
         }
 
-        // a member shouldn't be allowed to pay up above their total. so we bail
-        if (getAmountPaid() >= TotalAmount) {
-            double x = getAmountPaid() - TotalAmount;
-            clearLoan();
-            throw new AccountException("You loan is now fully paid. \nYour overpayment of ksh" + x + " will be added to your contributions");
+        // a member shouldn't be allowed to pay up above their total. so we notify them
+        if (getAmountPaid() >= getTotalAmount()) {
+            double x = getAmountPaid() - getTotalAmount();
+            // clear the loan, since now the user has either overpaid or has equally paid the loan fully
+            clearLoan(x);
+            // not really an indication of an error, but since the function return T/F this is the best way to do so
+            throw new AccountException("You loan is now fully paid. \nYour overpayment of ksh " + x + " will be added to your contributions");
         } else {
             // implies that the user hasn't paid enough, so we allow them to pay up
-            // UPDATE `sacco`.`loans` SET `paidAmount`= `paidAmount` + 5000 WHERE `id`=15
             try {
                 String sql = "UPDATE `sacco`.`loans` SET `paidAmount`= `paidAmount` + ? WHERE  `id`=?";
                 stmt = conn.prepareStatement(sql);
                 stmt.setDouble(1, getAmountToPay());
                 stmt.setLong(2, getId());
-
+                // record payment
                 int rows = stmt.executeUpdate();
-                // clear the loan so that user's count is updated
-
+                setPaymentID(recordPayment(getId()));
                 return rows == 1;
 
             } finally {
                 // close resources
                 close();
             }
-
         }
     }
 
-    private boolean clearLoan() throws SQLException {
+    // this shud only occur after payment >= Loan+interest
+    /**
+     *
+     * @param excess
+     * @return
+     * @throws SQLException
+     */
+    protected boolean clearLoan(double excess) throws SQLException {
         try {
-            String sql = "UPDATE `sacco`.`loans` SET cleared = ? WHERE `id`=?";
+            // no need to record a contribution if the excess is 0
+            String sql = "UPDATE `loans` SET cleared = ? WHERE `id`=?";
             stmt = conn.prepareStatement(sql);
             stmt.setDouble(1, LOAN_CLEARED);
             stmt.setLong(2, getId());
-
             int rows = stmt.executeUpdate();
-            return rows == 1;
+            return addExcessToContributions(excess) == rows;
 
         } finally {
             // close resources
             close();
         }
+    }
 
+    private int addExcessToContributions(double excess) throws SQLException {
+        String sql = "INSERT INTO `sacco`.`contributions` (`member_id`, `Amount`, `paymentMethod`, `Approved`) VALUES (?, ?, ?, ?)";
+        stmt = conn.prepareStatement(sql);
+        stmt.setLong(1, Member.getId());
+        stmt.setDouble(2, excess);
+        stmt.setString(3, "EXCESS");
+        stmt.setBoolean(4, true);
+        int rows = stmt.executeUpdate();
+        return rows;
+    }
+// record any loan payments, in a loan payments table to allow members to see them
+
+    /**
+     *
+     * @param id
+     * @return
+     * @throws SQLException
+     */
+    protected long recordPayment(long id) throws SQLException {
+        try {
+            String sql = "INSERT INTO `loanpayments` (`member_id`, `Amount`, `loan_id`) VALUES (?, ?, ?)";
+            stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            stmt.setLong(1, Member.getId());
+            stmt.setDouble(2, getLoanAmount());
+            stmt.setLong(3, id);
+
+            int rows = stmt.executeUpdate();
+            if (rows == 0) {
+                // a user wasn't added
+                throw new SQLException("A payment couldn't be made");
+            }
+
+            // get the returned inserted id
+            result = stmt.getGeneratedKeys();
+            if (result.next()) {
+                setPaymentID(result.getLong(1));
+                return getPaymentID();
+            } else {
+                throw new SQLException("The payment couldn't be made. an ID wasn't obtained");
+            }
+        } finally {
+            // close resources
+        }
     }
 
     // get loan info for current member. change this one coz ka hujanotice you are being redudant
+    /**
+     *
+     * @param cleared
+     * @throws SQLException
+     */
     public void getLoanInfo(int cleared) throws SQLException {
         String sql;
         if (cleared == 0) {
-            sql = "SELECT * FROM `sacco`.`loans` WHERE member_id = ? AND cleared = 0";
+            sql = "SELECT * FROM `loans` WHERE member_id = ? AND cleared = 0";
         } else if (cleared == 1) {
-            sql = "SELECT * FROM `sacco`.`loans` WHERE member_id = ? AND cleared = 1";
+            sql = "SELECT * FROM `loans` WHERE member_id = ? AND cleared = 1";
         } else {
-            sql = "SELECT * FROM `sacco`.`loans` WHERE member_id = ? AND cleared = 1 OR cleared = 0";
+            sql = "SELECT * FROM `loans` WHERE member_id = ? AND cleared = 1 OR cleared = 0";
         }
         // SELECT `id`, `member_id`, `LoanType`, `LoanAmount`, `TotalAmount`, `PaybackDate`, `LoanPurpose`, `paidAmount` FROM `sacco`.`loans` WHERE  `id`=15;
         try {
@@ -300,7 +361,7 @@ public class Loan {
                 // get the amount total/ paid
                 setLoanType(result.getString("LoanType"));
                 setLoanAmount(result.getDouble("LoanAmount"));
-                TotalAmount = result.getDouble("TotalAmount");
+                setTotalAmount(result.getDouble("TotalAmount"));
                 setAmountPaid(result.getDouble("paidAmount"));
             }
 
@@ -309,33 +370,29 @@ public class Loan {
         }
     }
 
-    // the current member should be free to update their payback date
-    public boolean ChangeLoanPayBackDate() throws SQLException {
-        try {
-            //System.out.println(conn);
-            // UPDATE `sacco`.`loans` SET `PaybackPeriod`='2015-07-20' WHERE  `id`=1;
-            String sql = "UPDATE `sacco`.`loans` SET `PaybackDate`=? WHERE  `id`= ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, this.PaybackPeriod);
-            stmt.setLong(2, getId());
-
-            int rows = stmt.executeUpdate();
-            return rows == 0;
-
-        } finally {
-            // close resources
-            close();
-        }
-    }
-
+    /**
+     *
+     * @param cleared
+     * <p>
+     * 0 = gets the count of all uncleared loans for the member </p>
+     * <p>
+     * 1 = get the count of all cleared loans for the member </p>
+     * <p>
+     * any = get the count of all cleared or uncleared loans for the member </p>
+     * @return
+     * <p>
+     * A count of the loans </p>
+     * @throws SQLException
+     */
     public int GetLoanCount(int cleared) throws SQLException {
+        //JOptionPane.showMessageDialog(null, Member.getId());
         String sql;
         if (cleared == 0) {
-            sql = "SELECT COUNT('member_id') FROM sacco.loans WHERE member_id = ? AND cleared = 0";
+            sql = "SELECT COUNT('member_id') FROM loans WHERE member_id = ? AND cleared = 0";
         } else if (cleared == 1) {
-            sql = "SELECT COUNT('member_id') FROM sacco.loans WHERE member_id = ? AND cleared = 1";
+            sql = "SELECT COUNT('member_id') FROM loans WHERE member_id = ? AND cleared = 1";
         } else {
-            sql = "SELECT COUNT('member_id') FROM sacco.loans WHERE member_id = ? AND cleared = 1 OR cleared = 0";
+            sql = "SELECT COUNT('member_id') FROM loans WHERE member_id = ? AND cleared = 1 OR cleared = 0";
         }
         try {
 
@@ -361,28 +418,26 @@ public class Loan {
     public void PrintLoanStatus(JTextArea jt, int cleared) throws SQLException {
         String sql;
         if (cleared == 0) {
-            sql = "SELECT * FROM sacco.loans WHERE member_id = ? AND cleared = 0";
+            sql = "SELECT * FROM loans WHERE member_id = ? AND cleared = 0";
         } else if (cleared == 1) {
-            sql = "SELECT * FROM sacco.loans WHERE member_id = ? AND cleared = 1";
+            sql = "SELECT * FROM loans WHERE member_id = ? AND cleared = 1";
         } else {
-            sql = "SELECT * FROM sacco.loans WHERE member_id = ? AND cleared = 1 OR cleared = 0";
+            sql = "SELECT * FROM loans WHERE member_id = ? AND cleared = 1 OR cleared = 0";
         }
         try {
             double la, pa = 0, ta = 0;
-            java.sql.Date d = null;
+            java.sql.Date d = Date.valueOf(LocalDate.now());
             jt.setText("");
             stmt = conn.prepareStatement(sql);
             stmt.setLong(1, Member.getId());
             result = stmt.executeQuery();
-            jt.append("MEMBER ID \t LOAN_AMOUNT \t TOTAL_AMOUNT \t LOAN_PERIOD \t LOAN_TYPE \t LOAN_PURPOSE \t \t PAID_AMOUNT\n \n");
+            jt.append("LOAN_AMOUNT \t TOTAL_AMOUNT \t LOAN_PERIOD \t LOAN_TYPE \t\t PAID_AMOUNT\n \n");
             while (result.next()) {
-                la = result.getDouble("LoanAmount");
-                pa = result.getDouble("paidAmount");
-                ta = result.getDouble("TotalAmount");
+                la = Double.parseDouble(df.format(result.getDouble("LoanAmount")));
+                pa = Double.parseDouble(df.format(result.getDouble("paidAmount")));
+                ta = Double.parseDouble(df.format(result.getDouble("TotalAmount")));
                 d = result.getDate("DateSubmitted");
                 // display the info
-                jt.append(Long.toString(result.getLong("member_id")));
-                jt.append("\t");
                 jt.append(la + "");
                 jt.append("\t\t");
                 jt.append(ta + "");
@@ -390,16 +445,20 @@ public class Loan {
                 jt.append(result.getString("PaybackDate"));
                 jt.append("\t\t");
                 jt.append(result.getString("LoanType"));
-                jt.append("\t");
-                jt.append(result.getString("LoanPurpose"));
                 jt.append("\t\t");
                 jt.append(pa + "\n");
             }
             // display extra info
-            jt.append("\n\n");
+            jt.append("\n");
+            jt.append("==============================================================================\n\n");
             jt.append("You currently have " + GetLoanCount(cleared) + " loans\n");
+            jt.append("Regarding your current loan, you've paid ksh " + pa + " since " + d.toLocalDate().format(DateTimeFormatter.ISO_DATE) + "\n");
             jt.append("You owe the sacco ksh " + (ta - pa) + ". \t Note: A negative value indicates an overpayment\n");
-            jt.append("Regarding your loan, you've paid ksh " + pa + " since " + d.toLocalDate().format(DateTimeFormatter.ISO_DATE) + "\n");
+            jt.append("==============================================================================\n\n");
+            jt.append("LOAN_AMOUNT ==> represents the amount(s) you took as a loan\n");
+            jt.append("TOTAL_AMOUNT ==> calculated as; loan x interestRate x time\n");
+            jt.append("PAID_AMOUNT ==> represents the amount you paid for each loan\n");
+            jt.append("LOAN_PERIOD ==> Time you chose to fulfil your loan payment");
         } finally {
             close();
         }
@@ -421,22 +480,9 @@ public class Loan {
     }
 
     /**
-     * @return the LOAN_INTEREST
+     * @param TotalAmount the TotalAmount to set
      */
-    private double getLOAN_INTEREST() {
-        return LOAN_INTEREST;
+    private void setTotalAmount(double TotalAmount) {
+        this.TotalAmount = TotalAmount;
     }
-
-    /**
-     * @param LOAN_INTEREST the LOAN_INTEREST to set
-     * @throws javax.security.auth.login.AccountException
-     */
-    public void setLOAN_INTEREST(double LOAN_INTEREST) throws AccountException {
-        if (Member.isAdmin()) {
-            this.LOAN_INTEREST = LOAN_INTEREST / 100;
-        } else {
-            throw new AccountException("You are not allowed to perform this action");
-        }
-    }
-
 }
