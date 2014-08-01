@@ -10,8 +10,6 @@ import com.sacco.classes.Application;
 import com.sacco.classes.Member;
 import java.sql.Date;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.security.auth.login.AccountException;
 import javax.swing.JOptionPane;
 
@@ -646,7 +644,7 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(rootPane, "Surely, don't do this. It's your own account", "Warning", JOptionPane.WARNING_MESSAGE);
         }
         try {
-            int reply = JOptionPane.showConfirmDialog(rootPane, "When the account is deactivated, the user wouldn't be able to login. Continue?", "prompt", JOptionPane.INFORMATION_MESSAGE, JOptionPane.YES_NO_OPTION);
+            int reply = JOptionPane.showConfirmDialog(rootPane, "When the account is deactivated, the user wouldn't be able to login. Continue?", "prompt", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             if (reply == JOptionPane.YES_OPTION) {
                 if (a.AlterMemberAccount(Long.parseLong(jComboBoxMembers.getSelectedItem().toString()), 0)) {
                     JOptionPane.showMessageDialog(rootPane, "Action was a success", "Account Deactivation", JOptionPane.INFORMATION_MESSAGE);
@@ -678,7 +676,7 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
                     + "<br><p><b>All loans, contributions, etc will be erased.</b>"
                     + "<br><i>You can try deactivating their account instead.</i></p>"
                     + "<br><p><b>Are you sure you want to do this?</b></p>"
-                    + "</html>", "Delete member prompt", JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+                    + "</html>", "Delete member prompt", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             if (reply == JOptionPane.YES_OPTION) {
                 if (a.AlterMemberAccount(Long.parseLong(jComboBoxMembers.getSelectedItem().toString()), 4)) {
                     JOptionPane.showMessageDialog(rootPane, "Action was a success", "Account deletion", JOptionPane.INFORMATION_MESSAGE);
@@ -700,7 +698,7 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
     private void jButtonActivateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonActivateActionPerformed
         // TODO add your handling code here:
         try {
-            int reply = JOptionPane.showConfirmDialog(rootPane, "When the account is activated, the user would now be able to login. Continue?", "prompt", JOptionPane.YES_NO_OPTION);
+            int reply = JOptionPane.showConfirmDialog(rootPane, "When the account is activated, the user would now be able to login. Continue?", "prompt", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
             if (reply == JOptionPane.YES_OPTION) {
                 if (a.AlterMemberAccount(Long.parseLong(jComboBoxMembers.getSelectedItem().toString()), 2)) {
                     JOptionPane.showMessageDialog(rootPane, "Action was a success", "Account Activation", JOptionPane.INFORMATION_MESSAGE);

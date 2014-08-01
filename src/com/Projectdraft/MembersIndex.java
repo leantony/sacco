@@ -36,7 +36,7 @@ public class MembersIndex extends javax.swing.JFrame {
                 jMenuAdministrator.setVisible(true);
             }
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(rootPane, ex.getMessage());
+            //JOptionPane.showMessageDialog(rootPane, "Application error");
             jMenuAdministrator.setVisible(false);
         }
     }
@@ -62,7 +62,6 @@ public class MembersIndex extends javax.swing.JFrame {
         jMenuItem15 = new javax.swing.JMenuItem();
         jSeparator10 = new javax.swing.JPopupMenu.Separator();
         jMenuItemLogout = new javax.swing.JMenuItem();
-        jSeparator11 = new javax.swing.JPopupMenu.Separator();
         jMenu8 = new javax.swing.JMenu();
         jMenuMember = new javax.swing.JMenu();
         jMenuItemMemberInfo = new javax.swing.JMenuItem();
@@ -71,14 +70,12 @@ public class MembersIndex extends javax.swing.JFrame {
         jSeparator18 = new javax.swing.JPopupMenu.Separator();
         jSeparator3 = new javax.swing.JPopupMenu.Separator();
         jMenuItem9 = new javax.swing.JMenuItem();
-        jSeparator12 = new javax.swing.JPopupMenu.Separator();
         jMenu2 = new javax.swing.JMenu();
         jMenuItemApplyLoan = new javax.swing.JMenuItem();
         jSeparator7 = new javax.swing.JPopupMenu.Separator();
         jMenuItemRepayLoan = new javax.swing.JMenuItem();
         jSeparator8 = new javax.swing.JPopupMenu.Separator();
         jMenuItemCheckLoanStatus = new javax.swing.JMenuItem();
-        jSeparator9 = new javax.swing.JPopupMenu.Separator();
         jMenuAdministrator = new javax.swing.JMenu();
         jMenu11 = new javax.swing.JMenu();
         jMenuItemAllMembersMenu = new javax.swing.JMenuItem();
@@ -100,7 +97,6 @@ public class MembersIndex extends javax.swing.JFrame {
         jMenuItem7 = new javax.swing.JMenuItem();
         jMenu10 = new javax.swing.JMenu();
         jMenuItemMakeContrib = new javax.swing.JMenuItem();
-        jSeparator6 = new javax.swing.JPopupMenu.Separator();
         jMenu9 = new javax.swing.JMenu();
         jMenuItem2 = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
@@ -160,7 +156,6 @@ public class MembersIndex extends javax.swing.JFrame {
             }
         });
         jMenu4.add(jMenuItemLogout);
-        jMenu4.add(jSeparator11);
 
         jMenuBar2.add(jMenu4);
 
@@ -198,7 +193,6 @@ public class MembersIndex extends javax.swing.JFrame {
             }
         });
         jMenu8.add(jMenuItem9);
-        jMenu8.add(jSeparator12);
 
         jMenuBar2.add(jMenu8);
 
@@ -232,7 +226,6 @@ public class MembersIndex extends javax.swing.JFrame {
             }
         });
         jMenu2.add(jMenuItemCheckLoanStatus);
-        jMenu2.add(jSeparator9);
 
         jMenuBar2.add(jMenu2);
 
@@ -323,7 +316,6 @@ public class MembersIndex extends javax.swing.JFrame {
             }
         });
         jMenu10.add(jMenuItemMakeContrib);
-        jMenu10.add(jSeparator6);
 
         jMenuBar2.add(jMenu10);
 
@@ -548,8 +540,6 @@ public class MembersIndex extends javax.swing.JFrame {
     private javax.swing.JMenu jMenuReports;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator10;
-    private javax.swing.JPopupMenu.Separator jSeparator11;
-    private javax.swing.JPopupMenu.Separator jSeparator12;
     private javax.swing.JPopupMenu.Separator jSeparator13;
     private javax.swing.JPopupMenu.Separator jSeparator14;
     private javax.swing.JPopupMenu.Separator jSeparator15;
@@ -561,9 +551,7 @@ public class MembersIndex extends javax.swing.JFrame {
     private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JPopupMenu.Separator jSeparator4;
     private javax.swing.JPopupMenu.Separator jSeparator5;
-    private javax.swing.JPopupMenu.Separator jSeparator6;
     private javax.swing.JPopupMenu.Separator jSeparator7;
     private javax.swing.JPopupMenu.Separator jSeparator8;
-    private javax.swing.JPopupMenu.Separator jSeparator9;
     // End of variables declaration//GEN-END:variables
 }

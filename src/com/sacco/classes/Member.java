@@ -1,13 +1,7 @@
 package com.sacco.classes;
 
 import com.sacco.classes.vendor.Bcrypt.BCrypt;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.HashSet;
 import java.util.Set;
 import javax.security.auth.login.AccountException;
@@ -20,6 +14,8 @@ public class Member {
     // for account active/ not. by default, a created account is active
     public static final short ACTIVE = 1;
     public static final short INACTIVE = 0;
+    // defines if we should use hashing for the user passwords. set to true if needed and false if not. just mek sure the db contains cleartext passwords befor login eg 123456
+    protected static final boolean hashPasswords = false;
     // the member id
     protected static long id;
     // for admin functions
@@ -213,7 +209,11 @@ public class Member {
      */
     public void setPassword(String password) {
         // hash the password. optional
-        this.password = BCrypt.Hash(password, BCrypt.generateSalt());
+        if (hashPasswords) {
+            this.password = BCrypt.Hash(password, BCrypt.generateSalt());
+        } else {
+            this.password = password;
+        }
     }
 
     // login a member
@@ -229,17 +229,19 @@ public class Member {
             result = stmt.executeQuery();
             while (result.next()) {
                 // check if the account is active
-                if (result.getShort("active") == 0) {
+                if (result.getShort("active") == INACTIVE) {
                     throw new AccountException("Your account is not activated. Please contact the administrator to fix this");
                 }
                 // we validate their hash
-                if (BCrypt.CheckPassword(password, result.getString("password"))) {
+                if (ValidatePassword(password, result.getString("password"), hashPasswords)) {
                     // store logged in userID in mem
                     Member.setId(id);
                     // this will be used to get the user's name and display it in the logged in user's index page
                     setFirstname(result.getString("firstname"));
                     // a successful addition of the user id to the hashset will indicate a valid login
                     return hs.add(id);
+                } else {
+                    return false;
                 }
 
             }
@@ -248,6 +250,16 @@ public class Member {
         }
         return false;
 
+    }
+
+    // provide a password from user, password from db, and decision if to hash
+    private boolean ValidatePassword(String password, String passwordFromDB, boolean hash) {
+        // we validate their hash
+        if (hash && passwordFromDB.length() >= 40) {
+            return BCrypt.CheckPassword(password, passwordFromDB);
+        } else {
+            return password.equals(passwordFromDB);
+        }
     }
 
     /**
@@ -374,13 +386,14 @@ public class Member {
                 getMemberInfo(m, id);
                 // retrieve hash from the database.
                 // if bcrypt realizes that the hashes match, then alert the user
-                // boolean force will allow the user to override the exception thrown
-                if (BCrypt.CheckPassword(password, m.password)) {
-                    throw new AccountException("You can't reuse your old password");
+                // specify if the password is to be hashed
+                if (hashPasswords && m.password.length() >= 40) {
+                    if (BCrypt.CheckPassword(password, m.password)) {
+                        throw new AccountException("You can't reuse your old password");
+                    }
+                    // bcrypt the password
+                    password = BCrypt.Hash(password, BCrypt.generateSalt());
                 }
-                // bcrypt the password
-                password = BCrypt.Hash(password, BCrypt.generateSalt());
-
                 // now comes the sql part of the activity
                 String sql = "UPDATE `members` SET `password`=? WHERE  `id`= ?";
                 stmt = conn.prepareStatement(sql);
