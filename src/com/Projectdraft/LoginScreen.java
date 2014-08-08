@@ -9,7 +9,6 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import com.sacco.classes.Application;
 import com.sacco.classes.Member;
-import java.util.Date;
 import javax.security.auth.login.AccountException;
 
 /**
@@ -159,7 +158,7 @@ public class LoginScreen extends javax.swing.JFrame {
         // check input
         long id = Application.CheckIfNumber(jTextFieldMemberID.getText());
         if (id <= 0) {
-            JOptionPane.showMessageDialog(null, "Please specify a valid user ID. Should be a number", "Wrong input type", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "Please specify a valid user ID. Should be a number", "Wrong input type", JOptionPane.ERROR_MESSAGE);
             jTextFieldMemberID.requestFocus();
             return;
         }
@@ -167,7 +166,7 @@ public class LoginScreen extends javax.swing.JFrame {
         // the password
         String password = new String(jPasswordPassword.getPassword());
         if (password.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Please enter your password", "Empty value", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "Please enter your password", "Empty value", JOptionPane.ERROR_MESSAGE);
             jPasswordPassword.requestFocus();
             return;
         }
@@ -175,20 +174,20 @@ public class LoginScreen extends javax.swing.JFrame {
         // attempt login
         try {
             if (!m.Login(id, password)) {
-                JOptionPane.showMessageDialog(null, "Invalid user ID or password. please try again", "Login failed", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(rootPane, "Invalid user ID or password. please try again", "Login failed", JOptionPane.INFORMATION_MESSAGE);
                 Application.clearTextFields(this.getContentPane());
                 jTextFieldMemberID.requestFocus();
             } else {
-                JOptionPane.showMessageDialog(null, "Successfully logged In!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(rootPane, "Successfully logged In!", "Success", JOptionPane.INFORMATION_MESSAGE);
                 this.dispose();
                 new MembersIndex().setVisible(true);
             }
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Encountered an error when trying to log you in. Try again later ", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "Encountered an error when trying to log you in. Try again later ", "Error", JOptionPane.ERROR_MESSAGE);
             Application.clearTextFields(this.getContentPane());
             jTextFieldMemberID.requestFocus();
         } catch (AccountException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             this.dispose();
         }
     }//GEN-LAST:event_jButtonLoginActionPerformed

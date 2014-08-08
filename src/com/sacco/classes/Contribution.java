@@ -62,7 +62,7 @@ public class Contribution {
     public Contribution() {
         this.conn = null;
         this.m = new Member();
-        database d = new database();
+        Database d = new Database();
         conn = d.getConnection();
     }
 
@@ -101,7 +101,7 @@ public class Contribution {
     public long makeContribution() throws SQLException {
         try {
             // INSERT INTO `sacco`.`contributions` (`member_id`, `Amount`, `paymentMethod`, `Approved`) VALUES (6, 5000, 'cash', 'yes');
-            String sql = "INSERT INTO `sacco`.`contributions` (`member_id`, `Amount`, `paymentMethod`) VALUES (?, ?, ?)";
+            String sql = "INSERT INTO `contributions` (`member_id`, `Amount`, `paymentMethod`) VALUES (?, ?, ?)";
             stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             stmt.setLong(1, Member.getId());
             stmt.setDouble(2, getAmount());

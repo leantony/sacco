@@ -22,15 +22,19 @@ public class DisplayLoanInformation extends javax.swing.JInternalFrame {
      */
     public DisplayLoanInformation() {
         initComponents();
+        jTextAreaLoanInfo.setEditable(false);
         try {
             if (l.GetLoanCount(3) == 0) {
                 jLabel1.setText("You have not applied for any loans yet. Apply for one then the functions below will be available");
                 HideElements();
-            } else if (l.GetLoanCount(1) >= 1) {
-                jLabel1.setText("You successfully cleared all your loans. Please apply for another one");
+            } else if (l.GetLoanCount(0) >= 1) {
+                jLabel1.setText("You have a pending loan to pay. Please complete your payment in due time");
+            }
+            else {
+                jLabel1.setText("You have completely paid for all your loans. You can apply for another");
             }
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "SQL error caught", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "SQL error caught", "Error", JOptionPane.ERROR_MESSAGE);
             this.dispose();
         }
     }
@@ -169,19 +173,19 @@ public class DisplayLoanInformation extends javax.swing.JInternalFrame {
             try {
                 l.PrintLoanStatus(jTextAreaLoanInfo, 1);
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(null, "SQL error caught", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(rootPane, "SQL error caught", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } else if (jCheckBoxUncleared.isSelected()) {
             try {
                 l.PrintLoanStatus(jTextAreaLoanInfo, 0);
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(null, "SQL error caught", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(rootPane, "SQL error caught", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } else {
             try {
                 l.PrintLoanStatus(jTextAreaLoanInfo, 3);
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(null, "SQL error caught", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(rootPane, "SQL error caught", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }//GEN-LAST:event_jButtonDisplayActionPerformed

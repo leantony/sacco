@@ -46,7 +46,7 @@ public class RepayLoan extends javax.swing.JInternalFrame {
                 jLabelPendingAmnt.setText(Double.toString(l.getAmountPaid()));
             }
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "wrong input type", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "wrong input type", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -219,7 +219,12 @@ public class RepayLoan extends javax.swing.JInternalFrame {
 
         int amnt = Application.CheckIfNumber(jTextFieldAmount.getText());
         if (amnt == -1) {
-            JOptionPane.showMessageDialog(null, "please enter valid value for the amount", "wrong input type", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "please enter valid value for the amount", "wrong input type", JOptionPane.ERROR_MESSAGE);
+            jTextFieldAmount.requestFocus();
+            return;
+        }
+        if (amnt < Loan.getMIN_ALLOWED_PAYMENT() || amnt > Loan.getMAX_ALLOWED_PAYMENT()) {
+            JOptionPane.showMessageDialog(rootPane, "sorry. we only allow loan payments of\nbetween ksh " + Loan.getMIN_ALLOWED_PAYMENT() + " and " + Loan.getMAX_ALLOWED_PAYMENT(), "wrong payment amount", JOptionPane.WARNING_MESSAGE);
             jTextFieldAmount.requestFocus();
             return;
         } else {
@@ -231,16 +236,16 @@ public class RepayLoan extends javax.swing.JInternalFrame {
             if (l.PayBackLoan()) {
                 // refresh the form page
                 updateForm();
-                JOptionPane.showMessageDialog(null, "You have successfully paid " + l.getAmountToPay() + " to your loan\n"
+                JOptionPane.showMessageDialog(rootPane, "You have successfully paid " + l.getAmountToPay() + " to your loan\n"
                         + "You have a pending amount of " + (l.getTotalAmount() - l.getAmountPaid())
                         + "\nYour payment id is " + l.getPaymentID(), "Success", JOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(null, "The operation wasn't successful. Please try again", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(rootPane, "The operation wasn't successful. Please try again", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "SQL error" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "SQL error" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } catch (AccountException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Overpayment", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Overpayment", JOptionPane.INFORMATION_MESSAGE);
             dispose();
         }
     }//GEN-LAST:event_jButtonPayActionPerformed

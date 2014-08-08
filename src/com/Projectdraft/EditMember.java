@@ -41,7 +41,7 @@ public class EditMember extends javax.swing.JInternalFrame {
             jTextFieldAddress.setText(m.getAddress());
             jTextFieldEmail.setText(m.getEmail());
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Encountered an error while trying to get your data. Please try again", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "Encountered an error while trying to get your data. Please try again", "Error", JOptionPane.ERROR_MESSAGE);
             this.dispose();
         }
     }
@@ -327,7 +327,7 @@ public class EditMember extends javax.swing.JInternalFrame {
         // the date of birth. please bear with this one. I couldn't find a better way that worked
         Date d = Application.CheckDateInput(jTextFieldDob.getText());
         if (d == null) {
-            JOptionPane.showMessageDialog(null, "please enter a date in the format of yyyy-mm-dd", "Invalid date", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "please enter a date in the format of yyyy-mm-dd", "Invalid date", JOptionPane.ERROR_MESSAGE);
             jTextFieldDob.requestFocus();
             return;
         } else {
@@ -337,7 +337,7 @@ public class EditMember extends javax.swing.JInternalFrame {
         // validate for didgits
         int mobileno = Application.CheckIfNumber(jTextFieldMobileNo.getText());
         if (mobileno == -1) {
-            JOptionPane.showMessageDialog(null, "please enter valid value for phone number", "Invalid phone number", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "please enter valid value for phone number", "Invalid phone number", JOptionPane.ERROR_MESSAGE);
             jTextFieldMobileNo.requestFocus();
             return;
         } else {

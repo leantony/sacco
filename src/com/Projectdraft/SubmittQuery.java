@@ -9,8 +9,6 @@ import com.sacco.classes.Application;
 import com.sacco.classes.Member;
 import com.sacco.classes.Query;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**

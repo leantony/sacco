@@ -10,12 +10,12 @@ public class Member {
 
     // define member datatypes as potrayed in the db
     // store a logged in user. ive chosen a hashset it coz it won't allow duplicate keys. so a user can't login twice
-    static Set<Long> hs = new HashSet<>();
+    static Set<Long> loggedInUsers = new HashSet<>();
     // for account active/ not. by default, a created account is active
     public static final short ACTIVE = 1;
     public static final short INACTIVE = 0;
     // defines if we should use hashing for the user passwords. set to true if needed and false if not. just mek sure the db contains cleartext passwords befor login eg 123456
-    protected static final boolean hashPasswords = false;
+    protected static final boolean HASHING = false;
     // the member id
     protected static long id;
     // for admin functions
@@ -54,7 +54,7 @@ public class Member {
      * @return
      */
     public static boolean CheckLoggedIn() {
-        return hs.contains(Member.getId());
+        return loggedInUsers.contains(Member.getId());
     }
 
     // logout the current member
@@ -63,8 +63,8 @@ public class Member {
         if (isAdmin()) {
             setAdmin(false);
         }
-        // JOptionPane.showMessageDialog(null, hs.contains(Member.getId()));
-        return hs.remove(Member.getId());
+        // JOptionPane.showMessageDialog(null, loggedInUsers.contains(Member.getId()));
+        return loggedInUsers.remove(Member.getId());
     }
 
     // the variables
@@ -80,17 +80,13 @@ public class Member {
     private Timestamp LastModifiedDate;
     private boolean AccountStatus;
 
-    // for database stuff
+    // for Database stuff
     PreparedStatement stmt = null;
-    database d = new database();
-    Connection conn = d.DBConnection;
+    Connection conn;
     ResultSet result = null;
 
-    // get a DBConnection to the database via constructor
-    public void Member() {
-        this.conn = null;
-        d = new database();
-        conn = d.getConnection();
+    public Member() {
+        this.conn = Database.getDBConnection();
     }
 
     /**
@@ -209,7 +205,7 @@ public class Member {
      */
     public void setPassword(String password) {
         // hash the password. optional
-        if (hashPasswords) {
+        if (HASHING) {
             this.password = BCrypt.Hash(password, BCrypt.generateSalt());
         } else {
             this.password = password;
@@ -228,18 +224,16 @@ public class Member {
             stmt.setLong(1, id);
             result = stmt.executeQuery();
             while (result.next()) {
-                // check if the account is active
+                // check if the account is active or not
                 if (result.getShort("active") == INACTIVE) {
                     throw new AccountException("Your account is not activated. Please contact the administrator to fix this");
                 }
-                // we validate their hash
-                if (ValidatePassword(password, result.getString("password"), hashPasswords)) {
-                    // store logged in userID in mem
+                // we validate their password
+                if (ValidatePassword(password, result.getString("password"), HASHING)) {
+                    // set the id
                     Member.setId(id);
-                    // this will be used to get the user's name and display it in the logged in user's index page
-                    setFirstname(result.getString("firstname"));
                     // a successful addition of the user id to the hashset will indicate a valid login
-                    return hs.add(id);
+                    return loggedInUsers.add(id);
                 } else {
                     return false;
                 }
@@ -269,8 +263,6 @@ public class Member {
      */
     public long AddMember() throws SQLException, AccountException {
         try {
-            //System.out.println(conn);
-            //INSERT INTO `sacco`.`members` (`firstname`, `lastname`, `gender`, `dob`, `mobileno`, `address`, `email`, `password`) VALUES ('6666', '6666', 'Female', '2014-07-21', 666, '666', '666', '123456');
             String sql
                     = "INSERT INTO `members` "
                     + "(`firstname`, `lastname`, `gender`, `dob`,"
@@ -291,12 +283,10 @@ public class Member {
                 // a user wasn't added
                 throw new SQLException("The specified user wasn't created");
             }
-
             // get the returned inserted id
             result = stmt.getGeneratedKeys();
             if (result.next()) {
                 return result.getLong(1);
-
             } else {
                 throw new SQLException("The specified user wasn't created. an ID wasn't obtained");
             }
@@ -304,7 +294,6 @@ public class Member {
             // close resources
             close();
         }
-
     }
 
     /**
@@ -322,7 +311,6 @@ public class Member {
             if (result.next()) {
                 return result.getLong("id");
             }
-
         } finally {
             // close resources
             close();
@@ -330,7 +318,6 @@ public class Member {
         return -1;
     }
 
-    // popultes all variables with member data to be used afterwards
     /**
      *
      * @param m
@@ -338,11 +325,11 @@ public class Member {
      * @throws SQLException
      */
     public void getMemberInfo(Member m, long id) throws SQLException {
+        // if a user invokes this as a normal user, then we don't need them passing any id in. just default to theirs
         if (!isAdmin()) {
             id = Member.getId();
         }
         try {
-            // SELECT `id`, `member_id` FROM `sacco`.`admins` WHERE  `id`=2;
             String sql = "SELECT * FROM `members` WHERE  `id`=?";
             stmt = conn.prepareStatement(sql);
             stmt.setLong(1, id);
@@ -364,10 +351,8 @@ public class Member {
         } finally {
             close();
         }
-
     }
 
-    // edit member password
     /**
      *
      * @param m
@@ -384,10 +369,10 @@ public class Member {
         if (CheckLoggedIn()) {
             try {
                 getMemberInfo(m, id);
-                // retrieve hash from the database.
+                // retrieve hash from the Database.
                 // if bcrypt realizes that the hashes match, then alert the user
                 // specify if the password is to be hashed
-                if (hashPasswords && m.password.length() >= 40) {
+                if (HASHING && m.password.length() >= 40) {
                     if (BCrypt.CheckPassword(password, m.password)) {
                         throw new AccountException("You can't reuse your old password");
                     }

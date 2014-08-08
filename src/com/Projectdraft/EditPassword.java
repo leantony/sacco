@@ -152,14 +152,14 @@ public class EditPassword extends javax.swing.JInternalFrame {
         //check if password strings are the same. common logic
         String passString;
         if (!Application.CheckPasswordEquality(jPasswordNewPassword, jPasswordNewRptPass)) {
-            JOptionPane.showMessageDialog(null, "Your passwords don't match", "Misimatching passwords", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "Your passwords don't match", "Misimatching passwords", JOptionPane.ERROR_MESSAGE);
             jPasswordNewPassword.requestFocus();
             return;
         } else {
             passString = new String(jPasswordNewPassword.getPassword());
             // check the password length
             if (passString.length() <= 5 || passString.length() > 30) {
-                JOptionPane.showMessageDialog(null, "Please specify a password length of between 6 and 30 characters", "Wrong password length", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(rootPane, "Please specify a password length of between 6 and 30 characters", "Wrong password length", JOptionPane.ERROR_MESSAGE);
                 jPasswordNewPassword.requestFocus();
                 return;
             }
@@ -169,14 +169,14 @@ public class EditPassword extends javax.swing.JInternalFrame {
         try {
             // save the edited password
             if (m.EditPassword(m, passString, Member.getId())) {
-                JOptionPane.showMessageDialog(null, "Password changed successfully. Please logout to review your changes", "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(rootPane, "Password changed successfully. Please logout to review your changes", "Success", JOptionPane.INFORMATION_MESSAGE);
                 this.dispose();
             }
         } catch (AccountException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
             this.dispose();
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "SQL error", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "SQL error", "Error", JOptionPane.ERROR_MESSAGE);
             this.dispose();
         }
     }//GEN-LAST:event_jButtonSaveActionPerformed

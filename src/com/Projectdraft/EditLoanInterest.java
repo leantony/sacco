@@ -29,7 +29,7 @@ public class EditLoanInterest extends javax.swing.JInternalFrame {
             this.a = new Admin();
             this.l = new Loan();
             if (a.getLoanInterest() == -1) {
-                JOptionPane.showMessageDialog(null, "Operation failed", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(rootPane, "Operation failed", "Error", JOptionPane.ERROR_MESSAGE);
                 this.dispose();
             } else {
                 //JOptionPane.showMessageDialog(rootPane, a.getLoanInterest());
@@ -37,10 +37,10 @@ public class EditLoanInterest extends javax.swing.JInternalFrame {
                 jLabelCurrentInterest.setText(Double.toString(a.getLoanInterest()));
             }
         } catch (AccountException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Access denied", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Access denied", JOptionPane.ERROR_MESSAGE);
             this.dispose();
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "SQL error caught", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "SQL error caught", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -62,7 +62,7 @@ public class EditLoanInterest extends javax.swing.JInternalFrame {
 
         setClosable(true);
         setIconifiable(true);
-        setTitle("Change Loan Interest");
+        setTitle("Change Percentage Loan Interest");
         setToolTipText("");
         setDoubleBuffered(true);
 
@@ -77,10 +77,10 @@ public class EditLoanInterest extends javax.swing.JInternalFrame {
         });
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel3.setText("New Loan Interest");
+        jLabel3.setText("New Loan Interest (%)");
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel2.setText("Current Loan Interest");
+        jLabel2.setText("Current Loan Interest (%)");
         jLabel2.setToolTipText("");
 
         jTextFieldNewInterest.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
@@ -147,9 +147,8 @@ public class EditLoanInterest extends javax.swing.JInternalFrame {
         int n = Application.CheckIfNumber(jTextFieldNewInterest.getText());
 
         if (n <= 0 || n > 50) {
-            JOptionPane.showMessageDialog(null, "A valid interest should lie between 1 and 50 %. No decimal points", "Invalid interest", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "You've picked an invalid value. A valid interest should\nlie between 1 and 50 %. No decimal points", "Invalid interest", JOptionPane.INFORMATION_MESSAGE);
             jTextFieldNewInterest.requestFocus();
-            return;
         } else {
             try {
 
@@ -160,17 +159,16 @@ public class EditLoanInterest extends javax.swing.JInternalFrame {
                     this.dispose();
                 } else {
                     if (a.ChangeLoanInterest(l, n)) {
-                        JOptionPane.showMessageDialog(null, "Operation succeeded", "Success", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(rootPane, "Operation succeeded", "Success", JOptionPane.INFORMATION_MESSAGE);
                         this.dispose();
                     } else {
-                        JOptionPane.showMessageDialog(null, "Operation failed", "Error", JOptionPane.ERROR_MESSAGE);
-                        return;
+                        JOptionPane.showMessageDialog(rootPane, "Operation failed", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
                 // save the interest
 
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(null, "SQL error caught", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(rootPane, "SQL error caught", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }//GEN-LAST:event_jButtonSaveActionPerformed

@@ -154,11 +154,11 @@ public class MakeContribution extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         int amnt = Application.CheckIfNumber(jTextFieldAmnt.getText());
         if (amnt == -1) {
-            JOptionPane.showMessageDialog(null, "please enter valid value for the amount", "wrong input type", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "please enter valid value for the amount", "wrong input type", JOptionPane.ERROR_MESSAGE);
             jTextFieldAmnt.requestFocus();
             return;
         } else if (amnt < Contribution.getContributionMin() || amnt > Contribution.getMaxContribution()) {
-            JOptionPane.showMessageDialog(null, "Currently we allow contributions of between " + Contribution.getContributionMin() + " and " + Contribution.getMaxContribution(), "wrong input range", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "Currently we allow contributions of between " + Contribution.getContributionMin() + " and " + Contribution.getMaxContribution(), "wrong input range", JOptionPane.ERROR_MESSAGE);
             jTextFieldAmnt.requestFocus();
             return;
         } else {
@@ -171,10 +171,10 @@ public class MakeContribution extends javax.swing.JInternalFrame {
         try {
             // save contribution
             long contribution = c.makeContribution();
-            JOptionPane.showMessageDialog(null, "You have successfully contributed " + c.getAmount() + " to the sacco ", "Success", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "You have successfully contributed " + c.getAmount() + " to the sacco ", "Success", JOptionPane.INFORMATION_MESSAGE);
             this.dispose();
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "SQL error caught", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "SQL error caught", "Error", JOptionPane.ERROR_MESSAGE);
             this.dispose();
         }
     }//GEN-LAST:event_jButtonContributeActionPerformed

@@ -14,6 +14,22 @@ public class Loan {
     // contribution values which can only be changed by the admin
     private static double MIN_LOAN = 10000;
     private static double MAX_LOAN = 1000000;
+    private static final double MAX_ALLOWED_PAYMENT = 1000000;
+    private static final double MIN_ALLOWED_PAYMENT = 1000;
+
+    /**
+     * @return the MAX_ALLOWED_PAYMENT
+     */
+    public static double getMAX_ALLOWED_PAYMENT() {
+        return MAX_ALLOWED_PAYMENT;
+    }
+
+    /**
+     * @return the MIN_ALLOWED_PAYMENT
+     */
+    public static double getMIN_ALLOWED_PAYMENT() {
+        return MIN_ALLOWED_PAYMENT;
+    }
     // format the cas
     DecimalFormat df = new DecimalFormat("#.##");
 
@@ -50,7 +66,7 @@ public class Loan {
     }
     Contribution c = new Contribution();
 
-    // define loan table datatypes as potrayed by the database
+    // define loan table datatypes as potrayed by the Database
     private long id;
     private long paymentID;
     private double LoanAmount;
@@ -66,7 +82,7 @@ public class Loan {
     private double AmountPaid; // from db
 
     // loan constants
-    private double LOAN_INTEREST;
+    private static double LOAN_INTEREST;
     PreparedStatement stmt = null;
     Connection conn;
     ResultSet result = null;
@@ -77,14 +93,14 @@ public class Loan {
      * loan interest and instatiating the member class
      */
     public Loan() {
-        this.conn = null;
+        this.conn = Database.getDBConnection();
         this.m = new Member();
-        database d = new database();
-        conn = d.getConnection();
+
         try {
-            this.LOAN_INTEREST = getLoanInterest();
+            Loan.LOAN_INTEREST = getLoanInterest();
         } catch (SQLException ex) {
-            this.LOAN_INTEREST = 5;
+            // if we get an error, default to 5
+            Loan.LOAN_INTEREST = 5;
         }
     }
 
@@ -118,7 +134,8 @@ public class Loan {
             // close resources
             close();
         }
-        return 1;
+        // default to 5 if an error occurs
+        return 5;
     }
 
     // get the total amount a loan shud have, using the formula I=PRT, A = I+P
@@ -190,11 +207,13 @@ public class Loan {
         if (GetLoanCount(LOAN_NOT_CLEARED) == 1) {
             throw new AccountException("You have pending loans to pay. Please clear them first to be able to continue");
         }
-        // a member should only apply for a loan if they've at least contributed once
+        // a member should only apply for a loan if they've at least contributed once. 
+        // so we count their approved contributions, and if they are 0 we alert them
         if (c.getMemberContributions(1) == 0) {
             throw new AccountException("You are not elligible to apply for a loan since youve not yet contributed to the sacco");
         }
         try {
+            // set their total payment
             setTotalAmount();
             String sql = "INSERT INTO `loans` "
                     + "(`member_id`, `LoanType`, `LoanAmount`, "
@@ -230,23 +249,25 @@ public class Loan {
 
     // loan payback function
     public boolean PayBackLoan() throws SQLException, AccountException {
+        // only an uncleared loan should be the one a member should pay for
         getLoanInfo(LOAN_NOT_CLEARED);
         // implies a loan id couldn't be found
         if (getId() <= 0) {
             throw new SQLException("A loan id wasn't obtained");
         }
 
-        // a member shouldn't be allowed to pay up above their total. so we notify them
+        // a member shouldn't be allowed to pay up above their total. so we notify them if that happens as they keep paying
         if (getAmountPaid() >= getTotalAmount()) {
-            double x = getAmountPaid() - getTotalAmount();
+            // get their excess payment
+            double excess = getAmountPaid() - getTotalAmount();
             // clear the loan, since now the user has either overpaid or has equally paid the loan fully
-            clearLoan(x);
+            clearLoan(excess);
             // not really an indication of an error, but since the function return T/F this is the best way to do so
-            throw new AccountException("You loan is now fully paid. \nYour overpayment of ksh " + x + " will be added to your contributions");
+            throw new AccountException("You loan is now fully paid. \nYour overpayment of ksh " + excess + " will be added to your contributions");
         } else {
             // implies that the user hasn't paid enough, so we allow them to pay up
             try {
-                String sql = "UPDATE `sacco`.`loans` SET `paidAmount`= `paidAmount` + ? WHERE  `id`=?";
+                String sql = "UPDATE `loans` SET `paidAmount`= `paidAmount` + ? WHERE  `id`=?";
                 stmt = conn.prepareStatement(sql);
                 stmt.setDouble(1, getAmountToPay());
                 stmt.setLong(2, getId());
@@ -286,7 +307,7 @@ public class Loan {
     }
 
     private int addExcessToContributions(double excess) throws SQLException {
-        String sql = "INSERT INTO `sacco`.`contributions` (`member_id`, `Amount`, `paymentMethod`, `Approved`) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO `contributions` (`member_id`, `Amount`, `paymentMethod`, `Approved`) VALUES (?, ?, ?, ?)";
         stmt = conn.prepareStatement(sql);
         stmt.setLong(1, Member.getId());
         stmt.setDouble(2, excess);
@@ -450,10 +471,10 @@ public class Loan {
             jt.append("Regarding your current loan, you've paid ksh " + pa + " since " + d.toLocalDate().format(DateTimeFormatter.ISO_DATE) + "\n");
             jt.append("You owe the sacco ksh " + (ta - pa) + ". \t Note: A negative value indicates an overpayment\n");
             jt.append("==============================================================================\n\n");
-            jt.append("LOAN_AMOUNT ==> represents the amount(s) you took as a loan\n");
+            jt.append("LOAN_AMOUNT  ==> represents the amount(s) you took as a loan\n");
             jt.append("TOTAL_AMOUNT ==> calculated as; loan x interestRate x time\n");
-            jt.append("PAID_AMOUNT ==> represents the amount you paid for each loan\n");
-            jt.append("LOAN_PERIOD ==> Time you chose to fulfil your loan payment");
+            jt.append("PAID_AMOUNT  ==> represents the amount you paid for each loan\n");
+            jt.append("LOAN_PERIOD  ==> Time (months) you chose to fulfil your loan payment");
         } finally {
             close();
         }

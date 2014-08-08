@@ -229,11 +229,11 @@ public class ApplyForLoan extends javax.swing.JInternalFrame {
         // validate for didgits
         int amnt = Application.CheckIfNumber(jTextFieldLoanAmnt.getText());
         if (amnt == -1) {
-            JOptionPane.showMessageDialog(null, "please enter valid value for the amount", "wrong input type", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "please enter valid value for the amount", "wrong input type", JOptionPane.ERROR_MESSAGE);
             jTextFieldLoanAmnt.requestFocus();
             return;
         } else if (amnt < Loan.getMIN_LOAN() || amnt > Loan.getMaxLoanAmount()) {
-            JOptionPane.showMessageDialog(null, "Currently we offer loans of between " + Loan.getMIN_LOAN() + " and " + Loan.getMaxLoanAmount(), "wrong input range", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "sorry .currently we offer loans of between " + Loan.getMIN_LOAN() + " and " + Loan.getMaxLoanAmount(), "wrong input range", JOptionPane.ERROR_MESSAGE);
             jTextFieldLoanAmnt.requestFocus();
             return;
         } else {
@@ -246,10 +246,10 @@ public class ApplyForLoan extends javax.swing.JInternalFrame {
         int months = Application.CheckIfNumber(jComboBoxPeriod.getSelectedItem().toString());
         // the date by which payments should be resolved
         if (months == -1) {
-            JOptionPane.showMessageDialog(null, "please select a valid index", "wrong input type", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "please select a valid index", "wrong input type", JOptionPane.ERROR_MESSAGE);
             return;
         } else {
-            //JOptionPane.showMessageDialog(null, months);
+            //JOptionPane.showMessageDialog(rootPane, months);
             l.setPaybackPeriod(months);
         }
 
@@ -263,13 +263,13 @@ public class ApplyForLoan extends javax.swing.JInternalFrame {
         // save the loan
         try {
             l.RequestLoan();
-            JOptionPane.showMessageDialog(null, "Your loan submission was successful", "Success", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "Your loan submission was successful", "Success", JOptionPane.INFORMATION_MESSAGE);
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "SQL error", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "SQL error", "Error", JOptionPane.ERROR_MESSAGE);
             // set focus on the first field
             jTextFieldLoanAmnt.requestFocus();
         } catch (AccountException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Not elligible", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Not elligible", JOptionPane.INFORMATION_MESSAGE);
         }
     }//GEN-LAST:event_jButtonSubmitActionPerformed
 

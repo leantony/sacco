@@ -465,7 +465,7 @@ public class AddMember extends javax.swing.JFrame {
         // the date of birth.
         Date d = Application.CheckDateInput(jTextFieldDob.getText());
         if (d == null) {
-            JOptionPane.showMessageDialog(null, "please enter a date in the format of yyyy-mm-dd", "Invalid date", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "please enter a date in the format of yyyy-mm-dd", "Invalid date", JOptionPane.ERROR_MESSAGE);
             jTextFieldDob.requestFocus();
             return;
         } else {
@@ -475,7 +475,7 @@ public class AddMember extends javax.swing.JFrame {
         // validate for didgits
         int mobileno = Application.CheckIfNumber(jTextFieldMobileNo.getText());
         if (mobileno == -1) {
-            JOptionPane.showMessageDialog(null, "please enter valid value for phone number", "Invalid phone number", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "please enter valid value for phone number", "Invalid phone number", JOptionPane.ERROR_MESSAGE);
             jTextFieldMobileNo.requestFocus();
             return;
         } else {
@@ -498,13 +498,13 @@ public class AddMember extends javax.swing.JFrame {
 
         //check if password strings are the same. common logic
         if (!Application.CheckPasswordEquality(jPasswordPassword, jPasswordRepeatedPass)) {
-            JOptionPane.showMessageDialog(null, "Your passwords don't match", "Misimatching passwords", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "Your passwords don't match", "Misimatching passwords", JOptionPane.ERROR_MESSAGE);
             jPasswordPassword.requestFocus();
             return;
         } else {
             String passString = new String(jPasswordPassword.getPassword());
             if (passString.length() <= 5 || passString.length() > 30) {
-                JOptionPane.showMessageDialog(null, "Please specify a password length of between 6 and 30 characters", "Wrong password length", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(rootPane, "Please specify a password length of between 6 and 30 characters", "Wrong password length", JOptionPane.ERROR_MESSAGE);
                 jPasswordPassword.requestFocus();
                 return;
             }
@@ -519,27 +519,24 @@ public class AddMember extends javax.swing.JFrame {
                 long id = m.AddMember();
                 if (jRadioButtonAdmin.isSelected() && a.AlterMemeberPosition(id, "admin", 1)) {
                     jRadioButtonSec.setSelected(false);
-                    JOptionPane.showMessageDialog(null, "You've added a new admin. The new member id is " + id + "", "Success", JOptionPane.INFORMATION_MESSAGE);
-                    return;
+                    JOptionPane.showMessageDialog(rootPane, "You've added a new admin. The new member id is " + id + "", "Success", JOptionPane.INFORMATION_MESSAGE);
                 } else if (jRadioButtonSec.isSelected() && a.AlterMemeberPosition(id, "secretary", 1)) {
-                    JOptionPane.showMessageDialog(null, "Youve added a new secretary. The new member id is " + id + "", "Success", JOptionPane.INFORMATION_MESSAGE);
-                    return;
+                    JOptionPane.showMessageDialog(rootPane, "Youve added a new secretary. The new member id is " + id + "", "Success", JOptionPane.INFORMATION_MESSAGE);
                 } else if (jRadioButtonTreasurer.isSelected() && a.AlterMemeberPosition(id, "treasurer", 1)) {
-                    JOptionPane.showMessageDialog(null, "Youve added a new Treasurer. The new member id is " + id + "", "Success", JOptionPane.INFORMATION_MESSAGE);
-                    return;
+                    JOptionPane.showMessageDialog(rootPane, "Youve added a new Treasurer. The new member id is " + id + "", "Success", JOptionPane.INFORMATION_MESSAGE);
                 }
             } else {
-                JOptionPane.showMessageDialog(null, "You have successfully registered for the sacco\nYour new user ID is " + m.AddMember() + ". Use it to login", "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(rootPane, "You have successfully registered for the sacco\nYour new user ID is " + m.AddMember() + ". Use it to login", "Success", JOptionPane.INFORMATION_MESSAGE);
                 this.dispose();
                 new LoginScreen().setVisible(true);
             }
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Could not add the member to the database. Try again " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "Could not add the member to the database. Try again " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             // set focus on the first field
             jTextFieldFname.requestFocus();
         } catch (AccountException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButtonSubmitActionPerformed
 

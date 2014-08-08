@@ -28,8 +28,9 @@ public class AllMembers extends javax.swing.JInternalFrame {
             this.m = new Member();
             this.a = new Admin();
             initComponents();
+            jTextAreaAllMembers.setEditable(false);
         } catch (AccountException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Access denied", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Access denied", JOptionPane.ERROR_MESSAGE);
             this.dispose();
         }
     }
@@ -118,14 +119,14 @@ public class AllMembers extends javax.swing.JInternalFrame {
         try {
             a.DisplayAllMembers(jTextAreaAllMembers);
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "SQL error", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "SQL error", "Error", JOptionPane.ERROR_MESSAGE);
         } catch (AccountException ex) {
-            JOptionPane.showMessageDialog(this.getParent(), ex.getMessage(), "Access Denied", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Access Denied", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButtonDisplayActionPerformed
 
     private void jButtonBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBackActionPerformed
-        dispose();
+        this.dispose();
     }//GEN-LAST:event_jButtonBackActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

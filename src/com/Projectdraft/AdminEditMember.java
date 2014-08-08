@@ -53,6 +53,8 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
         jPasswordNewRptPass.setEditable(edit);
         jTextId.setEditable(edit);
         jTextFieldLname.setEditable(edit);
+        jButtonSavePassword.setEnabled(edit);
+        jButtonSaveDetails.setEnabled(edit);
         // not required
         jTextFieldDateChanged.setEditable(false);
         jTextFieldDateRegistered.setEditable(false);
@@ -100,12 +102,12 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
         jTextFieldAddress = new javax.swing.JTextField();
         jTextFieldDob = new javax.swing.JTextField();
         jPanel6 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        jButtonSaveDetails = new javax.swing.JButton();
         jButtonDeactivate = new javax.swing.JButton();
         jButtonDelete = new javax.swing.JButton();
         jButtonActivate = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        jButtonViewMemberPayments = new javax.swing.JButton();
+        jButtonViewMemberLoans = new javax.swing.JButton();
 
         setClosable(true);
         setIconifiable(true);
@@ -369,10 +371,10 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
 
         jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Account Actions", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 12))); // NOI18N
 
-        jButton1.setText("Save new Details");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        jButtonSaveDetails.setText("Save new Details");
+        jButtonSaveDetails.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                jButtonSaveDetailsActionPerformed(evt);
             }
         });
 
@@ -414,7 +416,7 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
                             .addComponent(jButtonActivate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jButtonDeactivate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jButtonSaveDetails, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         jPanel6Layout.setVerticalGroup(
@@ -423,7 +425,7 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jButtonDeactivate)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE))
+                    .addComponent(jButtonSaveDetails, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE))
                 .addGap(21, 21, 21)
                 .addComponent(jButtonActivate)
                 .addGap(18, 18, Short.MAX_VALUE)
@@ -431,9 +433,9 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
                 .addContainerGap())
         );
 
-        jButton4.setText("View Payments");
+        jButtonViewMemberPayments.setText("View Payments");
 
-        jButton3.setText("View loans");
+        jButtonViewMemberLoans.setText("View loans");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -443,9 +445,9 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
                 .addContainerGap(18, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButtonViewMemberLoans, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(88, 88, 88)
-                        .addComponent(jButton4))
+                        .addComponent(jButtonViewMemberPayments))
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -481,8 +483,8 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(21, 21, 21)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton4)
-                            .addComponent(jButton3))))
+                            .addComponent(jButtonViewMemberPayments)
+                            .addComponent(jButtonViewMemberLoans))))
                 .addGap(38, 38, 38))
         );
 
@@ -520,7 +522,7 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
                 jRadioButtonFemale.setSelected(true);
             }
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "SQL Error", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "SQL Error", "Error", JOptionPane.ERROR_MESSAGE);
             //this.dispose();
         }
     }//GEN-LAST:event_jComboBoxMembersItemStateChanged
@@ -530,14 +532,14 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
         //check if password strings are the same. common logic
         String passString;
         if (!Application.CheckPasswordEquality(jPasswordNewPassword, jPasswordNewRptPass)) {
-            JOptionPane.showMessageDialog(null, "The passwords don't match", "Misimatching passwords", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "The passwords don't match", "Misimatching passwords", JOptionPane.ERROR_MESSAGE);
             jPasswordNewPassword.requestFocus();
             return;
         } else {
             passString = new String(jPasswordNewPassword.getPassword());
             // check the password length
             if (passString.length() <= 5 || passString.length() > 30) {
-                JOptionPane.showMessageDialog(null, "length should be between 6 and 30 characters", "Wrong password length", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(rootPane, "length should be between 6 and 30 characters", "Wrong password length", JOptionPane.ERROR_MESSAGE);
                 jPasswordNewPassword.requestFocus();
                 return;
             }
@@ -547,15 +549,14 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
         try {
             // save the edited password
             if (m.EditPassword(m, passString, Long.parseLong(jComboBoxMembers.getSelectedItem().toString()))) {
-                JOptionPane.showMessageDialog(null, "Done!", "Success", JOptionPane.INFORMATION_MESSAGE);
-                return;
+                JOptionPane.showMessageDialog(rootPane, "Done!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(rootPane, "Could not save the password. Please try again", "Action failed", JOptionPane.ERROR_MESSAGE);
             }
         } catch (AccountException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Not allowed", JOptionPane.WARNING_MESSAGE);
-            return;
+            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Not allowed", JOptionPane.WARNING_MESSAGE);
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "SQL Error", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+            JOptionPane.showMessageDialog(rootPane, "SQL Error", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButtonSavePasswordActionPerformed
 
@@ -568,7 +569,7 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_jToggleButtonEditActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void jButtonSaveDetailsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaveDetailsActionPerformed
         // TODO add your handling code here:
 
         // the member names. we check if user input is ok
@@ -594,7 +595,7 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
         // the date of birth. please bear with this one. I couldn't find a better way that worked
         Date d = Application.CheckDateInput(jTextFieldDob.getText());
         if (d == null) {
-            JOptionPane.showMessageDialog(null, "please enter a date in the format of yyyy-mm-dd", "Invalid date", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "please enter a date in the format of yyyy-mm-dd", "Invalid date", JOptionPane.ERROR_MESSAGE);
             jTextFieldDob.requestFocus();
             return;
         } else {
@@ -604,7 +605,7 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
         // validate for didgits
         int mobileno = Application.CheckIfNumber(jTextFieldMobileNo.getText());
         if (mobileno == -1) {
-            JOptionPane.showMessageDialog(null, "please enter valid value for phone number", "Invalid phone number", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "please enter valid value for phone number", "Invalid phone number", JOptionPane.ERROR_MESSAGE);
             jTextFieldMobileNo.requestFocus();
             return;
         } else {
@@ -637,7 +638,7 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(rootPane, "Operation failed " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_jButtonSaveDetailsActionPerformed
 
     private void jButtonDeactivateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeactivateActionPerformed
         if (Long.parseLong(jComboBoxMembers.getSelectedItem().toString()) == Member.getId()) {
@@ -648,16 +649,16 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
             if (reply == JOptionPane.YES_OPTION) {
                 if (a.AlterMemberAccount(Long.parseLong(jComboBoxMembers.getSelectedItem().toString()), 0)) {
                     JOptionPane.showMessageDialog(rootPane, "Action was a success", "Account Deactivation", JOptionPane.INFORMATION_MESSAGE);
+                    // log them out
                     // refresh combo box
                     a.DisplayAllMembers(jComboBoxMembers);
+                } else {
+                    JOptionPane.showMessageDialog(rootPane, "Operation failed", "Error", JOptionPane.ERROR_MESSAGE);
                 }
-                return;
-            } else {
-                return;
             }
 
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(rootPane, "Operation failed", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "SQL error", "Error", JOptionPane.ERROR_MESSAGE);
         } catch (AccountException ex) {
             JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Access denied", JOptionPane.ERROR_MESSAGE);
         }
@@ -682,14 +683,13 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
                     JOptionPane.showMessageDialog(rootPane, "Action was a success", "Account deletion", JOptionPane.INFORMATION_MESSAGE);
                     // refresh combo box
                     a.DisplayAllMembers(jComboBoxMembers);
+                } else {
+                    JOptionPane.showMessageDialog(rootPane, "Operation failed", "Error", JOptionPane.ERROR_MESSAGE);
                 }
-                return;
-            } else {
-                return;
             }
 
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(rootPane, "Operation failed", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "SQL error", "Error", JOptionPane.ERROR_MESSAGE);
         } catch (AccountException ex) {
             JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Access denied", JOptionPane.ERROR_MESSAGE);
         }
@@ -704,10 +704,9 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
                     JOptionPane.showMessageDialog(rootPane, "Action was a success", "Account Activation", JOptionPane.INFORMATION_MESSAGE);
                     // refresh combo box
                     a.DisplayAllMembers(jComboBoxMembers);
+                } else {
+                    JOptionPane.showMessageDialog(rootPane, "Operation failed", "Error", JOptionPane.ERROR_MESSAGE);
                 }
-                return;
-            } else {
-                return;
             }
 
         } catch (SQLException ex) {
@@ -718,13 +717,13 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_jButtonActivateActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
     private javax.swing.JButton jButtonActivate;
     private javax.swing.JButton jButtonDeactivate;
     private javax.swing.JButton jButtonDelete;
+    private javax.swing.JButton jButtonSaveDetails;
     private javax.swing.JButton jButtonSavePassword;
+    private javax.swing.JButton jButtonViewMemberLoans;
+    private javax.swing.JButton jButtonViewMemberPayments;
     private javax.swing.JComboBox jComboBoxMembers;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
