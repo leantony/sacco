@@ -19,8 +19,9 @@ import javax.swing.JOptionPane;
  */
 public class AdminEditMember extends javax.swing.JInternalFrame {
 
-    Admin a;
-    Member m;
+    Admin _admin;
+    Member _member;
+    long selectedMemberID;
 
     /**
      * Creates new form NewJInternalFrame
@@ -29,10 +30,10 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
         initComponents();
 
         try {
-            this.a = new Admin();
-            this.m = new Member();
+            this._admin = new Admin();
+            this._member = new Member();
             // TODO add your handling code here:
-            a.DisplayAllMembers(jComboBoxMembers);
+            _admin.DisplayAllMembers(jComboBoxMembers);
             EditMode(false);
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(rootPane, "SQL error", "Error", JOptionPane.ERROR_MESSAGE);
@@ -495,26 +496,35 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
         try {
             // TODO add your handling code here:
             // fill in the textfields
-            m.getMemberInfo(m, Long.parseLong(jComboBoxMembers.getSelectedItem().toString()));
+            _member.getMemberInfo(_member, Long.parseLong(jComboBoxMembers.getSelectedItem().toString()));
             jTextId.setText(jComboBoxMembers.getSelectedItem().toString());
-            jTextFieldFname.setText(m.getFirstname());
-            jTextFieldLname.setText(m.getLastname());
-            jTextFieldDob.setText(m.getDob().toString());
-            jTextFieldAddress.setText(m.getAddress());
-            jTextFieldDateRegistered.setText(m.getRegisteredDate().toString());
-            jTextFieldDateChanged.setText(m.getLastModifiedDate().toString());
-            jTextFieldMobileNo.setText(Integer.toString(m.getMobileno()));
-            jTextFieldEmail.setText(m.getEmail());
+            jTextFieldFname.setText(_member.getFirstname());
+            jTextFieldLname.setText(_member.getLastname());
+            jTextFieldDob.setText(_member.getDob().toString());
+            jTextFieldAddress.setText(_member.getAddress());
+            jTextFieldDateRegistered.setText(_member.getRegisteredDate().toString());
+            jTextFieldDateChanged.setText(_member.getLastModifiedDate().toString());
+            jTextFieldMobileNo.setText(Integer.toString(_member.getMobileno()));
+            jTextFieldEmail.setText(_member.getEmail());
             // block or unblock the activate/deactivate account button
-            if (m.getAccountStatus()) {
+            if (_member.getAccountStatus()) {
                 jButtonActivate.setEnabled(false);
+                jButtonActivate.setToolTipText("The account is already activated");
                 jButtonDeactivate.setEnabled(true);
             } else {
                 jButtonActivate.setEnabled(true);
+                jButtonDeactivate.setToolTipText("Account has not been deactivated");
                 jButtonDeactivate.setEnabled(false);
             }
+            selectedMemberID = Long.parseLong(jComboBoxMembers.getSelectedItem().toString());
+            if (selectedMemberID == Member.getId()) {
+                jButtonDeactivate.setEnabled(false);
+                jButtonDelete.setEnabled(false);
+                jButtonDelete.setToolTipText("You can delete any other account but not your own");
+                jButtonDeactivate.setToolTipText("You can deactivate any other account but not your own");
+            }
             // auto mark the gender
-            if (m.getGender().equals("Male")) {
+            if (_member.getGender().equals("Male")) {
                 jRadioButtonMale.setSelected(true);
                 jRadioButtonFemale.setSelected(false);
             } else {
@@ -548,7 +558,7 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
 
         try {
             // save the edited password
-            if (m.EditPassword(m, passString, Long.parseLong(jComboBoxMembers.getSelectedItem().toString()))) {
+            if (_member.EditPassword(passString, Long.parseLong(jComboBoxMembers.getSelectedItem().toString()))) {
                 JOptionPane.showMessageDialog(rootPane, "Done!", "Success", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(rootPane, "Could not save the password. Please try again", "Action failed", JOptionPane.ERROR_MESSAGE);
@@ -573,33 +583,33 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
 
         // the member names. we check if user input is ok
-        if (Application.ValidateEmptyTextBox(jTextFieldFname, "please enter a value for firstname")) {
-            m.setFirstname(jTextFieldFname.getText());
+        if (Application.ValidateEmptyValue(jTextFieldFname, "please enter a value for firstname")) {
+            _member.setFirstname(jTextFieldFname.getText());
         } else {
             // we halt execution of the function
             return;
         }
-        if (Application.ValidateEmptyTextBox(jTextFieldLname, "please enter a value for lastname")) {
-            m.setLastname(jTextFieldLname.getText());
+        if (Application.ValidateEmptyValue(jTextFieldLname, "please enter a value for lastname")) {
+            _member.setLastname(jTextFieldLname.getText());
         } else {
             return;
         }
 
         // set the gender
         if (jRadioButtonFemale.isSelected()) {
-            m.setGender(jRadioButtonFemale.getText());
+            _member.setGender(jRadioButtonFemale.getText());
         } else {
-            m.setGender(jRadioButtonMale.getText());
+            _member.setGender(jRadioButtonMale.getText());
         }
 
-        // the date of birth. please bear with this one. I couldn't find a better way that worked
+        // the date of birth. please bear with this one. I couldn't find _admin better way that worked
         Date d = Application.CheckDateInput(jTextFieldDob.getText());
         if (d == null) {
             JOptionPane.showMessageDialog(rootPane, "please enter a date in the format of yyyy-mm-dd", "Invalid date", JOptionPane.ERROR_MESSAGE);
             jTextFieldDob.requestFocus();
             return;
         } else {
-            m.setDob(d);
+            _member.setDob(d);
         }
 
         // validate for didgits
@@ -609,27 +619,28 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
             jTextFieldMobileNo.requestFocus();
             return;
         } else {
-            m.setMobileno(mobileno);
+            _member.setMobileno(mobileno);
         }
 
         // the address
-        if (Application.ValidateEmptyTextBox(jTextFieldAddress, "please enter a value for Address")) {
-            m.setAddress(jTextFieldAddress.getText());
+        if (Application.ValidateEmptyValue(jTextFieldAddress, "please enter a value for Address")) {
+            _member.setAddress(jTextFieldAddress.getText());
         } else {
             return;
         }
 
         // the email
-        if (Application.ValidateEmptyTextBox(jTextFieldEmail, "please enter an email address")) {
-            m.setEmail(jTextFieldEmail.getText().trim());
+        if (Application.ValidateEmptyValue(jTextFieldEmail, "please enter an email address")) {
+            _member.setEmail(jTextFieldEmail.getText().trim());
         } else {
             return;
         }
 
         try {
             // edit the info
-            if (m.EditMemberInfo(m)) {
+            if (_member.EditMemberInfo(_member)) {
                 JOptionPane.showMessageDialog(rootPane, "Success ", "Error", JOptionPane.INFORMATION_MESSAGE);
+                _admin.DisplayAllMembers(jComboBoxMembers);
             } else {
                 JOptionPane.showMessageDialog(rootPane, "No update was made", "Warning", JOptionPane.INFORMATION_MESSAGE);
             }
@@ -641,17 +652,20 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_jButtonSaveDetailsActionPerformed
 
     private void jButtonDeactivateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeactivateActionPerformed
-        if (Long.parseLong(jComboBoxMembers.getSelectedItem().toString()) == Member.getId()) {
-            JOptionPane.showMessageDialog(rootPane, "Surely, don't do this. It's your own account", "Warning", JOptionPane.WARNING_MESSAGE);
+        selectedMemberID = Long.parseLong(jComboBoxMembers.getSelectedItem().toString());
+        if (selectedMemberID == Member.getId()) {
+            jButtonDeactivate.setEnabled(false);
+            jButtonDeactivate.setToolTipText("You can deactivate any account but not your own");
         }
         try {
             int reply = JOptionPane.showConfirmDialog(rootPane, "When the account is deactivated, the user wouldn't be able to login. Continue?", "prompt", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             if (reply == JOptionPane.YES_OPTION) {
-                if (a.AlterMemberAccount(Long.parseLong(jComboBoxMembers.getSelectedItem().toString()), 0)) {
+                if (_admin.AlterMemberAccount(selectedMemberID, 0)) {
                     JOptionPane.showMessageDialog(rootPane, "Action was a success", "Account Deactivation", JOptionPane.INFORMATION_MESSAGE);
                     // log them out
+                    // Admin.Logout(selectedMemberID);
                     // refresh combo box
-                    a.DisplayAllMembers(jComboBoxMembers);
+                    _admin.DisplayAllMembers(jComboBoxMembers);
                 } else {
                     JOptionPane.showMessageDialog(rootPane, "Operation failed", "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -666,8 +680,9 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
 
     private void jButtonDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeleteActionPerformed
 
+        selectedMemberID = Long.parseLong(jComboBoxMembers.getSelectedItem().toString());
         // stop an obviously destructive action
-        if (Long.parseLong(jComboBoxMembers.getSelectedItem().toString()) == Member.getId()) {
+        if (selectedMemberID == Member.getId()) {
             JOptionPane.showMessageDialog(rootPane, "Surely, don't do this. It's your own account", "Warning", JOptionPane.WARNING_MESSAGE);
         }
         try {
@@ -679,10 +694,10 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
                     + "<br><p><b>Are you sure you want to do this?</b></p>"
                     + "</html>", "Delete member prompt", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             if (reply == JOptionPane.YES_OPTION) {
-                if (a.AlterMemberAccount(Long.parseLong(jComboBoxMembers.getSelectedItem().toString()), 4)) {
+                if (_admin.AlterMemberAccount(selectedMemberID, 4)) {
                     JOptionPane.showMessageDialog(rootPane, "Action was a success", "Account deletion", JOptionPane.INFORMATION_MESSAGE);
                     // refresh combo box
-                    a.DisplayAllMembers(jComboBoxMembers);
+                    _admin.DisplayAllMembers(jComboBoxMembers);
                 } else {
                     JOptionPane.showMessageDialog(rootPane, "Operation failed", "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -697,13 +712,14 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
 
     private void jButtonActivateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonActivateActionPerformed
         // TODO add your handling code here:
+        selectedMemberID = Long.parseLong(jComboBoxMembers.getSelectedItem().toString());
         try {
             int reply = JOptionPane.showConfirmDialog(rootPane, "When the account is activated, the user would now be able to login. Continue?", "prompt", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
             if (reply == JOptionPane.YES_OPTION) {
-                if (a.AlterMemberAccount(Long.parseLong(jComboBoxMembers.getSelectedItem().toString()), 2)) {
+                if (_admin.AlterMemberAccount(selectedMemberID, 2)) {
                     JOptionPane.showMessageDialog(rootPane, "Action was a success", "Account Activation", JOptionPane.INFORMATION_MESSAGE);
                     // refresh combo box
-                    a.DisplayAllMembers(jComboBoxMembers);
+                    _admin.DisplayAllMembers(jComboBoxMembers);
                 } else {
                     JOptionPane.showMessageDialog(rootPane, "Operation failed", "Error", JOptionPane.ERROR_MESSAGE);
                 }

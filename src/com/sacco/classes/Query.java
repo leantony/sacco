@@ -1,45 +1,34 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.sacco.classes;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
-/**
- *
- * @author Antony
- */
-public class Query extends Member {
+public class Query {
 
     private int QeryId;
     private String queryContent;
+    PreparedStatement stmt = null;
+    Connection conn;
+    ResultSet result = null;
 
-    /**
-     * @return the QeryId
-     */
+    public Query() {
+        this.conn = Database.getDBConnection();
+    }
+
     public int getQeryId() {
         return QeryId;
     }
 
-    /**
-     * @param QeryId the QeryId to set
-     */
     public void setQeryId(int QeryId) {
         this.QeryId = QeryId;
     }
 
-    /**
-     * @return the queryContent
-     */
     public String getQueryContent() {
         return queryContent;
     }
 
-    /**
-     * @param queryContent the queryContent to set
-     */
     public void setQueryContent(String queryContent) {
         this.queryContent = queryContent;
     }
@@ -54,14 +43,12 @@ public class Query extends Member {
             int rows = stmt.executeUpdate();
             return rows == 1;
         } finally {
-            // close resources
             close();
         }
     }
 
     public boolean ClearQuery() {
         return false;
-
     }
 
     private void close() {
@@ -78,5 +65,4 @@ public class Query extends Member {
             }
         }
     }
-
 }

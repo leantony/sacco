@@ -6,7 +6,6 @@
 package com.Projectdraft;
 
 import com.sacco.classes.Application;
-import com.sacco.classes.Member;
 import com.sacco.classes.Query;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
@@ -15,12 +14,12 @@ import javax.swing.JOptionPane;
  *
  * @author Antony
  */
-public class SubmittQuery extends javax.swing.JFrame {
+public class SubmittQuery extends javax.swing.JInternalFrame {
 
-    Query q = new Query();
+    Query _query = new Query();
 
     /**
-     * Creates new form SubmittQuery
+     * Creates new form NewJInternalFrame
      */
     public SubmittQuery() {
         initComponents();
@@ -38,20 +37,14 @@ public class SubmittQuery extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextAreaQueries = new javax.swing.JTextArea();
-        jButton1 = new javax.swing.JButton();
         JButtonSubmitt = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Comments Area");
-        setAlwaysOnTop(true);
-        setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        setResizable(false);
-        setType(java.awt.Window.Type.POPUP);
-
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Enter Your Query here and submit. We welcome any comment"));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Enter Your Query here and submit. We welcome any comment", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 12))); // NOI18N
         jPanel1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         jTextAreaQueries.setColumns(20);
+        jTextAreaQueries.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
         jTextAreaQueries.setRows(5);
         jScrollPane1.setViewportView(jTextAreaQueries);
 
@@ -72,14 +65,19 @@ public class SubmittQuery extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jButton1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jButton1.setText("Close");
-
         JButtonSubmitt.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         JButtonSubmitt.setText("Submit");
         JButtonSubmitt.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 JButtonSubmittActionPerformed(evt);
+            }
+        });
+
+        jButton1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jButton1.setText("Close");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
             }
         });
 
@@ -115,14 +113,13 @@ public class SubmittQuery extends javax.swing.JFrame {
     private void JButtonSubmittActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JButtonSubmittActionPerformed
         try {
             // TODO add your handling code here:
-            if (Application.ValidateEmptyTextArea(jTextAreaQueries, "Please fill in a comment")) {
-                q.setQueryContent(jTextAreaQueries.getText());
-                if (q.makeQuery()) {
+            if (Application.ValidateEmptyValue(jTextAreaQueries, "Please fill in a comment")) {
+                _query.setQueryContent(jTextAreaQueries.getText());
+                if (_query.makeQuery()) {
                     JOptionPane.showMessageDialog(rootPane, "Thank you");
                     this.dispose();
                 } else {
                     JOptionPane.showMessageDialog(rootPane, "Encountered an error. please try again");
-                    return;
                 }
 
             }
@@ -131,43 +128,10 @@ public class SubmittQuery extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_JButtonSubmittActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(SubmittQuery.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(SubmittQuery.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(SubmittQuery.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(SubmittQuery.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> {
-            if (Member.CheckLoggedIn()) {
-                new SubmittQuery().setVisible(true);
-            } else {
-                JOptionPane.showMessageDialog(null, "Please login first", "Access denied", JOptionPane.ERROR_MESSAGE);
-                new LoginScreen().setVisible(true);
-            }
-        });
-    }
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton JButtonSubmitt;

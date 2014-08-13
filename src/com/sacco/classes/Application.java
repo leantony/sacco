@@ -5,16 +5,20 @@ package com.sacco.classes;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import javax.swing.JEditorPane;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-public class Application {
+public final class Application {
+
+    public static DecimalFormat df = new DecimalFormat("#.##");
 
     // exit the app
     public static void Exit(int status) {
@@ -34,7 +38,7 @@ public class Application {
     }
 
     // clear all textual input
-    public static void clearTextFields(Container container) {
+    public static void clearAllTextFields(Container container) {
         for (Component c : container.getComponents()) {
             if (c instanceof JTextArea) {
                 JTextArea jt = (JTextArea) c;
@@ -43,35 +47,48 @@ public class Application {
                 JTextField f = (JTextField) c;
                 f.setText("");
             } else if (c instanceof Container) {
-                clearTextFields((Container) c);
+                clearAllTextFields((Container) c);
             }
         }
     }
 
     // check if a text box is empty
-    public static boolean ValidateEmptyTextBox(JTextField a, String errorMsg) {
-        if (errorMsg.isEmpty()) {
-            errorMsg = "Please enter a value for " + a.getName();
-        }
-        if (a.getText().trim().isEmpty()) {
-            a.requestFocus();
-            JOptionPane.showMessageDialog(null, errorMsg, "Empty value", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-        return true;
-    }
+    public static boolean ValidateEmptyValue(Object a, String errorMsg) {
+        if (a instanceof JEditorPane) {
+            JEditorPane jt = (JEditorPane) a;
 
-    // check if a text area is empty
-    public static boolean ValidateEmptyTextArea(JTextArea a, String errorMsg) {
-        if (errorMsg.isEmpty()) {
-            errorMsg = "Please enter a value for " + a.getName();
+            if (jt.getText().trim().isEmpty()) {
+                jt.requestFocus();
+                JOptionPane.showMessageDialog(null, errorMsg, "Invalid input", JOptionPane.ERROR_MESSAGE);
+                return false;
+            } else {
+                return true;
+            }
         }
-        if (a.getText().trim().isEmpty()) {
-            a.requestFocus();
-            JOptionPane.showMessageDialog(null, errorMsg, "Empty value", JOptionPane.ERROR_MESSAGE);
+        if (a instanceof JTextArea) {
+            JTextArea jt = (JTextArea) a;
+
+            if (jt.getText().trim().isEmpty()) {
+                jt.requestFocus();
+                JOptionPane.showMessageDialog(null, errorMsg, "Invalid input", JOptionPane.ERROR_MESSAGE);
+                return false;
+            } else {
+                return true;
+            }
+        } else if (a instanceof JTextField) {
+            JTextField jt = (JTextField) a;
+
+            if (jt.getText().trim().isEmpty()) {
+                jt.requestFocus();
+                JOptionPane.showMessageDialog(null, errorMsg, "Invalid input", JOptionPane.ERROR_MESSAGE);
+                return false;
+            } else {
+                return true;
+            }
+        } else {
             return false;
         }
-        return true;
+
     }
 
     // check if a string input is a number
@@ -82,6 +99,19 @@ public class Application {
                 return -1;
             }
             return Integer.parseInt(s);
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
+
+    // check if a string input is a double
+    public static double CheckForDouble(String s) {
+        try {
+            // disallow negative number input
+            if (Double.parseDouble(s.trim()) <= 0) {
+                return -1;
+            }
+            return Double.parseDouble(s);
         } catch (NumberFormatException e) {
             return -1;
         }

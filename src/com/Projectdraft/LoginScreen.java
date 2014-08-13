@@ -17,7 +17,7 @@ import javax.security.auth.login.AccountException;
  */
 public class LoginScreen extends javax.swing.JFrame {
 
-    Member m = new Member();
+    Member _member = new Member();
 
     /**
      * Creates new form Register
@@ -173,9 +173,9 @@ public class LoginScreen extends javax.swing.JFrame {
 
         // attempt login
         try {
-            if (!m.Login(id, password)) {
+            if (!_member.Login(id, password)) {
                 JOptionPane.showMessageDialog(rootPane, "Invalid user ID or password. please try again", "Login failed", JOptionPane.INFORMATION_MESSAGE);
-                Application.clearTextFields(this.getContentPane());
+                Application.clearAllTextFields(this.getContentPane());
                 jTextFieldMemberID.requestFocus();
             } else {
                 JOptionPane.showMessageDialog(rootPane, "Successfully logged In!", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -184,7 +184,7 @@ public class LoginScreen extends javax.swing.JFrame {
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(rootPane, "Encountered an error when trying to log you in. Try again later ", "Error", JOptionPane.ERROR_MESSAGE);
-            Application.clearTextFields(this.getContentPane());
+            Application.clearAllTextFields(this.getContentPane());
             jTextFieldMemberID.requestFocus();
         } catch (AccountException ex) {
             JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

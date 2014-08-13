@@ -17,33 +17,28 @@ import javax.swing.JOptionPane;
  */
 public class RepayLoan extends javax.swing.JInternalFrame {
 
-    Loan l;
+    Loan _loan;
 
     /**
      * Creates new form NewJInternalFrame
      */
     public RepayLoan() {
-        this.l = new Loan();
+        this._loan = new Loan();
         initComponents();
         updateForm();
     }
 
     private void updateForm() {
         try {
-            if (l.GetLoanCount(3) == 0) {
+            if (_loan.GetMemberLoanCount(2) == 0) {
                 jPanel1.setVisible(false);
-                jLabelStatus.setText("You have not applied for any loans yet. Apply for one then the functions below will be available");
-            }
-            // now, we don't need one viewing this form na hana loan zozote
-            if (l.GetLoanCount(0) == 0) {
-                jPanel1.setVisible(false);
-                jLabelStatus.setText("You have cleared all your loans. Apply for one then the functions below will be available");
-                // this.dispose();
+                jLabelStatus.setText("<html>You have not applied for any loans yet.<br>Apply for one then the functions below will be available</html>");
             } else {
-                l.getLoanInfo(0);
-                jLabelInitialAmnt.setText(Double.toString(l.getLoanAmount()));
-                jLabelLoanAndInterest.setText(Double.toString(l.getTotalAmount()));
-                jLabelPendingAmnt.setText(Double.toString(l.getAmountPaid()));
+                // get info about their unpaid loan
+                _loan.getLoanInfo(0);
+                jLabelInitialAmnt.setText(Application.df.format(Double.toString(_loan.getLoanAmount())));
+                jLabelLoanAndInterest.setText(Application.df.format(Double.toString(_loan.getTotalAmount())));
+                jLabelPendingAmnt.setText(Application.df.format(Double.toString(_loan.getAmountPaid())));
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "wrong input type", JOptionPane.ERROR_MESSAGE);
@@ -228,17 +223,19 @@ public class RepayLoan extends javax.swing.JInternalFrame {
             jTextFieldAmount.requestFocus();
             return;
         } else {
-            l.setAmountToPay(amnt);
+            _loan.setAmountToPay(amnt);
         }
 
         try {
             // save
-            if (l.PayBackLoan()) {
+            if (_loan.PayBackLoan()) {
                 // refresh the form page
                 updateForm();
-                JOptionPane.showMessageDialog(rootPane, "You have successfully paid " + l.getAmountToPay() + " to your loan\n"
-                        + "You have a pending amount of " + (l.getTotalAmount() - l.getAmountPaid())
-                        + "\nYour payment id is " + l.getPaymentID(), "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(rootPane, "You have successfully paid " + _loan.getAmountToPay() + " to your loan\n"
+                        + "You have a pending amount of " + (_loan.getTotalAmount() - _loan.getAmountPaid())
+                        + "\nYour payment id is " + _loan.getPaymentID(), "Success", JOptionPane.INFORMATION_MESSAGE);
+                // just close the form
+                this.dispose();
             } else {
                 JOptionPane.showMessageDialog(rootPane, "The operation wasn't successful. Please try again", "Error", JOptionPane.ERROR_MESSAGE);
             }

@@ -1,19 +1,52 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.sacco.classes;
 
-/**
- *
- * @author Antony
- */
+import java.sql.SQLException;
+import java.sql.Statement;
+
 public class Secretary extends Member {
-// record minutes, forward member complaints to manager
+
+    public static int SEC_POS_ID = 2;
 
     public boolean ListAllQueries() {
         return false;
+    }
 
+    public int RecordMinutes(String minutes, String title) throws SQLException {
+        try {
+            String sql = "INSERT INTO `minutes` (`member_id`, `title`, `content`) VALUES (?, ?, ?)";
+            stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            stmt.setLong(1, Member.getId());
+            stmt.setString(2, title);
+            stmt.setString(3, minutes);
+
+            int rows = stmt.executeUpdate();
+            if (rows == 0) {
+                throw new SQLException("The minutes weren't created");
+            }
+            // get the returned inserted id
+            result = stmt.getGeneratedKeys();
+            if (result.next()) {
+                return result.getInt(1);
+            } else {
+                throw new SQLException("The minutes weren't recorded. an ID wasn't obtained");
+            }
+        } finally {
+            close();
+        }
+    }
+
+    private void close() {
+        if (result != null) {
+            try {
+                result.close();
+            } catch (SQLException e) {
+            }
+        }
+        if (stmt != null) {
+            try {
+                stmt.close();
+            } catch (SQLException e) {
+            }
+        }
     }
 }

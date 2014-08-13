@@ -18,23 +18,24 @@ import javax.swing.JOptionPane;
  */
 public class EditLoanInterest extends javax.swing.JInternalFrame {
 
-    Admin a;
-    Loan l;
+    Admin _admin;
+    Loan _loan;
+    double value;
 
     /**
      * Creates new form NewJInternalFrame
      */
     public EditLoanInterest() {
         try {
-            this.a = new Admin();
-            this.l = new Loan();
-            if (a.getLoanInterest() == -1) {
+            this._admin = new Admin();
+            this._loan = new Loan();
+            if (_admin.getLoanInterest() == -1) {
                 JOptionPane.showMessageDialog(rootPane, "Operation failed", "Error", JOptionPane.ERROR_MESSAGE);
                 this.dispose();
             } else {
-                //JOptionPane.showMessageDialog(rootPane, a.getLoanInterest());
+                //JOptionPane.showMessageDialog(rootPane, _admin.getLoanInterest());
                 initComponents();
-                jLabelCurrentInterest.setText(Double.toString(a.getLoanInterest()));
+                jLabelCurrentInterest.setText(Double.toString(_admin.getLoanInterest()));
             }
         } catch (AccountException ex) {
             JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Access denied", JOptionPane.ERROR_MESSAGE);
@@ -77,13 +78,20 @@ public class EditLoanInterest extends javax.swing.JInternalFrame {
         });
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel3.setText("New Loan Interest (%)");
+        jLabel3.setText("New Monthly Loan Interest (%)");
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel2.setText("Current Loan Interest (%)");
+        jLabel2.setText("Current Monthly Loan Interest (%)");
         jLabel2.setToolTipText("");
 
         jTextFieldNewInterest.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jTextFieldNewInterest.addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+            }
+            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+                jTextFieldNewInterestInputMethodTextChanged(evt);
+            }
+        });
 
         jLabelCurrentInterest.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
@@ -91,20 +99,22 @@ public class EditLoanInterest extends javax.swing.JInternalFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel2))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(172, 172, 172)
+                        .addComponent(jButtonSave))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel3)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 92, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jTextFieldNewInterest, javax.swing.GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE)
-                    .addComponent(jLabelCurrentInterest, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabelCurrentInterest, javax.swing.GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE))
                 .addGap(20, 20, 20))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(172, 172, 172)
-                .addComponent(jButtonSave)
-                .addContainerGap(181, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -113,11 +123,11 @@ public class EditLoanInterest extends javax.swing.JInternalFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabelCurrentInterest, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, Short.MAX_VALUE)
+                .addGap(61, 61, 61)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextFieldNewInterest, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
-                .addGap(75, 75, 75)
+                    .addComponent(jLabel3)
+                    .addComponent(jTextFieldNewInterest, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 54, Short.MAX_VALUE)
                 .addComponent(jButtonSave)
                 .addContainerGap())
         );
@@ -135,19 +145,26 @@ public class EditLoanInterest extends javax.swing.JInternalFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private double getYearlyInterest(double monthly) {
+        try {
+            double YearlyInterest = monthly / 12;
+            return YearlyInterest;
+        } catch (Exception e) {
+            return 0;
+        }
+    }
     private void jButtonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaveActionPerformed
         // TODO add your handling code here:
-        int n = Application.CheckIfNumber(jTextFieldNewInterest.getText());
-
-        if (n <= 0 || n > 50) {
-            JOptionPane.showMessageDialog(rootPane, "You've picked an invalid value. A valid interest should\nlie between 1 and 50 %. No decimal points", "Invalid interest", JOptionPane.INFORMATION_MESSAGE);
+        value = Application.CheckForDouble(jTextFieldNewInterest.getText());
+        if (value <= 0 || value > 50) {
+            JOptionPane.showMessageDialog(rootPane, "You've picked an invalid value. A valid interest should\nlie between 1 and 50 %", "Invalid interest", JOptionPane.INFORMATION_MESSAGE);
             jTextFieldNewInterest.requestFocus();
         } else {
             try {
@@ -158,7 +175,7 @@ public class EditLoanInterest extends javax.swing.JInternalFrame {
                 if (reply == JOptionPane.CANCEL_OPTION | reply == JOptionPane.NO_OPTION) {
                     this.dispose();
                 } else {
-                    if (a.ChangeLoanInterest(l, n)) {
+                    if (_admin.ChangeLoanInterest(_loan, value)) {
                         JOptionPane.showMessageDialog(rootPane, "Operation succeeded", "Success", JOptionPane.INFORMATION_MESSAGE);
                         this.dispose();
                     } else {
@@ -172,6 +189,10 @@ public class EditLoanInterest extends javax.swing.JInternalFrame {
             }
         }
     }//GEN-LAST:event_jButtonSaveActionPerformed
+
+    private void jTextFieldNewInterestInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_jTextFieldNewInterestInputMethodTextChanged
+
+    }//GEN-LAST:event_jTextFieldNewInterestInputMethodTextChanged
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonSave;

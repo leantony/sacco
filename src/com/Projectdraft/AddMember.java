@@ -20,7 +20,7 @@ import javax.swing.JOptionPane;
 public class AddMember extends javax.swing.JFrame {
 
     // initialize member object
-    Member m = new Member();
+    Member _member = new Member();
 
     /**
      * Creates new form AddMember
@@ -443,23 +443,23 @@ public class AddMember extends javax.swing.JFrame {
     private void jButtonSubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSubmitActionPerformed
 
         // the member names. we check if user input is ok
-        if (Application.ValidateEmptyTextBox(jTextFieldFname, "please enter a value for firstname")) {
-            m.setFirstname(jTextFieldFname.getText());
+        if (Application.ValidateEmptyValue(jTextFieldFname, "please enter a value for firstname")) {
+            _member.setFirstname(jTextFieldFname.getText());
         } else {
             // we halt execution of the function
             return;
         }
-        if (Application.ValidateEmptyTextBox(jTextFieldLname, "please enter a value for lastname")) {
-            m.setLastname(jTextFieldLname.getText());
+        if (Application.ValidateEmptyValue(jTextFieldLname, "please enter a value for lastname")) {
+            _member.setLastname(jTextFieldLname.getText());
         } else {
             return;
         }
 
         // set the gender
         if (jRadioButtonFemale.isSelected()) {
-            m.setGender(jRadioButtonFemale.getText());
+            _member.setGender(jRadioButtonFemale.getText());
         } else {
-            m.setGender(jRadioButtonMale.getText());
+            _member.setGender(jRadioButtonMale.getText());
         }
 
         // the date of birth.
@@ -469,7 +469,7 @@ public class AddMember extends javax.swing.JFrame {
             jTextFieldDob.requestFocus();
             return;
         } else {
-            m.setDob(d);
+            _member.setDob(d);
         }
 
         // validate for didgits
@@ -479,19 +479,19 @@ public class AddMember extends javax.swing.JFrame {
             jTextFieldMobileNo.requestFocus();
             return;
         } else {
-            m.setMobileno(mobileno);
+            _member.setMobileno(mobileno);
         }
 
         // the address
-        if (Application.ValidateEmptyTextBox(jTextFieldAddress, "please enter a value for Address")) {
-            m.setAddress(jTextFieldAddress.getText());
+        if (Application.ValidateEmptyValue(jTextFieldAddress, "please enter a value for Address")) {
+            _member.setAddress(jTextFieldAddress.getText());
         } else {
             return;
         }
 
         // the email
-        if (Application.ValidateEmptyTextBox(jTextFieldEmail, "please enter an email address")) {
-            m.setEmail(jTextFieldEmail.getText().trim());
+        if (Application.ValidateEmptyValue(jTextFieldEmail, "please enter an email address")) {
+            _member.setEmail(jTextFieldEmail.getText().trim());
         } else {
             return;
         }
@@ -508,7 +508,7 @@ public class AddMember extends javax.swing.JFrame {
                 jPasswordPassword.requestFocus();
                 return;
             }
-            m.setPassword(passString);
+            _member.setPassword(passString);
         }
 
         // finally, insert a new user
@@ -516,7 +516,7 @@ public class AddMember extends javax.swing.JFrame {
             if (Member.isAdmin()) {
                 // attempt to add member to admins
                 Admin a = new Admin();
-                long id = m.AddMember();
+                long id = _member.AddMember();
                 if (jRadioButtonAdmin.isSelected() && a.AlterMemeberPosition(id, "admin", 1)) {
                     jRadioButtonSec.setSelected(false);
                     JOptionPane.showMessageDialog(rootPane, "You've added a new admin. The new member id is " + id + "", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -526,7 +526,7 @@ public class AddMember extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(rootPane, "Youve added a new Treasurer. The new member id is " + id + "", "Success", JOptionPane.INFORMATION_MESSAGE);
                 }
             } else {
-                JOptionPane.showMessageDialog(rootPane, "You have successfully registered for the sacco\nYour new user ID is " + m.AddMember() + ". Use it to login", "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(rootPane, "You have successfully registered for the sacco\nYour new user ID is " + _member.AddMember() + ". Use it to login", "Success", JOptionPane.INFORMATION_MESSAGE);
                 this.dispose();
                 new LoginScreen().setVisible(true);
             }
@@ -542,7 +542,7 @@ public class AddMember extends javax.swing.JFrame {
 
     private void jButtonResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonResetActionPerformed
         // TODO add your handling code here:
-        Application.clearTextFields(this.getContentPane());
+        Application.clearAllTextFields(this.getContentPane());
     }//GEN-LAST:event_jButtonResetActionPerformed
 
     /**

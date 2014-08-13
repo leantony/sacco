@@ -17,13 +17,13 @@ import javax.swing.JOptionPane;
  */
 public class EditPassword extends javax.swing.JInternalFrame {
 
-    Member m;
+    Member _member;
 
     /**
      * Creates new form NewJInternalFrame
      */
     public EditPassword() {
-        this.m = new Member();
+        this._member = new Member();
         initComponents();
     }
 
@@ -168,7 +168,7 @@ public class EditPassword extends javax.swing.JInternalFrame {
 
         try {
             // save the edited password
-            if (m.EditPassword(m, passString, Member.getId())) {
+            if (_member.EditPassword(passString, Member.getId())) {
                 JOptionPane.showMessageDialog(rootPane, "Password changed successfully. Please logout to review your changes", "Success", JOptionPane.INFORMATION_MESSAGE);
                 this.dispose();
             }

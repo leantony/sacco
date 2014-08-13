@@ -20,6 +20,16 @@ public class Admin extends Member {
         }
     }
 
+    public static boolean Logout(long id) throws AccountException {
+        // incase the usr was an admin, unset the admin variable
+        if (isAdmin()) {
+            //setAdmin(false);
+            return loggedInUsers.remove(id);
+        } else {
+            throw new AccountException("You are not authorized to perform this action");
+        }
+    }
+
     /**
      *
      * @param id
@@ -51,79 +61,98 @@ public class Admin extends Member {
             sql = "DELETE FROM members WHERE id = ?";
         }
         try {
-
             stmt = conn.prepareStatement(sql);
             stmt.setLong(1, id);
 
             int rows = stmt.executeUpdate();
             return rows == 1;
-
         } finally {
-            // close resources
             close();
         }
     }
 
-    private ResultSet getAllMemberInfo() throws SQLException {
+    private void getAllMemberInfo() throws SQLException {
         String sql = "SELECT * FROM members";
+        stmt = conn.prepareStatement(sql);
+        result = stmt.executeQuery();
+        while (result.next()) {
+            Member m = new Member();
+            m.t_id = result.getLong("id");
+            m.setFirstname(result.getString("firstname"));
+            m.setLastname(result.getString("lastname"));
+            m.setAddress(result.getString("address"));
+            m.setDob(result.getDate("dob"));
+            m.setEmail(result.getString("email"));
+            m.setGender(result.getString("gender"));
+            m.setMobileno(result.getInt("mobileno"));
+            allMembers.add(m);
+        }
+    }
+
+    private ResultSet getAllContributions() throws SQLException {
+        String sql = "SELECT * FROM contributions";
         stmt = conn.prepareStatement(sql);
         result = stmt.executeQuery();
         return result;
     }
 
-    /**
-     *
-     * @param combobox
-     * @throws SQLException
-     */
-    public void DisplayAllMembers(JComboBox combobox) throws SQLException {
+    public void DisplayAllContributions(JComboBox combobox) throws SQLException {
         DefaultComboBoxModel Model = new DefaultComboBoxModel();
         try {
-            result = getAllMemberInfo();
+            result = getAllContributions();
             while (result.next()) {
-                long memberID = result.getLong("id");
-                Model.addElement(memberID);
-
+                long ID = result.getLong("id");
+                Model.addElement(ID);
             }
             combobox.setModel(Model);
         } finally {
             close();
         }
-
     }
 
-    /**
-     *
-     * @param jt
-     * @throws SQLException
-     * @throws AccountException
-     */
-    public void DisplayAllMembers(JTextArea jt) throws SQLException, AccountException {
-        jt.setText("");
+    public void DisplayAllMembers(JComboBox combobox) throws SQLException {
+        DefaultComboBoxModel Model = new DefaultComboBoxModel();
+        // no need to re-execute the query while we already have a loaded list
+        if (allMembers.isEmpty()) {
+            getAllMemberInfo();
+        }
         try {
-            result = getAllMemberInfo();
+            allMembers.stream().map((_member) -> _member.t_id).forEach((memberID) -> {
+                Model.addElement(memberID);
+            });
+            combobox.setModel(Model);
+        } finally {
+            close();
+        }
+    }
+
+    public void DisplayAllMembers(JTextArea jt) throws SQLException {
+        jt.setText("");
+        // no need to re-execute the query while we already have a loaded list
+        if (allMembers.isEmpty()) {
+            getAllMemberInfo();
+        }
+        try {
             jt.append("Here are all the members in the sacco \n\n");
-            jt.append("FIRSTNAME\t LASTNAME \t GENDER \t DATE_OF_BIRTH \t ADDRESS \t EMAIL\n\n");
-            while (result.next()) {
-                // store logged in userID in mem
-                setId(id);
-                jt.append(result.getString("firstname"));
-                jt.append("\t");
-                jt.append(result.getString("lastname"));
-                jt.append("\t");
-                jt.append(result.getString("gender"));
-                jt.append("\t");
-                jt.append(result.getDate("dob").toString());
+            jt.append("MEMBER_ID\t\tFIRSTNAME\t\tLASTNAME\t\tGENDER\t\tDATE_OF_BIRTH\tADDRESS\t\tEMAIL\n\n");
+            for (Member _member : allMembers) {
+                jt.append(_member.t_id + "\t\t");
+                jt.append(_member.getFirstname());
                 jt.append("\t\t");
-                jt.append(result.getString("address"));
-                jt.append("\t");
-                jt.append(result.getString("email"));
+                jt.append(_member.getLastname());
+                jt.append("\t\t");
+                jt.append(_member.getGender());
+                jt.append("\t\t");
+                jt.append(_member.getDob().toString());
+                jt.append("\t\t");
+                jt.append(_member.getAddress());
+                jt.append("\t\t");
+                jt.append(_member.getEmail());
                 jt.append("\n");
             }
         } finally {
             close();
         }
-
     }
 
     /**
@@ -161,44 +190,11 @@ public class Admin extends Member {
             stmt.setLong(2, id);
             int rows = stmt.executeUpdate();
             return rows == 1;
-
         } finally {
-            // close resources
             close();
         }
     }
 
-    /**
-     *
-     * @param id
-     * <p>
-     * The member's id</p>
-     * @return
-     * @throws SQLException
-     * @throws AccountException
-     */
-    public boolean DeleteMemberLoan(long id) throws SQLException, AccountException {
-        if (isAdmin()) {
-            try {
-                String sql = "DELETE FROM Loans WHERE member_id = ?";
-                stmt = conn.prepareStatement(sql);
-                stmt.setLong(1, id);
-                int rows = stmt.executeUpdate();
-                return rows == 0;
-
-            } finally {
-                // close resources
-                close();
-            }
-        } else {
-            throw new AccountException("You are not allowed to perform this action");
-        }
-    }
-
-    /**
-     *
-     * @return @throws SQLException
-     */
     public double getLoanInterest() throws SQLException {
         try {
             String sql = "SELECT value FROM settings WHERE name = 'interest'";
@@ -209,35 +205,42 @@ public class Admin extends Member {
             }
 
         } finally {
-            // close resources
             close();
         }
         return -1;
     }
 
-    /**
-     *
-     * @param l
-     * @param interest
-     * @return
-     * @throws SQLException
-     */
+    public boolean ApproveORdissaproveContribution(long id, int Action) throws SQLException {
+        String sql;
+        if (Action == 1) {
+            sql = "UPDATE `contributions` SET `Approved`=1 WHERE  `id`=?";
+        } else if (Action == 0) {
+            sql = "UPDATE `contributions` SET `Approved`=0 WHERE  `id`=?";
+        } else {
+            sql = "UPDATE `sacco`.`contributions` SET `Approved`=1 WHERE  `id`=?";
+        }
+        try {
+            stmt = conn.prepareStatement(sql);
+            stmt.setLong(1, id);
+            int rows = stmt.executeUpdate();
+            return rows == 1;
+
+        } finally {
+            close();
+        }
+    }
+
     public boolean ChangeLoanInterest(Loan l, double interest) throws SQLException {
         if (getLoanInterest() == -1) {
             throw new SQLException("An error occured while trying to get the loan interest from db");
         }
         try {
-//            int loanCount = l.GetLoanCount(3);
             String sql = "UPDATE settings SET value = ? WHERE name = 'interest'";
             stmt = conn.prepareStatement(sql);
             stmt.setDouble(1, interest);
-
             int rows = stmt.executeUpdate();
-            // check if all rows of the table were updated. change should apply to all members
             return rows == 1;
-
         } finally {
-            // close resources
             close();
         }
     }

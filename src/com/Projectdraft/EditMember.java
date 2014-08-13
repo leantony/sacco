@@ -18,7 +18,7 @@ import javax.swing.JOptionPane;
  */
 public class EditMember extends javax.swing.JInternalFrame {
 
-    Member m = new Member();
+    Member _member = new Member();
 
     /**
      * Creates new form NewJInternalFrame
@@ -26,20 +26,20 @@ public class EditMember extends javax.swing.JInternalFrame {
     public EditMember() {
         try {
             initComponents();
-            m.getMemberInfo(m, Member.getId());
-            jTextFieldFname.setText(m.getFirstname());
-            jTextFieldLname.setText(m.getLastname());
+            _member.getMemberInfo(_member, Member.getId());
+            jTextFieldFname.setText(_member.getFirstname());
+            jTextFieldLname.setText(_member.getLastname());
 
             // auto mark the gender
-            if (m.getGender().equals("Male")) {
+            if (_member.getGender().equals("Male")) {
                 jRadioButtonMale.setSelected(true);
             } else {
                 jRadioButtonFemale.setSelected(true);
             }
-            jTextFieldDob.setText(m.getDob().toLocalDate().toString());
-            jTextFieldMobileNo.setText(String.valueOf(m.getMobileno()));
-            jTextFieldAddress.setText(m.getAddress());
-            jTextFieldEmail.setText(m.getEmail());
+            jTextFieldDob.setText(_member.getDob().toLocalDate().toString());
+            jTextFieldMobileNo.setText(String.valueOf(_member.getMobileno()));
+            jTextFieldAddress.setText(_member.getAddress());
+            jTextFieldEmail.setText(_member.getEmail());
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(rootPane, "Encountered an error while trying to get your data. Please try again", "Error", JOptionPane.ERROR_MESSAGE);
             this.dispose();
@@ -299,29 +299,29 @@ public class EditMember extends javax.swing.JInternalFrame {
 
     private void jButtonResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonResetActionPerformed
         // TODO add your handling code here:
-        Application.clearTextFields(this.getContentPane());
+        Application.clearAllTextFields(this.getContentPane());
     }//GEN-LAST:event_jButtonResetActionPerformed
 
     private void jButtonSubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSubmitActionPerformed
 
         // the member names. we check if user input is ok
-        if (Application.ValidateEmptyTextBox(jTextFieldFname, "please enter a value for firstname")) {
-            m.setFirstname(jTextFieldFname.getText());
+        if (Application.ValidateEmptyValue(jTextFieldFname, "please enter a value for firstname")) {
+            _member.setFirstname(jTextFieldFname.getText());
         } else {
             // we halt execution of the function
             return;
         }
-        if (Application.ValidateEmptyTextBox(jTextFieldLname, "please enter a value for lastname")) {
-            m.setLastname(jTextFieldLname.getText());
+        if (Application.ValidateEmptyValue(jTextFieldLname, "please enter a value for lastname")) {
+            _member.setLastname(jTextFieldLname.getText());
         } else {
             return;
         }
 
         // set the gender
         if (jRadioButtonFemale.isSelected()) {
-            m.setGender(jRadioButtonFemale.getText());
+            _member.setGender(jRadioButtonFemale.getText());
         } else {
-            m.setGender(jRadioButtonMale.getText());
+            _member.setGender(jRadioButtonMale.getText());
         }
 
         // the date of birth. please bear with this one. I couldn't find a better way that worked
@@ -331,7 +331,7 @@ public class EditMember extends javax.swing.JInternalFrame {
             jTextFieldDob.requestFocus();
             return;
         } else {
-            m.setDob(d);
+            _member.setDob(d);
         }
 
         // validate for didgits
@@ -341,26 +341,26 @@ public class EditMember extends javax.swing.JInternalFrame {
             jTextFieldMobileNo.requestFocus();
             return;
         } else {
-            m.setMobileno(mobileno);
+            _member.setMobileno(mobileno);
         }
 
         // the address
-        if (Application.ValidateEmptyTextBox(jTextFieldAddress, "please enter a value for Address")) {
-            m.setAddress(jTextFieldAddress.getText());
+        if (Application.ValidateEmptyValue(jTextFieldAddress, "please enter a value for Address")) {
+            _member.setAddress(jTextFieldAddress.getText());
         } else {
             return;
         }
 
         // the email
-        if (Application.ValidateEmptyTextBox(jTextFieldEmail, "please enter an email address")) {
-            m.setEmail(jTextFieldEmail.getText().trim());
+        if (Application.ValidateEmptyValue(jTextFieldEmail, "please enter an email address")) {
+            _member.setEmail(jTextFieldEmail.getText().trim());
         } else {
             return;
         }
 
         try {
             // edit the info
-            if (m.EditMemberInfo(m)) {
+            if (_member.EditMemberInfo(_member)) {
                 JOptionPane.showMessageDialog(rootPane, "Edit was a Success ", "Success", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(rootPane, "No update was made", "Warning", JOptionPane.INFORMATION_MESSAGE);

@@ -17,16 +17,16 @@ import javax.swing.JOptionPane;
  */
 public class AllMembers extends javax.swing.JInternalFrame {
 
-    Member m;
-    Admin a;
+    Member _member;
+    Admin _admin;
 
     /**
      * Creates new form NewJInternalFrame
      */
     public AllMembers() {
         try {
-            this.m = new Member();
-            this.a = new Admin();
+            this._member = new Member();
+            this._admin = new Admin();
             initComponents();
             jTextAreaAllMembers.setEditable(false);
         } catch (AccountException ex) {
@@ -44,30 +44,30 @@ public class AllMembers extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel1 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextAreaAllMembers = new javax.swing.JTextArea();
-        jButtonDisplay = new javax.swing.JButton();
         jButtonBack = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
+        jButtonDisplay = new javax.swing.JButton();
 
         setClosable(true);
         setIconifiable(true);
+        setMaximizable(true);
+        setResizable(true);
         setTitle("(Administrator) All Members");
         setDoubleBuffered(true);
 
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel1.setText("Here are all the registered Sacco Members");
+
         jTextAreaAllMembers.setEditable(false);
         jTextAreaAllMembers.setColumns(20);
+        jTextAreaAllMembers.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
         jTextAreaAllMembers.setRows(5);
         jScrollPane1.setViewportView(jTextAreaAllMembers);
 
-        jButtonDisplay.setText("Members");
-        jButtonDisplay.setActionCommand("Display");
-        jButtonDisplay.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonDisplayActionPerformed(evt);
-            }
-        });
-
+        jButtonBack.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jButtonBack.setText("Close");
         jButtonBack.setActionCommand("Display");
         jButtonBack.addActionListener(new java.awt.event.ActionListener() {
@@ -76,37 +76,61 @@ public class AllMembers extends javax.swing.JInternalFrame {
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabel1.setText("Sacco Members");
+        jButtonDisplay.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jButtonDisplay.setText("Members");
+        jButtonDisplay.setActionCommand("Display");
+        jButtonDisplay.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonDisplayActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButtonDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButtonBack, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 773, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jButtonDisplay)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButtonBack))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 352, Short.MAX_VALUE))
+                .addContainerGap())
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(246, 246, 246)
-                .addComponent(jLabel1)
-                .addContainerGap(463, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButtonDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButtonBack, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(120, 120, 120)
+                .addComponent(jLabel1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(5, 5, 5)
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButtonDisplay)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButtonBack))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -117,11 +141,9 @@ public class AllMembers extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
 
         try {
-            a.DisplayAllMembers(jTextAreaAllMembers);
+            _admin.DisplayAllMembers(jTextAreaAllMembers);
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(rootPane, "SQL error", "Error", JOptionPane.ERROR_MESSAGE);
-        } catch (AccountException ex) {
-            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Access Denied", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButtonDisplayActionPerformed
 
@@ -133,6 +155,7 @@ public class AllMembers extends javax.swing.JInternalFrame {
     private javax.swing.JButton jButtonBack;
     private javax.swing.JButton jButtonDisplay;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextAreaAllMembers;
     // End of variables declaration//GEN-END:variables
