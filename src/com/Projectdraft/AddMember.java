@@ -525,6 +525,7 @@ public class AddMember extends javax.swing.JFrame {
                 } else if (jRadioButtonTreasurer.isSelected() && a.AlterMemeberPosition(id, "treasurer", 1)) {
                     JOptionPane.showMessageDialog(rootPane, "Youve added a new Treasurer. The new member id is " + id + "", "Success", JOptionPane.INFORMATION_MESSAGE);
                 }
+                JOptionPane.showMessageDialog(rootPane, "Youve added a new Member but with no assigned position\nThe new member id is " + id + "", "Success", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(rootPane, "You have successfully registered for the sacco\nYour new user ID is " + _member.AddMember() + ". Use it to login", "Success", JOptionPane.INFORMATION_MESSAGE);
                 this.dispose();

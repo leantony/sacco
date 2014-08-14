@@ -18,7 +18,10 @@ import javax.swing.JOptionPane;
 public class RepayLoan extends javax.swing.JInternalFrame {
 
     Loan _loan;
+    double total_amnt;
+    double amnt_paid;
 
+    //long pid;
     /**
      * Creates new form NewJInternalFrame
      */
@@ -31,14 +34,19 @@ public class RepayLoan extends javax.swing.JInternalFrame {
     private void updateForm() {
         try {
             if (_loan.GetMemberLoanCount(2) == 0) {
-                jPanel1.setVisible(false);
                 jLabelStatus.setText("<html>You have not applied for any loans yet.<br>Apply for one then the functions below will be available</html>");
+                jPanel1.setVisible(false);
             } else {
                 // get info about their unpaid loan
-                _loan.getLoanInfo(0);
-                jLabelInitialAmnt.setText(Application.df.format(Double.toString(_loan.getLoanAmount())));
-                jLabelLoanAndInterest.setText(Application.df.format(Double.toString(_loan.getTotalAmount())));
-                jLabelPendingAmnt.setText(Application.df.format(Double.toString(_loan.getAmountPaid())));
+                _loan.getLoanInfo(0, false);
+                for (Loan loan : _loan.getLoanList()) {
+                    total_amnt = loan.getTotalAmount();
+                    amnt_paid = loan.getAmountPaid();
+                    jLabelInitialAmnt.setText(Double.toString(loan.getLoanAmount()));
+                    jLabelLoanAndInterest.setText(Application.df.format(loan.getTotalAmount()));
+                    jLabelPendingAmnt.setText(Application.df.format(loan.getAmountPaid()));
+                }
+
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "wrong input type", JOptionPane.ERROR_MESSAGE);
@@ -101,11 +109,17 @@ public class RepayLoan extends javax.swing.JInternalFrame {
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel3.setText("Current paid Amount");
 
+        jLabelPendingAmnt.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+
         jLabel0.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel0.setText("Initial Loan");
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel5.setText("Initial loan + interest");
+
+        jLabelInitialAmnt.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+
+        jLabelLoanAndInterest.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -122,7 +136,7 @@ public class RepayLoan extends javax.swing.JInternalFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(57, 57, 57)
                         .addComponent(jLabel2)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 248, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 245, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jButtonPay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jTextFieldAmount, javax.swing.GroupLayout.Alignment.TRAILING)
@@ -232,10 +246,10 @@ public class RepayLoan extends javax.swing.JInternalFrame {
                 // refresh the form page
                 updateForm();
                 JOptionPane.showMessageDialog(rootPane, "You have successfully paid " + _loan.getAmountToPay() + " to your loan\n"
-                        + "You have a pending amount of " + (_loan.getTotalAmount() - _loan.getAmountPaid())
+                        + "You have a pending amount of " + Application.df.format(total_amnt - amnt_paid)
                         + "\nYour payment id is " + _loan.getPaymentID(), "Success", JOptionPane.INFORMATION_MESSAGE);
                 // just close the form
-                this.dispose();
+                //this.dispose();
             } else {
                 JOptionPane.showMessageDialog(rootPane, "The operation wasn't successful. Please try again", "Error", JOptionPane.ERROR_MESSAGE);
             }

@@ -56,7 +56,6 @@ public final class Application {
     public static boolean ValidateEmptyValue(Object a, String errorMsg) {
         if (a instanceof JEditorPane) {
             JEditorPane jt = (JEditorPane) a;
-
             if (jt.getText().trim().isEmpty()) {
                 jt.requestFocus();
                 JOptionPane.showMessageDialog(null, errorMsg, "Invalid input", JOptionPane.ERROR_MESSAGE);
@@ -67,7 +66,6 @@ public final class Application {
         }
         if (a instanceof JTextArea) {
             JTextArea jt = (JTextArea) a;
-
             if (jt.getText().trim().isEmpty()) {
                 jt.requestFocus();
                 JOptionPane.showMessageDialog(null, errorMsg, "Invalid input", JOptionPane.ERROR_MESSAGE);
@@ -77,7 +75,6 @@ public final class Application {
             }
         } else if (a instanceof JTextField) {
             JTextField jt = (JTextField) a;
-
             if (jt.getText().trim().isEmpty()) {
                 jt.requestFocus();
                 JOptionPane.showMessageDialog(null, errorMsg, "Invalid input", JOptionPane.ERROR_MESSAGE);
@@ -88,13 +85,12 @@ public final class Application {
         } else {
             return false;
         }
-
     }
 
     // check if a string input is a number
     public static int CheckIfNumber(String s) {
         try {
-            // disallow negative number input
+            // disallow solo 0 or negative number input
             if (Integer.parseInt(s.trim()) <= 0) {
                 return -1;
             }

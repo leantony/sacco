@@ -2,9 +2,12 @@ package com.sacco.classes;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.security.auth.login.AccountException;
+import javax.swing.JOptionPane;
+import javax.swing.JRootPane;
 
 public class Member {
 
@@ -26,8 +29,8 @@ public class Member {
     public static final short INACTIVE = 0;
     private static boolean admin = false;
     // define member datatypes as potrayed in the db
-    // store a logged in user. ive chosen a hashset it coz it won't allow duplicate keys. so a user can't login twice
-    static HashSet<Long> loggedInUsers = new HashSet<>();
+    //static HashSet<Long> loggedInUsers = new HashSet<>();
+    static Map<Long, String> loggedInUsers = new HashMap<>();
     protected List<Member> allMembers = new ArrayList<>();
     // for Database stuff
     PreparedStatement stmt = null;
@@ -55,7 +58,7 @@ public class Member {
     }
 
     public static boolean CheckLoggedIn() {
-        return loggedInUsers.contains(Member.getId());
+        return loggedInUsers.containsKey(Member.getId());
     }
 
     public String getFirstname() {
@@ -135,10 +138,6 @@ public class Member {
         return AccountStatus;
     }
 
-    private void setAccountStatus(boolean AccountStatus) {
-        this.AccountStatus = AccountStatus;
-    }
-
     // login a member
     public boolean Login(long id, String password) throws SQLException, AccountException {
         if (Member.CheckLoggedIn()) {
@@ -156,12 +155,25 @@ public class Member {
                     throw new AccountException("Your account is not activated. Please contact the administrator to fix this");
                 }
                 Member.setId(id);
-                return loggedInUsers.add(id);
+                // add member details into the hashmap
+                loggedInUsers.put(id, result.getString("firstname"));
+                return loggedInUsers.containsKey(id);
             }
         } finally {
             close();
         }
         return false;
+    }
+
+    public void getMyLoggedInInfo(JRootPane p) {
+        for (Map.Entry<Long, String> entry : loggedInUsers.entrySet()) {
+            if (loggedInUsers.containsKey(Member.id)) {
+                Long m_id = entry.getKey();
+                String _fname = entry.getValue();
+                JOptionPane.showMessageDialog(p, "<html> <p><b>Your User Id is " + m_id + " </b> </p> <br> <p> <i> You are logged in as " + _fname + "</i> </p> </html>");
+            }
+            break;
+        }
     }
 
     // logout the current member
@@ -170,7 +182,8 @@ public class Member {
         if (isAdmin()) {
             setAdmin(false);
         }
-        return loggedInUsers.remove(Member.getId());
+        loggedInUsers.remove(id);
+        return loggedInUsers.containsKey(id) == false;
     }
 
     public long AddMember() throws SQLException, AccountException {
@@ -261,8 +274,7 @@ public class Member {
                 stmt = conn.prepareStatement(sql);
                 stmt.setString(1, password);
                 stmt.setLong(2, id);
-                int rows = stmt.executeUpdate();
-                return rows == 1;
+                return stmt.executeUpdate() == 1;
             } finally {
                 close();
             }
@@ -286,8 +298,7 @@ public class Member {
                 stmt.setString(6, m.address);
                 stmt.setString(7, m.email);
                 stmt.setLong(8, Member.getId());
-                int rows = stmt.executeUpdate();
-                return rows == 1;
+                return stmt.executeUpdate() == 1;
             } finally {
                 close();
             }

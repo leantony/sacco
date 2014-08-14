@@ -28,6 +28,14 @@ public class Contribution {
         conn = d.getConnection();
     }
 
+    public long getId() {
+        return id;
+    }
+
+    private void setId(long id) {
+        this.id = id;
+    }
+
     public static double getContributionMin() {
         return MIN_CONTRIBUTION;
     }
@@ -211,13 +219,5 @@ public class Contribution {
             } catch (SQLException e) {
             }
         }
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    private void setId(long id) {
-        this.id = id;
     }
 }

@@ -29,13 +29,12 @@ public class EditLoanInterest extends javax.swing.JInternalFrame {
         try {
             this._admin = new Admin();
             this._loan = new Loan();
-            if (_admin.getLoanInterest() == -1) {
-                JOptionPane.showMessageDialog(rootPane, "Operation failed", "Error", JOptionPane.ERROR_MESSAGE);
+            if (_loan.getLoanInterestFromDB() == -1) {
+                JOptionPane.showMessageDialog(rootPane, "An error occured. -1 was returned as the interest which is invalid", "Error", JOptionPane.ERROR_MESSAGE);
                 this.dispose();
             } else {
-                //JOptionPane.showMessageDialog(rootPane, _admin.getLoanInterest());
                 initComponents();
-                jLabelCurrentInterest.setText(Double.toString(_admin.getLoanInterest()));
+                jLabelCurrentInterest.setText(Double.toString(Loan.getLoanInterest()));
             }
         } catch (AccountException ex) {
             JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Access denied", JOptionPane.ERROR_MESSAGE);
@@ -153,13 +152,10 @@ public class EditLoanInterest extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private double getYearlyInterest(double monthly) {
-        try {
-            double YearlyInterest = monthly / 12;
-            return YearlyInterest;
-        } catch (Exception e) {
-            return 0;
-        }
+        double YearlyInterest = monthly / 12;
+        return Double.parseDouble(Application.df.format(YearlyInterest));
     }
+
     private void jButtonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaveActionPerformed
         // TODO add your handling code here:
         value = Application.CheckForDouble(jTextFieldNewInterest.getText());
@@ -169,21 +165,16 @@ public class EditLoanInterest extends javax.swing.JInternalFrame {
         } else {
             try {
 
-                int reply = JOptionPane.showConfirmDialog(this.getContentPane(), "The interest rate will change for all future loans\n"
-                        + "Do you really want to do this?", "prompt", JOptionPane.WARNING_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
-
-                if (reply == JOptionPane.CANCEL_OPTION | reply == JOptionPane.NO_OPTION) {
-                    this.dispose();
-                } else {
-                    if (_admin.ChangeLoanInterest(_loan, value)) {
+                int reply = JOptionPane.showConfirmDialog(rootPane, "The interest rate will change for all future loans\n"
+                        + "The yearly interest will be " + getYearlyInterest(value) + "%\nDo you really want to do this?", "prompt", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                if (reply == JOptionPane.YES_OPTION) {
+                    if (_admin.ChangeLoanInterest(value)) {
                         JOptionPane.showMessageDialog(rootPane, "Operation succeeded", "Success", JOptionPane.INFORMATION_MESSAGE);
                         this.dispose();
                     } else {
-                        JOptionPane.showMessageDialog(rootPane, "Operation failed", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(rootPane, "Operation failed. Interest not changed", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
-                // save the interest
-
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(rootPane, "SQL error caught", "Error", JOptionPane.ERROR_MESSAGE);
             }

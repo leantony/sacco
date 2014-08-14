@@ -69,6 +69,11 @@ public abstract class Payment {
      */
     protected abstract long recordLoanPayment(long id, double amount) throws SQLException;
 
+    /**
+     *
+     * @param cleared
+     * @throws SQLException
+     */
     public abstract void getOverallPaymentInfo(boolean cleared) throws SQLException;
 
 }

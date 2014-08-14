@@ -6,10 +6,8 @@
 package com.Projectdraft;
 
 import com.sacco.classes.Application;
-import com.sacco.classes.Database;
 import com.sacco.classes.Member;
 import java.sql.SQLException;
-import javax.security.auth.login.AccountException;
 import javax.swing.JOptionPane;
 
 /**
@@ -31,18 +29,19 @@ public class MembersIndex extends javax.swing.JFrame {
         jMenuSec.setVisible(false);
         jMenuTreasuere.setVisible(false);
         try {
-            //jLabel1.setText("Welcome. You are logged in as "+_member.getFirstname()+" .The time now is "+Helper.dateFromLong(Long.MIN_VALUE));
             // check if a user is an admin
             if (_member.checkUserPosition() == 1) {
                 // am an admin, so enable my menu
                 //JOptionPane.showMessageDialog(rootPane, _member.checkIfUserIsAdmin());
                 jMenuAdministrator.setVisible(true);
             }
+            // check if member is a secretary
             if (_member.checkUserPosition() == 2) {
                 jMenuSec.setVisible(true);
             } else {
                 jMenuSec.setVisible(false);
             }
+            // check if a member is a treasurer
             if (_member.checkUserPosition() == 3) {
                 jMenuTreasuere.setVisible(true);
             } else {
@@ -323,6 +322,11 @@ public class MembersIndex extends javax.swing.JFrame {
         jMenu5.setText("Manage Loans");
 
         jMenuItemViewLoans.setText("View Member Loans");
+        jMenuItemViewLoans.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemViewLoansActionPerformed(evt);
+            }
+        });
         jMenu5.add(jMenuItemViewLoans);
 
         jMenuAdministrator.add(jMenu5);
@@ -331,6 +335,11 @@ public class MembersIndex extends javax.swing.JFrame {
         jMenu12.setText("Manage Contributions");
 
         jMenuItemViewContrib.setText("View Member Contributions");
+        jMenuItemViewContrib.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemViewContribActionPerformed(evt);
+            }
+        });
         jMenu12.add(jMenuItemViewContrib);
         jMenu12.add(jSeparator6);
 
@@ -398,6 +407,11 @@ public class MembersIndex extends javax.swing.JFrame {
 
         jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
         jMenuItem1.setText("About");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
         jMenu9.add(jMenuItem1);
         jMenu9.add(jSeparator5);
 
@@ -517,7 +531,7 @@ public class MembersIndex extends javax.swing.JFrame {
 
     private void jMenuItem9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem9ActionPerformed
         // TODO add your handling code here:
-        JOptionPane.showMessageDialog(rootPane, "<html> <p>Your User Id is </p>" + Member.getId() + "<br><p> You are logged in as </p>" + _member.getFirstname() + "</html>");
+        _member.getMyLoggedInInfo(rootPane);
     }//GEN-LAST:event_jMenuItem9ActionPerformed
 
     private void jMenuItemViewMyContributionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemViewMyContributionsActionPerformed
@@ -554,6 +568,27 @@ public class MembersIndex extends javax.swing.JFrame {
         jDesktopPane1.add(adm);
         adm.setVisible(true);
     }//GEN-LAST:event_jMenuItemLoanPaymentActionPerformed
+
+    private void jMenuItemViewLoansActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemViewLoansActionPerformed
+        // TODO add your handling code here:
+        ViewAllMemberLoans adm = new ViewAllMemberLoans();
+        jDesktopPane1.add(adm);
+        adm.setVisible(true);
+    }//GEN-LAST:event_jMenuItemViewLoansActionPerformed
+
+    private void jMenuItemViewContribActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemViewContribActionPerformed
+        // TODO add your handling code here:
+
+    }//GEN-LAST:event_jMenuItemViewContribActionPerformed
+
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        // TODO add your handling code here:
+        String about = "<html><p>Built by JOHN CHACHA, on August 2014</p><br>"
+                + "<p>For any queries consult me @myemail</p><br>"
+                + "<p>copyright 2014. All rights reserved</p><br>"
+                + "</html>";
+        JOptionPane.showMessageDialog(rootPane, about, "About", JOptionPane.INFORMATION_MESSAGE);
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     /**
      * @param args the command line arguments

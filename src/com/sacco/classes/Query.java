@@ -39,7 +39,6 @@ public class Query {
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, getQueryContent());
             stmt.setLong(2, Member.getId());
-
             int rows = stmt.executeUpdate();
             return rows == 1;
         } finally {

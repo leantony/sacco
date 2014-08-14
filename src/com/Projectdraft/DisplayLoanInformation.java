@@ -175,7 +175,7 @@ public class DisplayLoanInformation extends javax.swing.JInternalFrame {
             jCheckBoxAll.setSelected(false);
             jCheckBoxUncleared.setSelected(false);
             try {
-                _loan.PrintLoanStatus(jTextAreaLoanInfo, 1);
+                _loan.PrintLoanStatus(jTextAreaLoanInfo, 1, true);
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(rootPane, "SQL error caught", "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -183,13 +183,13 @@ public class DisplayLoanInformation extends javax.swing.JInternalFrame {
             jCheckBoxAll.setSelected(false);
             jCheckBoxCleared.setSelected(false);
             try {
-                _loan.PrintLoanStatus(jTextAreaLoanInfo, 0);
+                _loan.PrintLoanStatus(jTextAreaLoanInfo, 0, true);
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(rootPane, "SQL error caught", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } else {
             try {
-                _loan.PrintLoanStatus(jTextAreaLoanInfo, 3);
+                _loan.PrintLoanStatus(jTextAreaLoanInfo, 3, true);
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(rootPane, "SQL error caught", "Error", JOptionPane.ERROR_MESSAGE);
             }

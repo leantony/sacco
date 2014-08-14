@@ -12,11 +12,10 @@ public class Admin extends Member {
 
     public static int ADMIN_POS_ID = 1;
 
-    // handy, since it will be always checked on instance creation
+    // anyone instantiating this class will have to be an admin
     public Admin() throws AccountException {
-        // check if the user is who they claim to be
         if (!Member.isAdmin()) {
-            throw new AccountException("Are you really an admin?. Check again");
+            throw new AccountException("You are not authorized to perform this action");
         }
     }
 
@@ -24,28 +23,13 @@ public class Admin extends Member {
         // incase the usr was an admin, unset the admin variable
         if (isAdmin()) {
             //setAdmin(false);
-            return loggedInUsers.remove(id);
+            loggedInUsers.remove(id);
+            return loggedInUsers.containsKey(id) == false;
         } else {
             throw new AccountException("You are not authorized to perform this action");
         }
     }
 
-    /**
-     *
-     * @param id
-     * @param status
-     * <p>
-     * Status code 0 -> Deactivate account </p>
-     * <p>
-     * Status code 1 -> delete an activated account </p>
-     * <p>
-     * Status code 2 -> Activate an account </p>
-     * <p>
-     * Status code Any -> Forcefully delete an account </p>
-     * @return
-     * @throws SQLException
-     * @throws AccountException
-     */
     public boolean AlterMemberAccount(long id, int status) throws SQLException, AccountException {
         String sql;
         if (status == 0) {
@@ -57,20 +41,19 @@ public class Admin extends Member {
         } else if (status == 2) {
             sql = "UPDATE members SET active = 1 WHERE id = ?";
         } else {
-            // delete any
+            // delete di akaunt
             sql = "DELETE FROM members WHERE id = ?";
         }
         try {
             stmt = conn.prepareStatement(sql);
             stmt.setLong(1, id);
-
-            int rows = stmt.executeUpdate();
-            return rows == 1;
+            return stmt.executeUpdate() == 1;
         } finally {
             close();
         }
     }
 
+    // stores member info in a list to be used later
     private void getAllMemberInfo() throws SQLException {
         String sql = "SELECT * FROM members";
         stmt = conn.prepareStatement(sql);
@@ -155,91 +138,53 @@ public class Admin extends Member {
         }
     }
 
-    /**
-     *
-     * @param id
-     * <p>
-     * The member's id</p>
-     * @param posname
-     * <p>
-     * The position name. Type in any name and the function would try it's best
-     * to find it in the database </p>
-     * @param Action
-     * <p>
-     * Action code 1 -> New position (insert) </p>
-     * <p>
-     * Action code 2 or any -> Update existing member position </p>
-     * @return
-     * <p>
-     * True if any of the actions was successful </p>
-     * @throws SQLException
-     */
     public boolean AlterMemeberPosition(long id, String posname, int Action) throws SQLException {
         String sql;
         long pid = getPositionId(posname);
+        // insert position
         if (Action == 1) {
             sql = "INSERT INTO `members_positions` (`position_id`, `member_id`) VALUES (?, ?)";
-        } else if (Action == 2) {
-            sql = "UPDATE `members_positions` SET `position_id`=? WHERE  `member_id`=?";
         } else {
+            // update an existing members position
             sql = "UPDATE `members_positions` SET `position_id`=? WHERE  `member_id`=?";
         }
         try {
             stmt = conn.prepareStatement(sql);
             stmt.setLong(1, pid);
             stmt.setLong(2, id);
-            int rows = stmt.executeUpdate();
-            return rows == 1;
+            return stmt.executeUpdate() == 1;
         } finally {
             close();
         }
     }
 
-    public double getLoanInterest() throws SQLException {
-        try {
-            String sql = "SELECT value FROM settings WHERE name = 'interest'";
-            stmt = conn.prepareStatement(sql);
-            result = stmt.executeQuery();
-            if (result.next()) {
-                return result.getDouble("value");
-            }
-
-        } finally {
-            close();
-        }
-        return -1;
-    }
-
-    public boolean ApproveORdissaproveContribution(long id, int Action) throws SQLException {
+    public boolean AlterMemberContribution(long id, int Action) throws SQLException {
         String sql;
-        if (Action == 1) {
-            sql = "UPDATE `contributions` SET `Approved`=1 WHERE  `id`=?";
-        } else if (Action == 0) {
+        if (Action == 0) {
+            // dissaprove contribution
             sql = "UPDATE `contributions` SET `Approved`=0 WHERE  `id`=?";
+        } else if (Action == 1) {
+            // approve contribution
+            sql = "UPDATE `contributions` SET `Approved`=1 WHERE  `id`=?";
         } else {
-            sql = "UPDATE `sacco`.`contributions` SET `Approved`=1 WHERE  `id`=?";
+            // delete contribution
+            sql = "DELETE FROM `contributions` WHERE `id`=?";
         }
         try {
             stmt = conn.prepareStatement(sql);
             stmt.setLong(1, id);
-            int rows = stmt.executeUpdate();
-            return rows == 1;
-
+            return stmt.executeUpdate() == 1;
         } finally {
             close();
         }
     }
 
-    public boolean ChangeLoanInterest(Loan l, double interest) throws SQLException {
-        if (getLoanInterest() == -1) {
-            throw new SQLException("An error occured while trying to get the loan interest from db");
-        }
+    public boolean ChangeLoanInterest(double interest) throws SQLException {
         try {
             String sql = "UPDATE settings SET value = ? WHERE name = 'interest'";
             stmt = conn.prepareStatement(sql);
             stmt.setDouble(1, interest);
-            int rows = stmt.executeUpdate();
-            return rows == 1;
+            return stmt.executeUpdate() == 1;
         } finally {
             close();
         }

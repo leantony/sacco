@@ -25,114 +25,66 @@ public class LoanPayment extends Payment {
         this.conn = Database.getDBConnection();
     }
 
-    /**
-     * @return the id
-     */
     @Override
     public long getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
     @Override
     protected void setId(long id) {
         this.id = id;
     }
 
-    /**
-     * @return the amount
-     */
     @Override
     public double getAmount() {
         return amount;
     }
 
-    /**
-     * @param amount the amount to set
-     */
     @Override
     public void setAmount(double amount) {
         this.amount = amount;
     }
 
-    /**
-     * @return the DatePaid
-     */
     @Override
     public Timestamp getDatePaid() {
         return DatePaid;
     }
 
-    /**
-     * @param DatePaid the DatePaid to set
-     */
     @Override
     public void setDatePaid(Timestamp DatePaid) {
         this.DatePaid = DatePaid;
     }
 
-    /**
-     * @return the Approved
-     */
     @Override
     public boolean isApproved() {
         return Approved;
     }
 
-    /**
-     * @param Approved the Approved to set
-     */
     @Override
     public void setApproved(boolean Approved) {
         this.Approved = Approved;
     }
 
-    /**
-     *
-     * @param id
-     * <p>
-     * The member's ID </p>
-     * @param amount
-     * @return
-     * <p>
-     * The payment ID </p>
-     * @throws SQLException
-     */
     @Override
     protected long recordLoanPayment(long id, double amount) throws SQLException {
-        try {
-            String sql = "INSERT INTO `loanpayments` (`member_id`, `Amount`, `loan_id`) VALUES (?, ?, ?)";
-            stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            stmt.setLong(1, Member.getId());
-            stmt.setDouble(2, amount);
-            stmt.setLong(3, id);
-
-            int rows = stmt.executeUpdate();
-            if (rows == 0) {
-                // a user wasn't added
-                throw new SQLException("A payment couldn't be made");
-            }
-
-            // get the returned inserted id
-            result = stmt.getGeneratedKeys();
-            if (result.next()) {
-                setId(result.getLong(1));
-                return getId();
-            } else {
-                throw new SQLException("The payment couldn't be made. an ID wasn't obtained");
-            }
-        } finally {
-            // close resources
+        String sql = "INSERT INTO `loanpayments` (`member_id`, `Amount`, `loan_id`) VALUES (?, ?, ?)";
+        stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        stmt.setLong(1, Member.getId());
+        stmt.setDouble(2, amount);
+        stmt.setLong(3, id);
+        int rows = stmt.executeUpdate();
+        if (rows == 0) {
+            return -1;
+        }
+        result = stmt.getGeneratedKeys();
+        if (result.next()) {
+            setId(result.getLong(1));
+            return getId();
+        } else {
+            return -1;
         }
     }
 
-    /**
-     *
-     * @param cleared
-     * @throws SQLException
-     */
     @Override
     public void getOverallPaymentInfo(boolean cleared) throws SQLException {
         String sql;
@@ -149,21 +101,23 @@ public class LoanPayment extends Payment {
                 p.DatePaid = result.getTimestamp("DatePaid");
                 loanPayments.add(p);
             }
-
         } finally {
             close();
         }
     }
 
     public void printMemberLoanPayments(JTextArea jt) throws SQLException {
+        jt.setText("");
         if (loanPayments.isEmpty()) {
             getOverallPaymentInfo(true);
         }
-        jt.append("AMOUNT \t DATE \t LOAN");
+        jt.append("AMOUNT \t TIME \n\n");
         for (LoanPayment loanPayment : loanPayments) {
-            jt.append(loanPayment.amount + "");
-            jt.append(loanPayment.DatePaid.toLocalDateTime() + "");
+            jt.append(loanPayment.amount + "\t");
+            jt.append(loanPayment.DatePaid.toString() + "\t");
+            jt.append("\n");
         }
+        jt.append("\n");
     }
 
     private void close() {
