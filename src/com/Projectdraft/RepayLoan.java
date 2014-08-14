@@ -39,6 +39,11 @@ public class RepayLoan extends javax.swing.JInternalFrame {
             } else {
                 // get info about their unpaid loan
                 _loan.getLoanInfo(0, false);
+                // if the list is empty, then there were no unpaid loans found
+                if (_loan.getLoanList().isEmpty()) {
+                    jLabelStatus.setText("<html><p>Good!. You do not have any unpaid loans</p><br><p>You are free to apply for another one</p></html>");
+                    jPanel1.setVisible(false);
+                }
                 for (Loan loan : _loan.getLoanList()) {
                     total_amnt = loan.getTotalAmount();
                     amnt_paid = loan.getAmountPaid();
@@ -249,7 +254,7 @@ public class RepayLoan extends javax.swing.JInternalFrame {
                         + "You have a pending amount of " + Application.df.format(total_amnt - amnt_paid)
                         + "\nYour payment id is " + _loan.getPaymentID(), "Success", JOptionPane.INFORMATION_MESSAGE);
                 // just close the form
-                //this.dispose();
+                this.dispose();
             } else {
                 JOptionPane.showMessageDialog(rootPane, "The operation wasn't successful. Please try again", "Error", JOptionPane.ERROR_MESSAGE);
             }

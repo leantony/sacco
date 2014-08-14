@@ -3,10 +3,8 @@ package com.sacco.classes;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import javax.security.auth.login.AccountException;
-import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 
 public class Loan {
@@ -43,7 +41,7 @@ public class Loan {
 
     public Loan() {
         this._contribution = new Contribution();
-        this.conn = Database.getDBConnection();
+        this.conn = new Database().getConnection();
         this.m = new Member();
         this.p = new LoanPayment();
         try {
@@ -270,7 +268,7 @@ public class Loan {
             // clear the loan, since now the user has either overpaid or has equally paid the loan fully
             clearLoan(excess, l_id);
             // not really an indication of an error, but since the function return T/F this is the best way to do so
-            throw new AccountException("You loan is now fully paid. \nYour overpayment of ksh " + Application.df.format(excess) + " will be added to your contributions");
+            throw new AccountException("You loan is fully paid. \nYour overpayment of ksh " + Application.df.format(excess) + " will be added to your contributions");
         } else {
             // implies that the user hasn't paid enough, so we allow them to pay up
             try {
@@ -323,7 +321,7 @@ public class Loan {
         } else if (cleared == 1) {
             sql = "SELECT SUM(LoanAmount) FROM loans WHERE cleared = 1";
         } else {
-            sql = "SELECT SUM(LoanAmount) FROM loans WHERE cleared = 1 OR cleared = 0";
+            sql = "SELECT SUM(LoanAmount) FROM loans";
         }
         try {
             stmt = conn.prepareStatement(sql);
@@ -375,7 +373,7 @@ public class Loan {
         } else if (cleared == 1) {
             sql = "SELECT COUNT(id) FROM loans WHERE cleared = 1";
         } else {
-            sql = "SELECT COUNT(id) FROM loans WHERE cleared = 1 OR cleared = 0";
+            sql = "SELECT COUNT(id) FROM loans";
         }
         try {
             stmt = conn.prepareStatement(sql);
@@ -399,7 +397,7 @@ public class Loan {
         } else if (cleared == 1) {
             sql = "SELECT COUNT(member_id) FROM loans WHERE member_id = ? AND cleared = 1";
         } else {
-            sql = "SELECT COUNT(member_id) FROM loans WHERE member_id = ? AND cleared = 1 OR cleared = 0";
+            sql = "SELECT COUNT(member_id) FROM loans WHERE member_id = ?";
         }
         try {
             stmt = conn.prepareStatement(sql);
@@ -415,13 +413,12 @@ public class Loan {
         }
     }
 
-    public void getLoanInfo(int cleared, boolean allInfo) throws SQLException {
+    public void getLoanInfo(int cleared, boolean allMembers) throws SQLException {
         String sql;
-        if (allInfo && Member.isAdmin()) {
+        if (allMembers && Member.isAdmin()) {
             sql = "SELECT * FROM `loans`";
             stmt = conn.prepareStatement(sql);
-        }
-        if (cleared == 0) {
+        } else if (cleared == 0) {
             sql = "SELECT * FROM `loans` WHERE member_id = ? AND cleared = 0";
             stmt = conn.prepareStatement(sql);
             stmt.setLong(1, Member.getId());
@@ -430,7 +427,7 @@ public class Loan {
             stmt = conn.prepareStatement(sql);
             stmt.setLong(1, Member.getId());
         } else {
-            sql = "SELECT * FROM `loans` WHERE member_id = ? AND cleared = 1 OR cleared = 0";
+            sql = "SELECT * FROM `loans` WHERE member_id = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setLong(1, Member.getId());
         }
@@ -453,24 +450,24 @@ public class Loan {
         }
     }
 
-    public void PrintLoanStatus(JTextArea jt, int cleared, boolean DisplayExtraInfo) throws SQLException {
+    public void PrintLoanStatus(JTextArea jt, int cleared, boolean DisplayExtraInfo, boolean allMembers) throws SQLException {
         jt.setText("");
         loanInfo.clear();
         if (Member.isAdmin()) {
-            getLoanInfo(cleared, false);
+            getLoanInfo(cleared, allMembers);
         } else {
             getLoanInfo(cleared, DisplayExtraInfo);
         }
         double la, pa = 0, ta = 0;
         Date d = Date.valueOf(LocalDate.now());
-        jt.append("LOAN_AMOUNT\tTOTAL_AMOUNT\tLOAN_PERIOD(Years)\tLOAN_TYPE\tPAID_AMOUNT\n \n");
+        jt.append("LOAN_AMOUNT\tTOTAL_AMOUNT\tLOAN_PERIOD(Months)\tLOAN_TYPE\tPAID_AMOUNT\n \n");
         for (Loan loan : loanInfo) {
             la = Double.parseDouble(Application.df.format(loan.getLoanAmount()));
             pa = Double.parseDouble(Application.df.format(loan.getAmountPaid()));
             ta = Double.parseDouble(Application.df.format(loan.getTotalAmount()));
             jt.append(la + "\t\t");
             jt.append(ta + "\t");
-            jt.append("\t\t" + Application.df.format(loan.getPaybackPeriod()) + "\t");
+            jt.append("\t\t" + Application.df.format(loan.getPaybackPeriod() * 12) + "\t");
             jt.append(loan.getLoanType() + "\t");
             jt.append(pa + "\n");
             d = new Date(loan.getDateSubmitted().getTime());
@@ -484,7 +481,7 @@ public class Loan {
             jt.append("LOAN_AMOUNT  ==> represents the amount(s) you took as a loan\n");
             jt.append("TOTAL_AMOUNT ==> loan + interest\n");
             jt.append("PAID_AMOUNT  ==> represents the amount you paid for each loan\n");
-            jt.append("LOAN_PERIOD  ==> Time (Years) you chose to fulfil your loan payment\n");
+            jt.append("LOAN_PERIOD  ==> Time (Months) you chose to fulfil your loan payment\n\n");
             jt.append("==============================================================================\n\n");
         }
     }

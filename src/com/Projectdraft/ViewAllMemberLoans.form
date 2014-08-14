@@ -8,7 +8,6 @@
     <Property name="resizable" type="boolean" value="true"/>
     <Property name="title" type="java.lang.String" value="(Administrator) Member Loans"/>
     <Property name="doubleBuffered" type="boolean" value="true"/>
-    <Property name="icon" type="boolean" value="true"/>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>

@@ -8,8 +8,6 @@ package com.Projectdraft;
 import com.sacco.classes.Admin;
 import com.sacco.classes.Loan;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.security.auth.login.AccountException;
 import javax.swing.JOptionPane;
 
@@ -143,7 +141,7 @@ public class ViewAllMemberLoans extends javax.swing.JInternalFrame {
     private void jButtonViewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonViewActionPerformed
         try {
             // TODO add your handling code here:
-            _loan.PrintLoanStatus(jTextAreaLoans, -1, false);
+            _loan.PrintLoanStatus(jTextAreaLoans, 4, false, true);
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(rootPane, "SQl Error " + ex.getMessage());
             this.dispose();

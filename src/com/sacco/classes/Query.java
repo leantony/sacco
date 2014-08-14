@@ -14,7 +14,7 @@ public class Query {
     ResultSet result = null;
 
     public Query() {
-        this.conn = Database.getDBConnection();
+        this.conn = new Database().getConnection();
     }
 
     public int getQeryId() {

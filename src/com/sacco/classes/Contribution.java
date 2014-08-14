@@ -24,8 +24,7 @@ public class Contribution {
     public Contribution() {
         this.conn = null;
         this._member = new Member();
-        Database d = new Database();
-        conn = d.getConnection();
+        conn = new Database().getConnection();
     }
 
     public long getId() {

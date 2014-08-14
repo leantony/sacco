@@ -22,7 +22,6 @@ public class ApplyForLoan extends javax.swing.JInternalFrame {
     /**
      * Creates new form NewJInternalFrame
      *
-     * @throws javax.security.auth.login.AccountException
      */
     public ApplyForLoan() {
         try {

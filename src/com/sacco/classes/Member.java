@@ -38,7 +38,7 @@ public class Member {
     ResultSet result = null;
 
     public Member() {
-        this.conn = Database.getDBConnection();
+        this.conn = new Database().getConnection();
     }
 
     protected static void setAdmin(boolean status) {
@@ -322,7 +322,7 @@ public class Member {
                     if (result.getInt("id") == Secretary.SEC_POS_ID) {
                         return 2;
                     } else {
-                        return 3;
+                        return result.getInt("id");
                     }
                 }
             } finally {

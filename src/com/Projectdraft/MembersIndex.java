@@ -23,26 +23,25 @@ public class MembersIndex extends javax.swing.JFrame {
      */
     public MembersIndex() {
         initComponents();
-
-        // disable administrative controls
-        jMenuAdministrator.setVisible(false);
-        jMenuSec.setVisible(false);
-        jMenuTreasuere.setVisible(false);
         try {
+            // disable administrative controls
+            jMenuAdministrator.setVisible(false);
+            jMenuSec.setVisible(false);
+            jMenuTreasuere.setVisible(false);
+            int m_pos = _member.checkUserPosition();
+
             // check if a user is an admin
-            if (_member.checkUserPosition() == 1) {
-                // am an admin, so enable my menu
-                //JOptionPane.showMessageDialog(rootPane, _member.checkIfUserIsAdmin());
+            if (m_pos == 1) {
                 jMenuAdministrator.setVisible(true);
             }
             // check if member is a secretary
-            if (_member.checkUserPosition() == 2) {
+            if (m_pos == 2) {
                 jMenuSec.setVisible(true);
             } else {
                 jMenuSec.setVisible(false);
             }
             // check if a member is a treasurer
-            if (_member.checkUserPosition() == 3) {
+            if (m_pos == 3) {
                 jMenuTreasuere.setVisible(true);
             } else {
                 jMenuTreasuere.setVisible(false);
