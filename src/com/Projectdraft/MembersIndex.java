@@ -47,11 +47,11 @@ public class MembersIndex extends javax.swing.JFrame {
                 jMenuTreasuere.setVisible(false);
             }
         } catch (SQLException ex) {
-            // we just disable all 'important' menus
+            // disable official menus for ordinary members
             jMenuAdministrator.setVisible(false);
             jMenuSec.setVisible(false);
-            jMenuTreasuere.setVisible(false);
-        }
+            jMenuTreasuere.setVisible(false);}
+        
 
     }
 

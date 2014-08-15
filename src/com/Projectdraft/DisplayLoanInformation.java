@@ -24,10 +24,10 @@ public class DisplayLoanInformation extends javax.swing.JInternalFrame {
         initComponents();
         jTextAreaLoanInfo.setEditable(false);
         try {
-            if (_loan.GetMemberLoanCount(3) == 0) {
+            if (_loan.GetMemberLoanCount(3, false) == 0) {
                 jLabel1.setText("You have not applied for any loans yet. Apply for one then the functions below will be available");
                 HideElements(false);
-            } else if (_loan.GetMemberLoanCount(0) >= 1) {
+            } else if (_loan.GetMemberLoanCount(0, false) >= 1) {
                 jLabel1.setText("You have a pending loan to pay. Please complete your payment in due time");
             } else {
                 jLabel1.setText("You have completely paid for all your loans. You can apply for another");

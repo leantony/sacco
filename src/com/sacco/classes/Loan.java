@@ -27,6 +27,7 @@ public class Loan {
     private static double LOAN_INTEREST;
     private static final short LOAN_CLEARED = 1;
     private static final short LOAN_NOT_CLEARED = 0;
+    private boolean APPROVED = false;
     private static double MIN_LOAN = 5000;
     private static double MAX_LOAN = 1000000;
     private static final double MAX_ALLOWED_PAYMENT = 1000000;
@@ -193,8 +194,8 @@ public class Loan {
         }
         // a user can only apply for a loan if they do't have any pending loans. so we get the count of their uncleared loans
         // in the db, a loan is uncleared if it's cleared status is 0. implies it hasn't been fully paid
-        if (GetMemberLoanCount(LOAN_NOT_CLEARED) >= 1) {
-            throw new AccountException("You have pending loans to pay. Please clear them first to be able to continue");
+        if (GetMemberLoanCount(LOAN_NOT_CLEARED, false) >= 1) {
+            throw new AccountException("Please wait for your submitted loan to be approved");
         }
         double multiplier;
         // at least 1.5x
@@ -210,7 +211,7 @@ public class Loan {
 
     // allow members to request loans
     public long RequestLoan(double amount) throws SQLException, AccountException {
-        if (GetMemberLoanCount(LOAN_NOT_CLEARED) >= 1) {
+        if (GetMemberLoanCount(LOAN_NOT_CLEARED, true) >= 1) {
             throw new AccountException("You have pending loans to pay. Please clear them first to be able to continue");
         }
         setTotalAmount(amount);
@@ -390,12 +391,12 @@ public class Loan {
         }
     }
 
-    public int GetMemberLoanCount(int cleared) throws SQLException {
+    public int GetMemberLoanCount(int cleared, boolean ApprovedStatus) throws SQLException {
         String sql;
-        if (cleared == 0) {
-            sql = "SELECT COUNT(member_id) FROM loans WHERE member_id = ? AND cleared = 0";
-        } else if (cleared == 1) {
-            sql = "SELECT COUNT(member_id) FROM loans WHERE member_id = ? AND cleared = 1";
+        if (cleared == 0 && !ApprovedStatus) {
+            sql = "SELECT COUNT(member_id) FROM loans WHERE member_id = ? AND cleared = 0 AND Approved = 0";
+        } else if (cleared == 1 && ApprovedStatus) {
+            sql = "SELECT COUNT(member_id) FROM loans WHERE member_id = ? AND cleared = 1 AND Approved = 1";
         } else {
             sql = "SELECT COUNT(member_id) FROM loans WHERE member_id = ?";
         }
@@ -443,6 +444,8 @@ public class Loan {
                 l.DateSubmitted = result.getTimestamp("DateSubmitted");
                 l.PaybackPeriod = result.getDouble("paybackDate");
                 l.LoanType = result.getString("loanType");
+                l.APPROVED = result.getBoolean("Approved");
+                
                 loanInfo.add(l);
             }
         } finally {
@@ -460,7 +463,7 @@ public class Loan {
         }
         double la, pa = 0, ta = 0;
         Date d = Date.valueOf(LocalDate.now());
-        jt.append("LOAN_AMOUNT\tTOTAL_AMOUNT\tLOAN_PERIOD(Months)\tLOAN_TYPE\tPAID_AMOUNT\n \n");
+        jt.append("LOAN_AMOUNT\tTOTAL_AMOUNT\tLOAN_PERIOD(Months)\tAPPROVED\tLOAN_TYPE\tPAID_AMOUNT\n \n");
         for (Loan loan : loanInfo) {
             la = Double.parseDouble(Application.df.format(loan.getLoanAmount()));
             pa = Double.parseDouble(Application.df.format(loan.getAmountPaid()));
@@ -468,6 +471,11 @@ public class Loan {
             jt.append(la + "\t\t");
             jt.append(ta + "\t");
             jt.append("\t\t" + Application.df.format(loan.getPaybackPeriod() * 12) + "\t");
+            if (loan.APPROVED){
+                jt.append("YES\t");
+            } else {
+                jt.append("NO\t");
+            }
             jt.append(loan.getLoanType() + "\t");
             jt.append(pa + "\n");
             d = new Date(loan.getDateSubmitted().getTime());
@@ -475,7 +483,7 @@ public class Loan {
         jt.append("\n");
         if (DisplayExtraInfo) {
             jt.append("==============================================================================\n\n");
-            jt.append("For your selected option, You currently have " + GetMemberLoanCount(cleared) + " loans\n");
+            jt.append("For your selected option, You currently have " + GetMemberLoanCount(cleared,true) + " loans\n");
             jt.append("Regarding your current loan, you've paid ksh " + pa + " since " + d + "\n");
             jt.append("You owe the sacco ksh " + Application.df.format(ta - pa) + ". \t Note: A negative value indicates an overpayment\n\n");
             jt.append("LOAN_AMOUNT  ==> represents the amount(s) you took as a loan\n");
