@@ -126,19 +126,19 @@ public class WelcomeScreen extends javax.swing.JFrame {
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField1ActionPerformed
-    
+
     private void LoginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoginButtonActionPerformed
         // launch  the login form
         this.dispose();
         new LoginScreen().setVisible(true);
     }//GEN-LAST:event_LoginButtonActionPerformed
-    
+
     private void RegisterButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RegisterButtonActionPerformed
         // launch the Add Member form
         this.dispose();
         new AddMember().setVisible(true);
     }//GEN-LAST:event_RegisterButtonActionPerformed
-    
+
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         Application.Exit(0);
     }//GEN-LAST:event_jButton1ActionPerformed

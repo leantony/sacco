@@ -33,7 +33,7 @@ public class RepayLoan extends javax.swing.JInternalFrame {
 
     private void updateForm() {
         try {
-            if (_loan.GetMemberLoanCount(0, false) >= 1){
+            if (_loan.GetMemberLoanCount(0, false) >= 1) {
                 jLabelStatus.setText("<html>Please wait until we approve your loan so that you can pay it<br></html>");
                 jPanel1.setVisible(false);
             }

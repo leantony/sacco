@@ -50,8 +50,8 @@ public class MembersIndex extends javax.swing.JFrame {
             // disable official menus for ordinary members
             jMenuAdministrator.setVisible(false);
             jMenuSec.setVisible(false);
-            jMenuTreasuere.setVisible(false);}
-        
+            jMenuTreasuere.setVisible(false);
+        }
 
     }
 
@@ -142,6 +142,7 @@ public class MembersIndex extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Sacco Application");
+        setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         setPreferredSize(new java.awt.Dimension(1024, 768));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {

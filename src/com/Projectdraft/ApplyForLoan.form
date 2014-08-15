@@ -160,11 +160,9 @@
                       <EmptySpace pref="36" max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Component id="jComboBoxLoanType" pref="134" max="32767" attributes="0"/>
-                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Component id="jTextFieldLoanAmnt" max="32767" attributes="0"/>
-                              <Component id="jLabel3" pref="134" max="32767" attributes="0"/>
-                              <Component id="jTextFieldPayBackPeriod" max="32767" attributes="0"/>
-                          </Group>
+                          <Component id="jTextFieldLoanAmnt" max="32767" attributes="0"/>
+                          <Component id="jLabel3" pref="134" max="32767" attributes="0"/>
+                          <Component id="jTextFieldPayBackPeriod" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>

@@ -353,9 +353,11 @@ public class ApplyForLoan extends javax.swing.JInternalFrame {
 //            JOptionPane.showMessageDialog(rootPane, "According to your contributions, you can be able to recieve a max loan of ksh " + max_amnt + "\n You can now submitt your loan", "Information", JOptionPane.INFORMATION_MESSAGE);
             if (amnt > max_amnt) {
                 JOptionPane.showMessageDialog(rootPane, "Please change your loan to be less or equal to your allowed maximmum");
+                jTextFieldLoanAmnt.requestFocus();
             } else {
                 _loan.RequestLoan(amnt);
-                JOptionPane.showMessageDialog(rootPane, "Your loan submission was successful", "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(rootPane, "Thank You. Your loan submission was successful", "Success", JOptionPane.INFORMATION_MESSAGE);
+                this.dispose();
             }
 
         } catch (SQLException e) {

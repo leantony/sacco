@@ -29,7 +29,7 @@ public class ViewLoanPayments extends javax.swing.JInternalFrame {
         this._loan = new Loan();
         initComponents();
         try {
-            if (_loan.GetMemberLoanCount(0, false) >= 1){
+            if (_loan.GetMemberLoanCount(0, false) >= 1) {
                 jLabel1.setText("<html>You do not have any approved loans yet.<br>We have to approve a loan before you pay for it</html>");
                 HideElements(false);
             }

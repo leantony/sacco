@@ -27,10 +27,10 @@ public class DisplayLoanInformation extends javax.swing.JInternalFrame {
             if (_loan.GetMemberLoanCount(3, false) == 0) {
                 jLabel1.setText("You have not applied for any loans yet. Apply for one then the functions below will be available");
                 HideElements(false);
-            } else if (_loan.GetMemberLoanCount(0, false) >= 1) {
+            } else if (_loan.GetMemberLoanCount(0, true) == 1) {
                 jLabel1.setText("You have a pending loan to pay. Please complete your payment in due time");
             } else {
-                jLabel1.setText("You have completely paid for all your loans. You can apply for another");
+                jLabel1.setText("Here is Your loan report");
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(rootPane, "SQL error caught", "Error", JOptionPane.ERROR_MESSAGE);
