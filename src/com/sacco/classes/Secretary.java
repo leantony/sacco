@@ -5,13 +5,14 @@ import java.sql.Statement;
 
 public class Secretary extends Member {
 
-    public static int SEC_POS_ID = 2;
+    public static int SEC_POSITION_ID = 2;
 
     public boolean ListAllQueries() {
         return false;
     }
 
     public int RecordMinutes(String minutes, String title) throws SQLException {
+        this.conn = new Database().getConnection();
         try {
             String sql = "INSERT INTO `minutes` (`member_id`, `title`, `content`) VALUES (?, ?, ?)";
             stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -32,21 +33,6 @@ public class Secretary extends Member {
             }
         } finally {
             close();
-        }
-    }
-
-    private void close() {
-        if (result != null) {
-            try {
-                result.close();
-            } catch (SQLException e) {
-            }
-        }
-        if (stmt != null) {
-            try {
-                stmt.close();
-            } catch (SQLException e) {
-            }
         }
     }
 }

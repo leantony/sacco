@@ -10,7 +10,7 @@ import javax.swing.JTextArea;
 
 public class Admin extends Member {
 
-    public static int ADMIN_POS_ID = 1;
+    public static int ADMIN_POSITION_ID = 1;
 
     // anyone instantiating this class will have to be an admin
     public Admin() throws AccountException {
@@ -19,19 +19,20 @@ public class Admin extends Member {
         }
     }
 
-    public static boolean Logout(long id) throws AccountException {
+    public static boolean Logout(long memberID) throws AccountException {
         // incase the usr was an admin, unset the admin variable
         if (isAdmin()) {
             //setAdmin(false);
-            loggedInUsers.remove(id);
-            return loggedInUsers.containsKey(id) == false;
+            loggedInUsers.remove(memberID);
+            return loggedInUsers.containsKey(memberID) == false;
         } else {
             throw new AccountException("You are not authorized to perform this action");
         }
     }
 
-    public boolean AlterMemberAccount(long id, int status) throws SQLException, AccountException {
+    public boolean AlterMemberAccount(long memberID, int status) throws SQLException, AccountException {
         String sql;
+        this.conn = new Database().getConnection();
         if (status == 0) {
             // deactivate account
             sql = "UPDATE members SET active = 0 WHERE id = ?";
@@ -46,7 +47,7 @@ public class Admin extends Member {
         }
         try {
             stmt = conn.prepareStatement(sql);
-            stmt.setLong(1, id);
+            stmt.setLong(1, memberID);
             return stmt.executeUpdate() == 1;
         } finally {
             close();
@@ -54,25 +55,31 @@ public class Admin extends Member {
     }
 
     // stores member info in a list to be used later
-    private void getAllMemberInfo() throws SQLException {
+    public void getAllMemberInfo() throws SQLException {
+        this.conn = new Database().getConnection();
         String sql = "SELECT * FROM members";
-        stmt = conn.prepareStatement(sql);
-        result = stmt.executeQuery();
-        while (result.next()) {
-            Member m = new Member();
-            m.t_id = result.getLong("id");
-            m.setFirstname(result.getString("firstname"));
-            m.setLastname(result.getString("lastname"));
-            m.setAddress(result.getString("address"));
-            m.setDob(result.getDate("dob"));
-            m.setEmail(result.getString("email"));
-            m.setGender(result.getString("gender"));
-            m.setMobileno(result.getInt("mobileno"));
-            allMembers.add(m);
+        try {
+            stmt = conn.prepareStatement(sql);
+            result = stmt.executeQuery();
+            while (result.next()) {
+                Member m = new Member();
+                m.t_id = result.getLong("id");
+                m.setFirstname(result.getString("firstname"));
+                m.setLastname(result.getString("lastname"));
+                m.setAddress(result.getString("address"));
+                m.setDob(result.getDate("dob"));
+                m.setEmail(result.getString("email"));
+                m.setGender(result.getString("gender"));
+                m.setMobileno(result.getInt("mobileno"));
+                allMembers.add(m);
+            }
+        } finally {
+            close();
         }
     }
 
     private ResultSet getAllContributions() throws SQLException {
+        this.conn = new Database().getConnection();
         String sql = "SELECT * FROM contributions";
         stmt = conn.prepareStatement(sql);
         result = stmt.executeQuery();
@@ -94,6 +101,7 @@ public class Admin extends Member {
     }
 
     public void DisplayAllMembers(JComboBox combobox) throws SQLException {
+        this.conn = new Database().getConnection();
         DefaultComboBoxModel Model = new DefaultComboBoxModel();
         // no need to re-execute the query while we already have a loaded list
         if (allMembers.isEmpty()) {
@@ -115,32 +123,29 @@ public class Admin extends Member {
         if (allMembers.isEmpty()) {
             getAllMemberInfo();
         }
-        try {
-            jt.append("Here are all the members in the sacco \n\n");
-            jt.append("MEMBER_ID\t\tFIRSTNAME\t\tLASTNAME\t\tGENDER\t\tDATE_OF_BIRTH\tADDRESS\t\tEMAIL\n\n");
-            for (Member _member : allMembers) {
-                jt.append(_member.t_id + "\t\t");
-                jt.append(_member.getFirstname());
-                jt.append("\t\t");
-                jt.append(_member.getLastname());
-                jt.append("\t\t");
-                jt.append(_member.getGender());
-                jt.append("\t\t");
-                jt.append(_member.getDob().toString());
-                jt.append("\t\t");
-                jt.append(_member.getAddress());
-                jt.append("\t\t");
-                jt.append(_member.getEmail());
-                jt.append("\n");
-            }
-        } finally {
-            close();
+        jt.append("Here are all the members in the sacco \n\n");
+        jt.append("MEMBER_ID\t\tFIRSTNAME\t\tLASTNAME\t\tGENDER\t\tDATE_OF_BIRTH\tADDRESS\t\tEMAIL\n\n");
+        for (Member _member : allMembers) {
+            jt.append(_member.t_id + "\t\t");
+            jt.append(_member.getFirstname());
+            jt.append("\t\t");
+            jt.append(_member.getLastname());
+            jt.append("\t\t");
+            jt.append(_member.getGender());
+            jt.append("\t\t");
+            jt.append(_member.getDob().toString());
+            jt.append("\t\t");
+            jt.append(_member.getAddress());
+            jt.append("\t\t");
+            jt.append(_member.getEmail());
+            jt.append("\n");
         }
     }
 
-    public boolean AlterMemeberPosition(long id, String posname, int Action) throws SQLException {
+    public boolean AlterMemeberPosition(long memberID, String posname, int Action) throws SQLException {
         String sql;
         long pid = getPositionId(posname);
+        this.conn = new Database().getConnection();
         // insert position
         if (Action == 1) {
             sql = "INSERT INTO `members_positions` (`position_id`, `member_id`) VALUES (?, ?)";
@@ -151,14 +156,15 @@ public class Admin extends Member {
         try {
             stmt = conn.prepareStatement(sql);
             stmt.setLong(1, pid);
-            stmt.setLong(2, id);
+            stmt.setLong(2, memberID);
             return stmt.executeUpdate() == 1;
         } finally {
             close();
         }
     }
 
-    public boolean AlterMemberContribution(long id, int Action) throws SQLException {
+    public boolean AlterMemberContribution(long contributionID, int Action) throws SQLException {
+        this.conn = new Database().getConnection();
         String sql;
         if (Action == 0) {
             // dissaprove contribution
@@ -172,7 +178,7 @@ public class Admin extends Member {
         }
         try {
             stmt = conn.prepareStatement(sql);
-            stmt.setLong(1, id);
+            stmt.setLong(1, contributionID);
             return stmt.executeUpdate() == 1;
         } finally {
             close();
@@ -180,6 +186,7 @@ public class Admin extends Member {
     }
 
     public boolean ChangeLoanInterest(double interest) throws SQLException {
+        this.conn = new Database().getConnection();
         try {
             String sql = "UPDATE settings SET value = ? WHERE name = 'interest'";
             stmt = conn.prepareStatement(sql);
@@ -187,21 +194,6 @@ public class Admin extends Member {
             return stmt.executeUpdate() == 1;
         } finally {
             close();
-        }
-    }
-
-    private void close() {
-        if (result != null) {
-            try {
-                result.close();
-            } catch (SQLException e) {
-            }
-        }
-        if (stmt != null) {
-            try {
-                stmt.close();
-            } catch (SQLException e) {
-            }
         }
     }
 }

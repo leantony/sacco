@@ -5,14 +5,13 @@ import javax.swing.JTextArea;
 
 public class Treasurer extends Member {
 
-    public static int TREASURER_POS_ID = 3;
+    public static int TREASURER_POSITION_ID = 3;
     Contribution _contrib;
     Loan _loan;
 
     public Treasurer() {
         this._loan = new Loan();
         this._contrib = new Contribution();
-
     }
 
     public void ViewLoanAndContributionTotals(JTextArea jt) throws SQLException {

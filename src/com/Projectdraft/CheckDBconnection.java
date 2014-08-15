@@ -19,7 +19,7 @@ public class CheckDBconnection {
      */
     public static void main(String[] args) throws Exception {
         // TODO code application logic here
-        System.out.println(Database.getDBConnection());
+        System.out.println(new Database().getConnection());
+        System.exit(0);
     }
-
 }

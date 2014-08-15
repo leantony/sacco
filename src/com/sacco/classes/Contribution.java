@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JTextArea;
 
-public class Contribution {
+public class Contribution implements AutoCloseable {
 
     private long id;
     private int amount;
@@ -16,15 +16,12 @@ public class Contribution {
     private static double MIN_CONTRIBUTION = 1000;
     private static double MAX_CONTRIBUTION = 1000000;
     Member _member;
-
     PreparedStatement stmt = null;
-    Connection conn;
+    Connection conn = null;
     ResultSet result = null;
 
     public Contribution() {
-        this.conn = null;
         this._member = new Member();
-        conn = new Database().getConnection();
     }
 
     public long getId() {
@@ -68,6 +65,7 @@ public class Contribution {
     }
 
     public long makeContribution() throws SQLException {
+        this.conn = new Database().getConnection();
         try {
             String sql = "INSERT INTO `contributions` (`member_id`, `Amount`, `paymentMethod`) VALUES (?, ?, ?)";
             stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -92,6 +90,7 @@ public class Contribution {
     }
 
     public double getAvgContributions(long id, int ApprovedStatus) throws SQLException {
+        this.conn = new Database().getConnection();
         if (!Member.isAdmin()) {
             id = Member.getId();
         }
@@ -118,6 +117,7 @@ public class Contribution {
     }
 
     public double getTotalContributions(long id, int ApprovedStatus) throws SQLException {
+        this.conn = new Database().getConnection();
         if (!Member.isAdmin()) {
             id = Member.getId();
         }
@@ -144,6 +144,7 @@ public class Contribution {
     }
 
     public int getMemberContributions(int ApprovedStatus) throws SQLException {
+        this.conn = new Database().getConnection();
         String sql;
         if (ApprovedStatus == 0) {
             sql = "SELECT COUNT('member_id') FROM contributions WHERE member_id = ? AND Approved = 0";
@@ -168,6 +169,7 @@ public class Contribution {
 
     public void ViewAllMemberContribuitons(JTextArea jt) throws SQLException {
         jt.setText("");
+        this.conn = new Database().getConnection();
         try {
             String sql = "SELECT * FROM contributions WHERE member_id = ?";
             stmt = conn.prepareStatement(sql);
@@ -205,7 +207,8 @@ public class Contribution {
         }
     }
 
-    private void close() {
+    @Override
+    public void close() {
         if (result != null) {
             try {
                 result.close();
@@ -215,6 +218,13 @@ public class Contribution {
         if (stmt != null) {
             try {
                 stmt.close();
+            } catch (SQLException e) {
+            }
+        }
+        if (conn != null) {
+            try {
+                conn.close();
+                conn = null;
             } catch (SQLException e) {
             }
         }

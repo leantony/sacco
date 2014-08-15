@@ -152,7 +152,7 @@ public class EditLoanInterest extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private double getYearlyInterest(double monthly) {
-        double YearlyInterest = monthly / 12;
+        double YearlyInterest = monthly * 12;
         return Double.parseDouble(Application.df.format(YearlyInterest));
     }
 

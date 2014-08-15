@@ -7,7 +7,7 @@ import java.util.List;
 import javax.security.auth.login.AccountException;
 import javax.swing.JTextArea;
 
-public class Loan {
+public class Loan implements AutoCloseable {
 
     // define loan table datatypes as potrayed by the Database
     private long id;
@@ -36,14 +36,12 @@ public class Loan {
     Contribution _contribution;
     PreparedStatement stmt = null;
     Connection conn;
-    Database d = new Database();
     ResultSet result = null;
     Member m;
     LoanPayment p;
 
     public Loan() {
         this._contribution = new Contribution();
-        this.conn = d.getConnection();
         this.m = new Member();
         this.p = new LoanPayment();
         try {
@@ -77,6 +75,7 @@ public class Loan {
 
     public final double getLoanInterestFromDB() throws SQLException {
         try {
+            this.conn = new Database().getConnection();
             String sql = "SELECT value FROM settings WHERE name = 'interest'";
             stmt = conn.prepareStatement(sql);
             result = stmt.executeQuery();
@@ -218,6 +217,7 @@ public class Loan {
         if (GetMemberLoanCount(LOAN_NOT_CLEARED, true) >= 1) {
             throw new AccountException("You have pending loans to pay. Please clear them first to be able to continue");
         }
+        this.conn = new Database().getConnection();
         setTotalAmount(amount);
         try {
             String sql = "INSERT INTO `loans` "
@@ -275,6 +275,7 @@ public class Loan {
             // not really an indication of an error, but since the function return T/F this is the best way to do so
             throw new AccountException("You loan is fully paid. \nYour overpayment of ksh " + Application.df.format(excess) + " will be added to your contributions");
         } else {
+            this.conn = new Database().getConnection();
             // implies that the user hasn't paid enough, so we allow them to pay up
             try {
                 String sql = "UPDATE `loans` SET `paidAmount`= `paidAmount` + ? WHERE  `id`=?";
@@ -292,17 +293,13 @@ public class Loan {
     }
 
     // this shud be calld only after payment >= Loan+interest
-    protected boolean clearLoan(double excess, long id) throws SQLException {
-        try {
-            String sql = "UPDATE `loans` SET cleared = ? WHERE `id`=?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setDouble(1, LOAN_CLEARED);
-            stmt.setLong(2, id);
-            int rows = stmt.executeUpdate();
-            return addExcessToContributions(excess) == rows;
-        } finally {
-            close();
-        }
+    private boolean clearLoan(double excess, long id) throws SQLException {
+        String sql = "UPDATE `loans` SET cleared = ? WHERE `id`=?";
+        stmt = conn.prepareStatement(sql);
+        stmt.setDouble(1, LOAN_CLEARED);
+        stmt.setLong(2, id);
+        int rows = stmt.executeUpdate();
+        return addExcessToContributions(excess) == rows;
     }
 
     private int addExcessToContributions(double excess) throws SQLException {
@@ -310,6 +307,7 @@ public class Loan {
             // just do nothing and return 1
             return 1;
         }
+        this.conn = new Database().getConnection();
         String sql = "INSERT INTO `contributions` (`member_id`, `Amount`, `paymentMethod`, `Approved`) VALUES (?, ?, ?, ?)";
         stmt = conn.prepareStatement(sql);
         stmt.setLong(1, Member.getId());
@@ -321,6 +319,7 @@ public class Loan {
 
     public double GetLoanTotal(int cleared) throws SQLException {
         String sql;
+        this.conn = new Database().getConnection();
         if (cleared == 0) {
             sql = "SELECT SUM(LoanAmount) FROM loans WHERE cleared = 0";
         } else if (cleared == 1) {
@@ -342,6 +341,7 @@ public class Loan {
     }
 
     public double getPaymentsTotal() throws SQLException {
+        this.conn = new Database().getConnection();
         String sql = "SELECT SUM(paidAmount) FROM loans";
         try {
             stmt = conn.prepareStatement(sql);
@@ -357,6 +357,7 @@ public class Loan {
     }
 
     public double getInterestTotal() throws SQLException {
+        this.conn = new Database().getConnection();
         String sql = "SELECT SUM(TotalAmount) FROM loans WHERE cleared = 1 OR cleared = 0";
         try {
             stmt = conn.prepareStatement(sql);
@@ -373,6 +374,7 @@ public class Loan {
 
     public int GetOverallLoanCount(int cleared) throws SQLException {
         String sql;
+        this.conn = new Database().getConnection();
         if (cleared == 0) {
             sql = "SELECT COUNT(id) FROM loans WHERE cleared = 0";
         } else if (cleared == 1) {
@@ -397,6 +399,7 @@ public class Loan {
 
     public int GetMemberLoanCount(int cleared, boolean ApprovedStatus) throws SQLException {
         String sql;
+        this.conn = new Database().getConnection();
         if (cleared == 0 && ApprovedStatus) {
             sql = "SELECT COUNT(member_id) FROM loans WHERE member_id = ? AND Approved = 1";
         } else if (cleared == 0 && !ApprovedStatus) {
@@ -422,6 +425,7 @@ public class Loan {
 
     public void getLoanInfo(int cleared, boolean allMembers) throws SQLException {
         String sql;
+        this.conn = new Database().getConnection();
         if (allMembers && Member.isAdmin()) {
             sql = "SELECT * FROM `loans`";
             stmt = conn.prepareStatement(sql);
@@ -451,7 +455,6 @@ public class Loan {
                 l.PaybackPeriod = result.getDouble("paybackDate");
                 l.LoanType = result.getString("loanType");
                 l.LOAN_APPROVED = result.getBoolean("Approved");
-
                 loanInfo.add(l);
             }
         } finally {
@@ -461,6 +464,7 @@ public class Loan {
 
     public void PrintLoanStatus(JTextArea jt, int cleared, boolean DisplayExtraInfo, boolean allMembers) throws SQLException {
         jt.setText("");
+        this.conn = new Database().getConnection();
         loanInfo.clear();
         if (Member.isAdmin()) {
             getLoanInfo(cleared, allMembers);
@@ -500,7 +504,8 @@ public class Loan {
         }
     }
 
-    private void close() {
+    @Override
+    public void close() {
         if (result != null) {
             try {
                 result.close();
@@ -510,6 +515,13 @@ public class Loan {
         if (stmt != null) {
             try {
                 stmt.close();
+            } catch (SQLException e) {
+            }
+        }
+        if (conn != null) {
+            try {
+                conn.close();
+                conn = null;
             } catch (SQLException e) {
             }
         }

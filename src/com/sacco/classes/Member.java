@@ -9,7 +9,7 @@ import javax.security.auth.login.AccountException;
 import javax.swing.JOptionPane;
 import javax.swing.JRootPane;
 
-public class Member {
+public class Member implements AutoCloseable {
 
     protected static long id;
     private String firstname;
@@ -24,22 +24,21 @@ public class Member {
     private Timestamp LastModifiedDate;
     private boolean AccountStatus;
     protected long t_id = 0;
+
     // for account active/ not. by default, a created account is active
-    public static final short ACTIVE = 1;
-    public static final short INACTIVE = 0;
+    public static final short ACCOUNT_ACTIVE = 1;
+    public static final short ACCOUNT_INACTIVE = 0;
     private static boolean admin = false;
+
     // define member datatypes as potrayed in the db
     //static HashSet<Long> loggedInUsers = new HashSet<>();
     static Map<Long, String> loggedInUsers = new HashMap<>();
     protected List<Member> allMembers = new ArrayList<>();
+
     // for Database stuff
     PreparedStatement stmt = null;
-    Connection conn;
+    Connection conn = null;
     ResultSet result = null;
-
-    public Member() {
-        this.conn = new Database().getConnection();
-    }
 
     protected static void setAdmin(boolean status) {
         admin = status;
@@ -139,14 +138,15 @@ public class Member {
     }
 
     // login a member
-    public boolean Login(long id, String password) throws SQLException, AccountException {
+    public boolean Login(long memberID, String password) throws SQLException, AccountException {
         if (Member.CheckLoggedIn()) {
             throw new AccountException("You are already logged in");
         }
+        this.conn = new Database().getConnection();
         try {
             String sql = "SELECT password, firstname, active FROM members WHERE id=? AND password=MD5(?)";
             stmt = conn.prepareStatement(sql);
-            stmt.setLong(1, id);
+            stmt.setLong(1, memberID);
             stmt.setString(2, password);
             result = stmt.executeQuery();
             if (result.next()) {
@@ -154,10 +154,10 @@ public class Member {
                 if (!result.getBoolean("active")) {
                     throw new AccountException("Your account is not activated. Please contact the administrator to fix this");
                 }
-                Member.setId(id);
+                Member.setId(memberID);
                 // add member details into the hashmap
-                loggedInUsers.put(id, result.getString("firstname"));
-                return loggedInUsers.containsKey(id);
+                loggedInUsers.put(memberID, result.getString("firstname"));
+                return loggedInUsers.containsKey(memberID);
             }
         } finally {
             close();
@@ -182,11 +182,12 @@ public class Member {
         if (isAdmin()) {
             setAdmin(false);
         }
-        loggedInUsers.remove(id);
-        return loggedInUsers.containsKey(id) == false;
+        loggedInUsers.remove(Member.id);
+        return loggedInUsers.containsKey(Member.id) == false;
     }
 
     public long AddMember() throws SQLException, AccountException {
+        this.conn = new Database().getConnection();
         try {
             String sql
                     = "INSERT INTO `members` "
@@ -220,6 +221,7 @@ public class Member {
     }
 
     public long getPositionId(String posname) throws SQLException {
+        this.conn = new Database().getConnection();
         try {
             String sql = "SELECT `id` FROM positions WHERE `name` LIKE ? LIMIT 1";
             stmt = conn.prepareStatement(sql);
@@ -234,15 +236,16 @@ public class Member {
         return -1;
     }
 
-    public void getMemberInfo(Member m, long id) throws SQLException {
-        // if a user invokes this as a normal user, then we don't need them passing any id in. just default to theirs
+    public void getMemberInfo(Member m, long memberID) throws SQLException {
+        // if a user invokes this as a normal user, then we don't need them passing any memberID in. just default to theirs
         if (!isAdmin()) {
-            id = Member.getId();
+            memberID = Member.getId();
         }
+        this.conn = new Database().getConnection();
         try {
             String sql = "SELECT * FROM `members` WHERE  `id`=?";
             stmt = conn.prepareStatement(sql);
-            stmt.setLong(1, id);
+            stmt.setLong(1, memberID);
             result = stmt.executeQuery();
             while (result.next()) {
                 m.lastname = result.getString("lastname");
@@ -262,18 +265,19 @@ public class Member {
         }
     }
 
-    public boolean EditPassword(String password, long id) throws AccountException, SQLException {
+    public boolean EditPassword(String password, long memberID) throws AccountException, SQLException {
         if (!isAdmin()) {
-            id = Member.getId();
+            memberID = Member.getId();
         }
+        this.conn = new Database().getConnection();
         if (CheckLoggedIn()) {
             try {
-                //getMemberInfo(_member, id);
+                //getMemberInfo(_member, memberID);
                 // now comes the sql part of the activity
                 String sql = "UPDATE `members` SET `password`=MD5(?) WHERE  `id`= ?";
                 stmt = conn.prepareStatement(sql);
                 stmt.setString(1, password);
-                stmt.setLong(2, id);
+                stmt.setLong(2, memberID);
                 return stmt.executeUpdate() == 1;
             } finally {
                 close();
@@ -284,6 +288,7 @@ public class Member {
     }
 
     public boolean EditMemberInfo(Member m) throws AccountException, SQLException {
+        this.conn = new Database().getConnection();
         if (CheckLoggedIn()) {
             try {
                 String sql = "UPDATE `members` SET "
@@ -308,6 +313,7 @@ public class Member {
     }
 
     public int checkUserPosition() throws SQLException {
+        this.conn = new Database().getConnection();
         if (CheckLoggedIn()) {
             try {
                 String sql = "SELECT id FROM positions JOIN members_positions ON positions.id = members_positions.position_id AND member_id = ?";
@@ -315,11 +321,11 @@ public class Member {
                 stmt.setLong(1, Member.getId());
                 result = stmt.executeQuery();
                 while (result.next()) {
-                    if (result.getInt("id") == Admin.ADMIN_POS_ID) {
+                    if (result.getInt("id") == Admin.ADMIN_POSITION_ID) {
                         setAdmin(true);
                         return 1;
                     }
-                    if (result.getInt("id") == Secretary.SEC_POS_ID) {
+                    if (result.getInt("id") == Secretary.SEC_POSITION_ID) {
                         return 2;
                     } else {
                         return result.getInt("id");
@@ -332,7 +338,8 @@ public class Member {
         return -1;
     }
 
-    private void close() {
+    @Override
+    public void close() {
         if (result != null) {
             try {
                 result.close();
@@ -342,6 +349,13 @@ public class Member {
         if (stmt != null) {
             try {
                 stmt.close();
+            } catch (SQLException e) {
+            }
+        }
+        if (conn != null) {
+            try {
+                conn.close();
+                conn = null;
             } catch (SQLException e) {
             }
         }

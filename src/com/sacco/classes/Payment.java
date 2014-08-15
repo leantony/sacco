@@ -62,6 +62,7 @@ public abstract class Payment {
      * @param id
      * <p>
      * The member's ID </p>
+     * @param amount
      * @return
      * <p>
      * The payment ID </p>
