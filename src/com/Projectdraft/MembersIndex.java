@@ -37,14 +37,10 @@ public class MembersIndex extends javax.swing.JFrame {
             // check if member is a secretary
             if (m_pos == 2) {
                 jMenuSec.setVisible(true);
-            } else {
-                jMenuSec.setVisible(false);
             }
             // check if a member is a treasurer
             if (m_pos == 3) {
                 jMenuTreasuere.setVisible(true);
-            } else {
-                jMenuTreasuere.setVisible(false);
             }
         } catch (SQLException ex) {
             // disable official menus for ordinary members

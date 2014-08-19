@@ -7,8 +7,8 @@ package com.Projectdraft;
 
 import com.sacco.classes.Application;
 import com.sacco.classes.Member;
-import java.sql.Date;
 import java.sql.SQLException;
+import java.time.Instant;
 import javax.security.auth.login.AccountException;
 import javax.swing.JOptionPane;
 
@@ -36,7 +36,7 @@ public class EditMember extends javax.swing.JInternalFrame {
             } else {
                 jRadioButtonFemale.setSelected(true);
             }
-            jTextFieldDob.setText(_member.getDob().toLocalDate().toString());
+            jXDatePickerDOB.setDate(_member.getDob());
             jTextFieldMobileNo.setText(String.valueOf(_member.getMobileno()));
             jTextFieldAddress.setText(_member.getAddress());
             jTextFieldEmail.setText(_member.getEmail());
@@ -60,8 +60,6 @@ public class EditMember extends javax.swing.JInternalFrame {
         jTextFieldFname = new javax.swing.JTextField();
         jTextFieldLname = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jTextFieldDob = new javax.swing.JTextField();
         jTextFieldMobileNo = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
@@ -75,6 +73,8 @@ public class EditMember extends javax.swing.JInternalFrame {
         jRadioButtonFemale = new javax.swing.JRadioButton();
         jLabel5 = new javax.swing.JLabel();
         jRadioButtonMale = new javax.swing.JRadioButton();
+        jXDatePickerDOB = new org.jdesktop.swingx.JXDatePicker();
+        jLabel4 = new javax.swing.JLabel();
 
         setClosable(true);
         setIconifiable(true);
@@ -103,15 +103,8 @@ public class EditMember extends javax.swing.JInternalFrame {
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel2.setText("Last Name");
 
-        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel4.setText("Date of Birth");
-        jLabel4.setToolTipText("");
-
-        jTextFieldDob.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jTextFieldDob.setToolTipText("Enter date of birth (yyyy-mm-dd)");
-
         jTextFieldMobileNo.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jTextFieldMobileNo.setToolTipText("Enter a mobile number");
+        jTextFieldMobileNo.setToolTipText("Enter a mobile number e.g 0712345678");
 
         jLabel7.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel7.setText("Mobile Number");
@@ -120,10 +113,10 @@ public class EditMember extends javax.swing.JInternalFrame {
         jLabel6.setText("Address");
 
         jTextFieldAddress.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jTextFieldAddress.setToolTipText("Your Home Address");
+        jTextFieldAddress.setToolTipText("Your Home Address e.g 768, karen");
 
         jTextFieldEmail.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jTextFieldEmail.setToolTipText("enter an Email Address");
+        jTextFieldEmail.setToolTipText("enter an Email Address e.g myname@domain.org");
 
         jLabel8.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel8.setText("email Address");
@@ -211,6 +204,12 @@ public class EditMember extends javax.swing.JInternalFrame {
                 .addGap(48, 48, 48))
         );
 
+        jXDatePickerDOB.setToolTipText("Select a date of birth");
+
+        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel4.setText("Date of Birth");
+        jLabel4.setToolTipText("");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -227,10 +226,10 @@ public class EditMember extends javax.swing.JInternalFrame {
                             .addComponent(jLabel8)
                             .addComponent(jLabel6)
                             .addComponent(jLabel7)
-                            .addComponent(jLabel4)
                             .addComponent(jLabel1)
-                            .addComponent(jLabel2))
-                        .addGap(54, 54, 54)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel4))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -240,10 +239,10 @@ public class EditMember extends javax.swing.JInternalFrame {
                                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jTextFieldDob, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jTextFieldEmail, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
-                                    .addComponent(jTextFieldAddress, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
-                                    .addComponent(jTextFieldMobileNo))
+                                    .addComponent(jTextFieldEmail, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
+                                    .addComponent(jTextFieldAddress, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
+                                    .addComponent(jTextFieldMobileNo)
+                                    .addComponent(jXDatePickerDOB, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addGap(72, 72, 72)
                                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addGap(58, 58, 58))
@@ -264,23 +263,25 @@ public class EditMember extends javax.swing.JInternalFrame {
                             .addComponent(jTextFieldLname, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel2)))
                     .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(42, 42, 42)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jTextFieldDob, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(49, 49, 49)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jXDatePickerDOB, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4))
-                .addGap(47, 47, 47)
+                .addGap(51, 51, 51)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jTextFieldMobileNo, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel7))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(50, 50, 50)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(jLabel6))
-                            .addComponent(jTextFieldAddress))
-                        .addGap(54, 54, 54)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 62, Short.MAX_VALUE)
+                                .addComponent(jLabel6)
+                                .addGap(54, 54, 54))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(42, 42, 42)
+                                .addComponent(jTextFieldAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jTextFieldEmail, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING)))
@@ -324,24 +325,22 @@ public class EditMember extends javax.swing.JInternalFrame {
             _member.setGender(jRadioButtonMale.getText());
         }
 
-        // the date of birth. please bear with this one. I couldn't find a better way that worked
-        Date d = Application.CheckDateInput(jTextFieldDob.getText());
-        if (d == null) {
-            JOptionPane.showMessageDialog(rootPane, "please enter a date in the format of yyyy-mm-dd", "Invalid date", JOptionPane.ERROR_MESSAGE);
-            jTextFieldDob.requestFocus();
-            return;
-        } else {
-            _member.setDob(d);
+        java.util.Date dt = jXDatePickerDOB.getDate();
+        if (dt == null) {
+            dt = java.util.Date.from(Instant.EPOCH);
         }
+        _member.setDob(new java.sql.Date(dt.getTime()));
 
         // validate for didgits
-        int mobileno = Application.CheckIfNumber(jTextFieldMobileNo.getText());
+        long mobileno = Application.CheckIfLong(jTextFieldMobileNo.getText());
         if (mobileno == -1) {
             JOptionPane.showMessageDialog(rootPane, "please enter valid value for phone number", "Invalid phone number", JOptionPane.ERROR_MESSAGE);
             jTextFieldMobileNo.requestFocus();
             return;
         } else {
-            _member.setMobileno(mobileno);
+            String s = Application.AREA_CODE + Long.toString(mobileno);
+            JOptionPane.showMessageDialog(rootPane, s);
+            _member.setMobileno(Long.parseLong(s));
         }
 
         // the address
@@ -352,9 +351,11 @@ public class EditMember extends javax.swing.JInternalFrame {
         }
 
         // the email
-        if (Application.ValidateEmptyValue(jTextFieldEmail, "please enter an email address")) {
-            _member.setEmail(jTextFieldEmail.getText().trim());
+        if (Application.ValidateEmail(jTextFieldEmail.getText())) {
+            _member.setEmail(jTextFieldEmail.getText());
         } else {
+            JOptionPane.showMessageDialog(rootPane, "please enter a valid email address", "Invalid email", JOptionPane.ERROR_MESSAGE);
+            jTextFieldEmail.requestFocus();
             return;
         }
 
@@ -392,10 +393,10 @@ public class EditMember extends javax.swing.JInternalFrame {
     private javax.swing.JRadioButton jRadioButtonFemale;
     private javax.swing.JRadioButton jRadioButtonMale;
     private javax.swing.JTextField jTextFieldAddress;
-    private javax.swing.JTextField jTextFieldDob;
     private javax.swing.JTextField jTextFieldEmail;
     private javax.swing.JTextField jTextFieldFname;
     private javax.swing.JTextField jTextFieldLname;
     private javax.swing.JTextField jTextFieldMobileNo;
+    private org.jdesktop.swingx.JXDatePicker jXDatePickerDOB;
     // End of variables declaration//GEN-END:variables
 }

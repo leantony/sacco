@@ -8,8 +8,8 @@ package com.Projectdraft;
 import com.sacco.classes.Admin;
 import com.sacco.classes.Application;
 import com.sacco.classes.Member;
-import java.sql.Date;
 import java.sql.SQLException;
+import java.time.Instant;
 import javax.security.auth.login.AccountException;
 import javax.swing.JOptionPane;
 
@@ -18,7 +18,7 @@ import javax.swing.JOptionPane;
  * @author Antony
  */
 public class AdminEditMember extends javax.swing.JInternalFrame {
-
+    
     Admin _admin;
     Member _member;
     long selectedMemberID;
@@ -28,25 +28,33 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
      */
     public AdminEditMember() {
         initComponents();
-
+        
         try {
             this._admin = new Admin();
             this._member = new Member();
             // TODO add your handling code here:
             _admin.DisplayAllMembers(jComboBoxMembers);
             EditMode(false);
+            selectedMemberID = Long.parseLong(jComboBoxMembers.getSelectedItem().toString());
+            if (selectedMemberID == Member.getId()) {
+                jButtonDeactivate.setEnabled(false);
+                jButtonDelete.setEnabled(false);
+                jButtonActivate.setEnabled(false);
+                jButtonDelete.setToolTipText("You can delete any other account but not your own");
+                jButtonDeactivate.setToolTipText("You can deactivate any other account but not your own");
+            }
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(rootPane, "SQL error", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "SQL error " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             this.dispose();
         } catch (AccountException ex) {
             JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Access denied", JOptionPane.ERROR_MESSAGE);
             this.dispose();
         }
     }
-
+    
     private void EditMode(boolean edit) {
         jTextFieldAddress.setEditable(edit);
-        jTextFieldDob.setEditable(edit);
+        jXDatePickerDOB.setEditable(edit);
         jTextFieldFname.setEditable(edit);
         jTextFieldMobileNo.setEditable(edit);
         jTextFieldEmail.setEditable(edit);
@@ -93,15 +101,15 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
         jTextFieldFname = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jTextFieldEmail = new javax.swing.JTextField();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
         jTextFieldLname = new javax.swing.JTextField();
+        jXDatePickerDOB = new org.jdesktop.swingx.JXDatePicker();
         jTextFieldMobileNo = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
         jTextFieldAddress = new javax.swing.JTextField();
-        jTextFieldDob = new javax.swing.JTextField();
+        jLabel11 = new javax.swing.JLabel();
+        jTextFieldEmail = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
         jButtonSaveDetails = new javax.swing.JButton();
         jButtonDeactivate = new javax.swing.JButton();
@@ -281,25 +289,32 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel3.setText("Last Name");
 
-        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel4.setText("Date of birth");
+        jTextFieldLname.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
-        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel5.setText("Mobile no");
+        jXDatePickerDOB.setToolTipText("Select a date of birth between 1950 and 1990");
 
-        jTextFieldEmail.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jTextFieldMobileNo.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jTextFieldMobileNo.setToolTipText("Enter a mobile number e.g 0712345678");
+
+        jLabel7.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel7.setText("Mobile Number");
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel6.setText("Address");
 
-        jLabel7.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel7.setText("Email");
-
-        jTextFieldLname.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-
-        jTextFieldMobileNo.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-
         jTextFieldAddress.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jTextFieldAddress.setToolTipText("Your Home Address e.g 855, karen");
+
+        jLabel11.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel11.setText("email Address");
+        jLabel11.setToolTipText("");
+
+        jTextFieldEmail.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jTextFieldEmail.setToolTipText("enter an Email Address e.g myname@domain.org");
+
+        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel4.setText("Date of Birth");
+        jLabel4.setToolTipText("Select a date of birth between 1950 and 1990");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -310,31 +325,26 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addGap(0, 15, Short.MAX_VALUE)
-                                .addComponent(jLabel1)
-                                .addGap(97, 97, 97))
-                            .addComponent(jLabel2))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jTextId, javax.swing.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
-                            .addComponent(jTextFieldFname)))
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel1))
+                        .addGap(52, 52, 52)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jTextFieldFname)
+                            .addComponent(jTextId)
+                            .addComponent(jTextFieldLname)))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel4)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel6)
                             .addComponent(jLabel7)
-                            .addComponent(jLabel3))
-                        .addGap(51, 51, 51)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextFieldMobileNo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE)
-                            .addComponent(jTextFieldAddress)
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel11))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jXDatePickerDOB, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jTextFieldEmail)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(jTextFieldLname, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jTextFieldDob)))))
+                            .addComponent(jTextFieldAddress)
+                            .addComponent(jTextFieldMobileNo, javax.swing.GroupLayout.PREFERRED_SIZE, 202, javax.swing.GroupLayout.PREFERRED_SIZE)))))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -343,31 +353,31 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(jTextId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(27, 27, 27)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGap(34, 34, 34)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextFieldFname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2))
-                .addGap(29, 29, 29)
+                .addGap(40, 40, 40)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(jTextFieldLname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(35, 35, 35)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jXDatePickerDOB, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addGap(48, 48, 48)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextFieldDob, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextFieldMobileNo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel5))
-                .addGap(50, 50, 50)
+                    .addComponent(jLabel7)
+                    .addComponent(jTextFieldMobileNo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(39, 39, 39)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextFieldAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6))
-                .addGap(47, 47, 47)
+                .addGap(43, 43, 43)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextFieldEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel7))
-                .addGap(69, 69, 69))
+                    .addComponent(jLabel11))
+                .addGap(51, 51, 51))
         );
 
         jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Account Actions", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 12))); // NOI18N
@@ -443,7 +453,7 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(18, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jButtonViewMemberLoans, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -457,7 +467,7 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jToggleButtonEdit)
                             .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(28, Short.MAX_VALUE))
+                        .addContainerGap(20, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -472,9 +482,9 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(36, 36, 36)
+                        .addGap(18, 18, 18)
                         .addComponent(jToggleButtonEdit)
-                        .addGap(31, 31, 31)
+                        .addGap(49, 49, 49)
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(29, 29, 29)
                         .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -500,21 +510,23 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
             jTextId.setText(jComboBoxMembers.getSelectedItem().toString());
             jTextFieldFname.setText(_member.getFirstname());
             jTextFieldLname.setText(_member.getLastname());
-            jTextFieldDob.setText(_member.getDob().toString());
+            jXDatePickerDOB.setDate(_member.getDob());
             jTextFieldAddress.setText(_member.getAddress());
             jTextFieldDateRegistered.setText(_member.getRegisteredDate().toString());
             jTextFieldDateChanged.setText(_member.getLastModifiedDate().toString());
-            jTextFieldMobileNo.setText(Integer.toString(_member.getMobileno()));
+            jTextFieldMobileNo.setText(Long.toString(_member.getMobileno()));
             jTextFieldEmail.setText(_member.getEmail());
             // block or unblock the activate/deactivate account button
             if (_member.getAccountStatus()) {
                 jButtonActivate.setEnabled(false);
                 jButtonActivate.setToolTipText("The account is already activated");
                 jButtonDeactivate.setEnabled(true);
+                jButtonDelete.setEnabled(true);
             } else {
                 jButtonActivate.setEnabled(true);
                 jButtonDeactivate.setToolTipText("Account has not been deactivated");
                 jButtonDeactivate.setEnabled(false);
+                jButtonDelete.setEnabled(true);
             }
             selectedMemberID = Long.parseLong(jComboBoxMembers.getSelectedItem().toString());
             if (selectedMemberID == Member.getId()) {
@@ -536,7 +548,7 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
             //this.dispose();
         }
     }//GEN-LAST:event_jComboBoxMembersItemStateChanged
-
+    
     private void jButtonSavePasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSavePasswordActionPerformed
         // TODO add your handling code here:
         //check if password strings are the same. common logic
@@ -553,9 +565,9 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
                 jPasswordNewPassword.requestFocus();
                 return;
             }
-
+            
         }
-
+        
         try {
             // save the edited password
             if (_member.EditPassword(passString, Long.parseLong(jComboBoxMembers.getSelectedItem().toString()))) {
@@ -569,7 +581,7 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(rootPane, "SQL Error", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButtonSavePasswordActionPerformed
-
+    
     private void jToggleButtonEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonEditActionPerformed
         // TODO add your handling code here:
         if (jToggleButtonEdit.isSelected()) {
@@ -578,7 +590,7 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
             EditMode(false);
         }
     }//GEN-LAST:event_jToggleButtonEditActionPerformed
-
+    
     private void jButtonSaveDetailsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaveDetailsActionPerformed
         // TODO add your handling code here:
 
@@ -601,25 +613,23 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
         } else {
             _member.setGender(jRadioButtonMale.getText());
         }
-
-        // the date of birth. please bear with this one. I couldn't find _admin better way that worked
-        Date d = Application.CheckDateInput(jTextFieldDob.getText());
-        if (d == null) {
-            JOptionPane.showMessageDialog(rootPane, "please enter a date in the format of yyyy-mm-dd", "Invalid date", JOptionPane.ERROR_MESSAGE);
-            jTextFieldDob.requestFocus();
-            return;
-        } else {
-            _member.setDob(d);
+        
+        java.util.Date dt = jXDatePickerDOB.getDate();
+        if (dt == null) {
+            dt = java.util.Date.from(Instant.EPOCH);
         }
+        _member.setDob(new java.sql.Date(dt.getTime()));
 
         // validate for didgits
-        int mobileno = Application.CheckIfNumber(jTextFieldMobileNo.getText());
+        long mobileno = Application.CheckIfLong(jTextFieldMobileNo.getText());
         if (mobileno == -1) {
             JOptionPane.showMessageDialog(rootPane, "please enter valid value for phone number", "Invalid phone number", JOptionPane.ERROR_MESSAGE);
             jTextFieldMobileNo.requestFocus();
             return;
         } else {
-            _member.setMobileno(mobileno);
+            String s = Application.AREA_CODE + Long.toString(mobileno);
+            //JOptionPane.showMessageDialog(rootPane, s);
+            _member.setMobileno(Long.parseLong(s));
         }
 
         // the address
@@ -630,12 +640,14 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
         }
 
         // the email
-        if (Application.ValidateEmptyValue(jTextFieldEmail, "please enter an email address")) {
-            _member.setEmail(jTextFieldEmail.getText().trim());
+        if (Application.ValidateEmail(jTextFieldEmail.getText())) {
+            _member.setEmail(jTextFieldEmail.getText());
         } else {
+            JOptionPane.showMessageDialog(rootPane, "please enter a valid email address", "Invalid email", JOptionPane.ERROR_MESSAGE);
+            jTextFieldEmail.requestFocus();
             return;
         }
-
+        
         try {
             // edit the info
             if (_member.EditMemberInfo(_member)) {
@@ -650,7 +662,7 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(rootPane, "Operation failed " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButtonSaveDetailsActionPerformed
-
+    
     private void jButtonDeactivateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeactivateActionPerformed
         selectedMemberID = Long.parseLong(jComboBoxMembers.getSelectedItem().toString());
         if (selectedMemberID == Member.getId()) {
@@ -670,16 +682,16 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
                     JOptionPane.showMessageDialog(rootPane, "Operation failed", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
-
+            
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(rootPane, "SQL error", "Error", JOptionPane.ERROR_MESSAGE);
         } catch (AccountException ex) {
             JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Access denied", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButtonDeactivateActionPerformed
-
+    
     private void jButtonDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeleteActionPerformed
-
+        
         selectedMemberID = Long.parseLong(jComboBoxMembers.getSelectedItem().toString());
         // stop an obviously destructive action
         if (selectedMemberID == Member.getId()) {
@@ -702,14 +714,14 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
                     JOptionPane.showMessageDialog(rootPane, "Operation failed", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
-
+            
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(rootPane, "SQL error", "Error", JOptionPane.ERROR_MESSAGE);
         } catch (AccountException ex) {
             JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Access denied", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButtonDeleteActionPerformed
-
+    
     private void jButtonActivateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonActivateActionPerformed
         // TODO add your handling code here:
         selectedMemberID = Long.parseLong(jComboBoxMembers.getSelectedItem().toString());
@@ -724,7 +736,7 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
                     JOptionPane.showMessageDialog(rootPane, "Operation failed", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
-
+            
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(rootPane, "SQl error occured", "Error", JOptionPane.ERROR_MESSAGE);
         } catch (AccountException ex) {
@@ -743,12 +755,12 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
     private javax.swing.JComboBox jComboBoxMembers;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
@@ -765,12 +777,12 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
     private javax.swing.JTextField jTextFieldAddress;
     private javax.swing.JTextField jTextFieldDateChanged;
     private javax.swing.JTextField jTextFieldDateRegistered;
-    private javax.swing.JTextField jTextFieldDob;
     private javax.swing.JTextField jTextFieldEmail;
     private javax.swing.JTextField jTextFieldFname;
     private javax.swing.JTextField jTextFieldLname;
     private javax.swing.JTextField jTextFieldMobileNo;
     private javax.swing.JTextField jTextId;
     private javax.swing.JToggleButton jToggleButtonEdit;
+    private org.jdesktop.swingx.JXDatePicker jXDatePickerDOB;
     // End of variables declaration//GEN-END:variables
 }

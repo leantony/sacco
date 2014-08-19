@@ -1,11 +1,13 @@
 package com.sacco.classes;
 
+import com.sacco.classes.vendor.Bcrypt.BCrypt;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.security.auth.login.AccountException;
+import javax.security.auth.login.LoginException;
 import javax.swing.JOptionPane;
 import javax.swing.JRootPane;
 
@@ -16,7 +18,7 @@ public class Member implements AutoCloseable {
     private String gender;
     private String lastname;
     private Date dob;
-    private int mobileno;
+    private long mobileno;
     private String address;
     private String email;
     private String password;
@@ -92,11 +94,11 @@ public class Member implements AutoCloseable {
         this.dob = dob;
     }
 
-    public int getMobileno() {
+    public long getMobileno() {
         return mobileno;
     }
 
-    public void setMobileno(int mobileno) {
+    public void setMobileno(long mobileno) {
         this.mobileno = mobileno;
     }
 
@@ -122,7 +124,7 @@ public class Member implements AutoCloseable {
 
     public void setPassword(String password) {
         // hash the password. never optional but in this case it is. ata bcrypt nkatoa bana
-        this.password = password;
+        this.password = BCrypt.Hash(password, BCrypt.generateSalt());
     }
 
     public Timestamp getRegisteredDate() {
@@ -138,26 +140,31 @@ public class Member implements AutoCloseable {
     }
 
     // login a member
-    public boolean Login(long memberID, String password) throws SQLException, AccountException {
+    public boolean Login(long memberID, String password) throws SQLException, AccountException, LoginException {
         if (Member.CheckLoggedIn()) {
-            throw new AccountException("You are already logged in");
+            throw new LoginException("You are already logged in");
         }
         this.conn = new Database().getConnection();
         try {
-            String sql = "SELECT password, firstname, active FROM members WHERE id=? AND password=MD5(?)";
+            String sql = "SELECT password, firstname, active FROM members WHERE id=?";
             stmt = conn.prepareStatement(sql);
             stmt.setLong(1, memberID);
-            stmt.setString(2, password);
             result = stmt.executeQuery();
             if (result.next()) {
                 // check if the account is active or not
                 if (!result.getBoolean("active")) {
                     throw new AccountException("Your account is not activated. Please contact the administrator to fix this");
                 }
-                Member.setId(memberID);
-                // add member details into the hashmap
-                loggedInUsers.put(memberID, result.getString("firstname"));
-                return loggedInUsers.containsKey(memberID);
+                // check thi password
+                if (BCrypt.CheckPassword(password, result.getString("password"))) {
+                    Member.setId(memberID);
+                    // reset the login errors variable
+                    // add member details into the hashmap
+                    loggedInUsers.put(memberID, result.getString("firstname"));
+                    return loggedInUsers.containsKey(memberID);
+                } else {
+                    return false;
+                }
             }
         } finally {
             close();
@@ -193,13 +200,13 @@ public class Member implements AutoCloseable {
                     = "INSERT INTO `members` "
                     + "(`firstname`, `lastname`, `gender`, `dob`,"
                     + " `mobileno`, `address`, `email`, `password`) "
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?, MD5(?))";
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, getFirstname());
             stmt.setString(2, getLastname());
             stmt.setString(3, getGender());
             stmt.setDate(4, getDob());
-            stmt.setInt(5, getMobileno());
+            stmt.setLong(5, getMobileno());
             stmt.setString(6, getAddress());
             stmt.setString(7, getEmail());
             stmt.setString(8, getPassword());
@@ -254,7 +261,7 @@ public class Member implements AutoCloseable {
                 m.gender = result.getString("gender");
                 m.email = result.getString("email");
                 m.dob = result.getDate("dob");
-                m.mobileno = result.getInt("mobileno");
+                m.mobileno = result.getLong("mobileno");
                 m.password = result.getString("password");
                 m.RegisteredDate = result.getTimestamp("DateRegistered");
                 m.LastModifiedDate = result.getTimestamp("DateModified");
@@ -272,9 +279,8 @@ public class Member implements AutoCloseable {
         this.conn = new Database().getConnection();
         if (CheckLoggedIn()) {
             try {
-                //getMemberInfo(_member, memberID);
-                // now comes the sql part of the activity
-                String sql = "UPDATE `members` SET `password`=MD5(?) WHERE  `id`= ?";
+                password = BCrypt.Hash(password, BCrypt.generateSalt());
+                String sql = "UPDATE `members` SET `password`=? WHERE `id`= ?";
                 stmt = conn.prepareStatement(sql);
                 stmt.setString(1, password);
                 stmt.setLong(2, memberID);
@@ -299,7 +305,7 @@ public class Member implements AutoCloseable {
                 stmt.setString(2, m.lastname);
                 stmt.setString(3, m.gender);
                 stmt.setDate(4, m.dob);
-                stmt.setInt(5, m.mobileno);
+                stmt.setLong(5, m.mobileno);
                 stmt.setString(6, m.address);
                 stmt.setString(7, m.email);
                 stmt.setLong(8, Member.getId());

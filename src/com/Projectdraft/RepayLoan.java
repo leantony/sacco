@@ -235,7 +235,7 @@ public class RepayLoan extends javax.swing.JInternalFrame {
     private void jButtonPayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPayActionPerformed
         // TODO add your handling code here:
 
-        int amnt = Application.CheckIfNumber(jTextFieldAmount.getText());
+        int amnt = Application.CheckIfInteger(jTextFieldAmount.getText());
         if (amnt == -1) {
             JOptionPane.showMessageDialog(rootPane, "please enter valid value for the amount", "wrong input type", JOptionPane.ERROR_MESSAGE);
             jTextFieldAmount.requestFocus();
@@ -253,7 +253,7 @@ public class RepayLoan extends javax.swing.JInternalFrame {
             // save
             if (_loan.PayBackLoan()) {
                 // refresh the form page
-                updateForm();
+                //updateForm();
                 JOptionPane.showMessageDialog(rootPane, "You have successfully paid " + _loan.getAmountToPay() + " to your loan\n"
                         + "You have a pending amount of " + Application.df.format(total_amnt - amnt_paid)
                         + "\nYour payment id is " + _loan.getPaymentID(), "Success", JOptionPane.INFORMATION_MESSAGE);

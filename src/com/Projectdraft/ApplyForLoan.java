@@ -309,7 +309,7 @@ public class ApplyForLoan extends javax.swing.JInternalFrame {
     private void jButtonSubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSubmitActionPerformed
         // TODO add your handling code here:
         // validate for didgits
-        int amnt = Application.CheckIfNumber(jTextFieldLoanAmnt.getText());
+        int amnt = Application.CheckIfInteger(jTextFieldLoanAmnt.getText());
         if (amnt == -1) {
             JOptionPane.showMessageDialog(rootPane, "please enter valid value for the amount", "wrong input type", JOptionPane.ERROR_MESSAGE);
             jTextFieldLoanAmnt.requestFocus();
@@ -325,7 +325,7 @@ public class ApplyForLoan extends javax.swing.JInternalFrame {
         // set the loan type
         _loan.setLoanType(jComboBoxLoanType.getSelectedItem().toString());
 
-        int months = Application.CheckIfNumber(jTextFieldPayBackPeriod.getText());
+        int months = Application.CheckIfInteger(jTextFieldPayBackPeriod.getText());
         // the date by which payments should be resolved
         if (months == -1) {
             JOptionPane.showMessageDialog(rootPane, "Enter the number of months", "wrong input type", JOptionPane.ERROR_MESSAGE);

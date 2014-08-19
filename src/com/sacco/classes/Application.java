@@ -6,19 +6,30 @@ package com.sacco.classes;
 import java.awt.Component;
 import java.awt.Container;
 import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.JEditorPane;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import org.apache.commons.validator.routines.DateValidator;
+import org.apache.commons.validator.routines.EmailValidator;
 
 public final class Application {
 
     public static DecimalFormat df = new DecimalFormat("#.##");
+    public static String AREA_CODE = "254";
+    private static Pattern pattern;
+    private static Matcher matcher;
+    private static final String EMAIL_PATTERN
+            = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+            + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+
+    public Application() {
+        pattern = Pattern.compile(EMAIL_PATTERN);
+    }
 
     // exit the app
     public static void Exit(int status) {
@@ -26,15 +37,17 @@ public final class Application {
     }
 
     // check & parse user date input
-    public static java.sql.Date CheckDateInput(String date) {
+    public static boolean CheckDateInput(String date) {
         // sql date input
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-M-dd");
-        try {
-            Date d = simpleDateFormat.parse(date);
-            return new java.sql.Date(d.getTime());
-        } catch (ParseException ex) {
-            return null;
-        }
+//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-M-dd");
+//        try {
+//            Date d = simpleDateFormat.parse(date);
+//            return new java.sql.Date(d.getTime());
+//        } catch (ParseException ex) {
+//            return null;
+//        }
+        DateValidator dt = DateValidator.getInstance();
+        return dt.isValid(date);
     }
 
     // clear all textual input
@@ -50,6 +63,14 @@ public final class Application {
                 clearAllTextFields((Container) c);
             }
         }
+    }
+
+    public static boolean ValidateEmail(String email) {
+//        pattern = Pattern.compile(EMAIL_PATTERN);
+//        matcher = pattern.matcher(email);
+//        return matcher.matches();
+        EmailValidator emailValidator = EmailValidator.getInstance();
+        return emailValidator.isValid(email);
     }
 
     // check if a text box is empty
@@ -87,8 +108,21 @@ public final class Application {
         }
     }
 
-    // check if a string input is a number
-    public static int CheckIfNumber(String s) {
+    // check if a string input is long
+    public static long CheckIfLong(String s) {
+        try {
+            // disallow solo 0 or negative number input
+            if (Long.parseLong(s.trim()) <= 0) {
+                return -1;
+            }
+            return Integer.parseInt(s);
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
+
+    // check if a string input is integer
+    public static int CheckIfInteger(String s) {
         try {
             // disallow solo 0 or negative number input
             if (Integer.parseInt(s.trim()) <= 0) {

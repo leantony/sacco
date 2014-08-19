@@ -153,7 +153,7 @@ public class MakeContribution extends javax.swing.JInternalFrame {
 
     private void jButtonContributeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonContributeActionPerformed
         // TODO add your handling code here:
-        int amnt = Application.CheckIfNumber(jTextFieldAmnt.getText());
+        int amnt = Application.CheckIfInteger(jTextFieldAmnt.getText());
         if (amnt == -1) {
             JOptionPane.showMessageDialog(rootPane, "please enter valid value for the amount", "wrong input type", JOptionPane.ERROR_MESSAGE);
             jTextFieldAmnt.requestFocus();

@@ -70,7 +70,7 @@ public class Admin extends Member {
                 m.setDob(result.getDate("dob"));
                 m.setEmail(result.getString("email"));
                 m.setGender(result.getString("gender"));
-                m.setMobileno(result.getInt("mobileno"));
+                m.setMobileno(result.getLong("mobileno"));
                 allMembers.add(m);
             }
         } finally {

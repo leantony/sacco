@@ -10,6 +10,7 @@ import javax.swing.JOptionPane;
 import com.sacco.classes.Application;
 import com.sacco.classes.Member;
 import javax.security.auth.login.AccountException;
+import javax.security.auth.login.LoginException;
 
 /**
  *
@@ -18,6 +19,7 @@ import javax.security.auth.login.AccountException;
 public class LoginScreen extends javax.swing.JFrame {
 
     Member _member = new Member();
+    static int loginErrors = 0;
 
     /**
      * Creates new form Register
@@ -155,10 +157,15 @@ public class LoginScreen extends javax.swing.JFrame {
 
     private void jButtonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLoginActionPerformed
 
+        if (loginErrors >= 5) {
+            JOptionPane.showMessageDialog(rootPane, "You have exceeded your maximmum number of login attempts");
+            Application.Exit(1);
+        }
         // check input
-        long id = Application.CheckIfNumber(jTextFieldMemberID.getText());
+        long id = Application.CheckIfInteger(jTextFieldMemberID.getText());
         if (id <= 0) {
             JOptionPane.showMessageDialog(rootPane, "Please specify a valid user ID. Should be a number", "Wrong input type", JOptionPane.ERROR_MESSAGE);
+            loginErrors++;
             jTextFieldMemberID.requestFocus();
             return;
         }
@@ -167,6 +174,7 @@ public class LoginScreen extends javax.swing.JFrame {
         String password = new String(jPasswordPassword.getPassword());
         if (password.isEmpty()) {
             JOptionPane.showMessageDialog(rootPane, "Please enter your password", "Empty value", JOptionPane.ERROR_MESSAGE);
+            loginErrors++;
             jPasswordPassword.requestFocus();
             return;
         }
@@ -175,10 +183,10 @@ public class LoginScreen extends javax.swing.JFrame {
         try {
             if (!_member.Login(id, password)) {
                 JOptionPane.showMessageDialog(rootPane, "Invalid user ID or password. please try again", "Login failed", JOptionPane.INFORMATION_MESSAGE);
+                loginErrors++;
                 Application.clearAllTextFields(this.getContentPane());
                 jTextFieldMemberID.requestFocus();
             } else {
-                JOptionPane.showMessageDialog(rootPane, "Successfully logged In!", "Success", JOptionPane.INFORMATION_MESSAGE);
                 this.dispose();
                 new MembersIndex().setVisible(true);
             }
@@ -187,6 +195,9 @@ public class LoginScreen extends javax.swing.JFrame {
             Application.clearAllTextFields(this.getContentPane());
             jTextFieldMemberID.requestFocus();
         } catch (AccountException ex) {
+            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            this.dispose();
+        } catch (LoginException ex) {
             JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             this.dispose();
         }
