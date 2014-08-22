@@ -178,7 +178,7 @@ public class Contribution implements AutoCloseable {
             jt.append("Here are all your contributions\n\n");
             jt.append("AMOUNT(KSH)\t\tPAYMENT_METHOD\t\tDATE_CONTRIBUTED\t\tAPPROVED\n\n");
             while (result.next()) {
-                jt.append(Application.df.format(result.getDouble("Amount")));
+                jt.append(Utility.DF.format(result.getDouble("Amount")));
                 jt.append("\t\t");
                 jt.append(result.getString("paymentMethod"));
                 jt.append("\t\t\t");
@@ -194,7 +194,7 @@ public class Contribution implements AutoCloseable {
             jt.append("\n");
             jt.append("==================================================================================\n\n");
             jt.append("You have currently contributed " + getMemberContributions(3) + " times (We only count the ones appoved, including excess)\n");
-            jt.append("Your Averege contributions are Ksh " + Application.df.format(getAvgContributions(Member.getId(), 1)) + "\n");
+            jt.append("Your Averege contributions are Ksh " + Utility.DF.format(getAvgContributions(Member.getId(), 1)) + "\n");
             jt.append("Your total contributions are Ksh " + getTotalContributions(Member.getId(), 1) + " (Only Approved ones)\n");
             jt.append("AMOUNT  ==> represents the amount(s) you've contributed\n");
             jt.append("PAYMENT_METHOD ==> method you chose to pay the contribution\n");

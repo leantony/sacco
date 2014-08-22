@@ -161,7 +161,7 @@
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Component id="jComboBoxLoanType" pref="134" max="32767" attributes="0"/>
                           <Component id="jTextFieldLoanAmnt" max="32767" attributes="0"/>
-                          <Component id="jLabel3" pref="134" max="32767" attributes="0"/>
+                          <Component id="jLabelOfferedLoan" pref="134" max="32767" attributes="0"/>
                           <Component id="jTextFieldPayBackPeriod" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
@@ -189,7 +189,7 @@
                       <EmptySpace min="-2" pref="56" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="jLabel2" alignment="3" min="-2" pref="26" max="-2" attributes="0"/>
-                          <Component id="jLabel3" alignment="3" min="-2" pref="26" max="-2" attributes="0"/>
+                          <Component id="jLabelOfferedLoan" alignment="3" min="-2" pref="26" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="52" max="-2" attributes="0"/>
                   </Group>
@@ -256,7 +256,7 @@
                 <Property name="text" type="java.lang.String" value="Your Maximmum allowed loan (KSH)"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="jLabel3">
+            <Component class="javax.swing.JLabel" name="jLabelOfferedLoan">
               <Properties>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="33" green="99" red="ff" type="rgb"/>

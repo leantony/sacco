@@ -3,10 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.Projectdraft;
+package com.App.gui;
 
 import com.sacco.classes.Admin;
-import com.sacco.classes.Application;
+import com.sacco.classes.Utility;
+import static com.sacco.classes.Utility.Validation.CheckForDouble;
 import com.sacco.classes.Loan;
 import java.sql.SQLException;
 import javax.security.auth.login.AccountException;
@@ -153,12 +154,12 @@ public class EditLoanInterest extends javax.swing.JInternalFrame {
 
     private double getYearlyInterest(double monthly) {
         double YearlyInterest = monthly * 12;
-        return Double.parseDouble(Application.df.format(YearlyInterest));
+        return Double.parseDouble(Utility.DF.format(YearlyInterest));
     }
 
     private void jButtonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaveActionPerformed
         // TODO add your handling code here:
-        value = Application.CheckForDouble(jTextFieldNewInterest.getText());
+        value = CheckForDouble(jTextFieldNewInterest.getText());
         if (value <= 0 || value > 50) {
             JOptionPane.showMessageDialog(rootPane, "You've picked an invalid value. A valid interest should\nlie between 1 and 50 %", "Invalid interest", JOptionPane.INFORMATION_MESSAGE);
             jTextFieldNewInterest.requestFocus();

@@ -3,10 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.Projectdraft;
+package com.App.gui;
 
-import com.sacco.classes.Application;
 import com.sacco.classes.Secretary;
+import com.sacco.classes.Utility;
+import static com.sacco.classes.Utility.Validation.ValidateEmptyValue;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -143,10 +144,10 @@ public class CreateMinutes extends javax.swing.JInternalFrame {
 
     private void jButtonUploadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonUploadActionPerformed
         // TODO add your handling code here:
-        if (!Application.ValidateEmptyValue(jTextFieldMinutesTitle, "Enter a title for the minutes")) {
+        if (!ValidateEmptyValue(jTextFieldMinutesTitle, "Enter a title for the minutes")) {
             return;
         }
-        if (!Application.ValidateEmptyValue(jEditorPaneMinutes, "Please fill in the minutes")) {
+        if (!ValidateEmptyValue(jEditorPaneMinutes, "Please fill in the minutes")) {
             return;
         }
         try {
@@ -159,7 +160,7 @@ public class CreateMinutes extends javax.swing.JInternalFrame {
 
     private void jButtonClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonClearActionPerformed
         // TODO add your handling code here:
-        Application.clearAllTextFields(this.getContentPane());
+        Utility.clearAllTextFields(this.getContentPane());
     }//GEN-LAST:event_jButtonClearActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

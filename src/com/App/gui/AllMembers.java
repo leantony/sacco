@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.Projectdraft;
+package com.App.gui;
 
 import com.sacco.classes.Admin;
-import com.sacco.classes.Loan;
+import com.sacco.classes.Member;
 import java.sql.SQLException;
 import javax.security.auth.login.AccountException;
 import javax.swing.JOptionPane;
@@ -15,21 +15,22 @@ import javax.swing.JOptionPane;
  *
  * @author Antony
  */
-public class ViewAllMemberLoans extends javax.swing.JInternalFrame {
+public class AllMembers extends javax.swing.JInternalFrame {
 
+    Member _member;
     Admin _admin;
-    Loan _loan;
 
     /**
-     * Creates new form ViewAllMemberLoans
+     * Creates new form NewJInternalFrame
      */
-    public ViewAllMemberLoans() {
+    public AllMembers() {
         try {
-            this._loan = new Loan();
+            this._member = new Member();
             this._admin = new Admin();
             initComponents();
+            jTextAreaAllMembers.setEditable(false);
         } catch (AccountException ex) {
-            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Access Denied", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Access denied", JOptionPane.ERROR_MESSAGE);
             this.dispose();
         }
     }
@@ -43,45 +44,46 @@ public class ViewAllMemberLoans extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
-        jButtonExit = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
-        jButtonView = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextAreaLoans = new javax.swing.JTextArea();
+        jTextAreaAllMembers = new javax.swing.JTextArea();
+        jButtonBack = new javax.swing.JButton();
+        jButtonDisplay = new javax.swing.JButton();
 
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
         setResizable(true);
-        setTitle("(Administrator) Member Loans");
+        setTitle("(Administrator) All Members");
         setDoubleBuffered(true);
 
-        jButtonExit.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jButtonExit.setText("Exit");
-        jButtonExit.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonExitActionPerformed(evt);
-            }
-        });
-
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jLabel1.setText("Here are all Member's loans");
-        jLabel1.setToolTipText("");
+        jLabel1.setText("Here are all the registered Sacco Members");
 
-        jButtonView.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jButtonView.setText("View");
-        jButtonView.addActionListener(new java.awt.event.ActionListener() {
+        jTextAreaAllMembers.setEditable(false);
+        jTextAreaAllMembers.setColumns(20);
+        jTextAreaAllMembers.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
+        jTextAreaAllMembers.setRows(5);
+        jScrollPane1.setViewportView(jTextAreaAllMembers);
+
+        jButtonBack.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jButtonBack.setText("Close");
+        jButtonBack.setActionCommand("Display");
+        jButtonBack.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonViewActionPerformed(evt);
+                jButtonBackActionPerformed(evt);
             }
         });
 
-        jTextAreaLoans.setEditable(false);
-        jTextAreaLoans.setColumns(20);
-        jTextAreaLoans.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
-        jTextAreaLoans.setRows(5);
-        jScrollPane1.setViewportView(jTextAreaLoans);
+        jButtonDisplay.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jButtonDisplay.setText("Members");
+        jButtonDisplay.setActionCommand("Display");
+        jButtonDisplay.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonDisplayActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -89,27 +91,23 @@ public class ViewAllMemberLoans extends javax.swing.JInternalFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButtonExit, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButtonView, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 933, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButtonDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButtonBack, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 773, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButtonView)
+                        .addComponent(jButtonDisplay)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButtonExit))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE))
+                        .addComponent(jButtonBack))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 352, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -121,39 +119,44 @@ public class ViewAllMemberLoans extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(120, 120, 120)
+                .addComponent(jLabel1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(5, 5, 5)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(20, 20, 20))
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButtonExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonExitActionPerformed
+    private void jButtonDisplayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDisplayActionPerformed
         // TODO add your handling code here:
-        this.dispose();
-    }//GEN-LAST:event_jButtonExitActionPerformed
 
-    private void jButtonViewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonViewActionPerformed
         try {
-            // TODO add your handling code here:
-            _loan.PrintLoanStatus(jTextAreaLoans, 4, false, true);
+            _admin.DisplayAllMembers(jTextAreaAllMembers);
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(rootPane, "SQl Error " + ex.getMessage());
-            this.dispose();
+            JOptionPane.showMessageDialog(rootPane, "SQL error", "Error", JOptionPane.ERROR_MESSAGE);
         }
-    }//GEN-LAST:event_jButtonViewActionPerformed
+    }//GEN-LAST:event_jButtonDisplayActionPerformed
+
+    private void jButtonBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBackActionPerformed
+        this.dispose();
+    }//GEN-LAST:event_jButtonBackActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButtonExit;
-    private javax.swing.JButton jButtonView;
+    private javax.swing.JButton jButtonBack;
+    private javax.swing.JButton jButtonDisplay;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea jTextAreaLoans;
+    private javax.swing.JTextArea jTextAreaAllMembers;
     // End of variables declaration//GEN-END:variables
 }

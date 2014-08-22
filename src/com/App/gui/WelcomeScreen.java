@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.Projectdraft;
+package com.App.gui;
 
 import javax.swing.JOptionPane;
-import com.sacco.classes.Application;
+import com.sacco.classes.Utility;
 
 /**
  *
@@ -140,7 +140,7 @@ public class WelcomeScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_RegisterButtonActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        Application.Exit(0);
+        Utility.Exit(0);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

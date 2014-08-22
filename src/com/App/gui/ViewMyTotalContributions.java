@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.Projectdraft;
+package com.App.gui;
 
-import com.sacco.classes.Treasurer;
+import com.sacco.classes.Contribution;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
@@ -13,15 +13,15 @@ import javax.swing.JOptionPane;
  *
  * @author Antony
  */
-public class ViewLoanAndContributionReport extends javax.swing.JInternalFrame {
+public class ViewMyTotalContributions extends javax.swing.JInternalFrame {
 
-    Treasurer _trey;
+    Contribution _contrib;
 
     /**
-     * Creates new form ViewTotalLoans
+     * Creates new form ViewTotalContributions
      */
-    public ViewLoanAndContributionReport() {
-        this._trey = new Treasurer();
+    public ViewMyTotalContributions() {
+        this._contrib = new Contribution();
         initComponents();
     }
 
@@ -35,30 +35,28 @@ public class ViewLoanAndContributionReport extends javax.swing.JInternalFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jButtonExit = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
-        jButtonView = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextAreaContributions = new javax.swing.JTextArea();
+        jLabel1 = new javax.swing.JLabel();
+        jButtonView = new javax.swing.JButton();
+        jButtonExit = new javax.swing.JButton();
 
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
         setResizable(true);
-        setTitle("View Total Loans and Contributions");
+        setTitle("Your Contributions");
         setToolTipText("");
+        setDoubleBuffered(true);
 
-        jButtonExit.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jButtonExit.setText("Exit");
-        jButtonExit.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonExitActionPerformed(evt);
-            }
-        });
+        jTextAreaContributions.setEditable(false);
+        jTextAreaContributions.setColumns(20);
+        jTextAreaContributions.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
+        jTextAreaContributions.setRows(5);
+        jScrollPane1.setViewportView(jTextAreaContributions);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jLabel1.setText("Here is the company's loan and contribution report");
-        jLabel1.setToolTipText("");
+        jLabel1.setText("Here is Your contribution report");
 
         jButtonView.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jButtonView.setText("View");
@@ -68,11 +66,13 @@ public class ViewLoanAndContributionReport extends javax.swing.JInternalFrame {
             }
         });
 
-        jTextAreaContributions.setEditable(false);
-        jTextAreaContributions.setColumns(20);
-        jTextAreaContributions.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
-        jTextAreaContributions.setRows(5);
-        jScrollPane1.setViewportView(jTextAreaContributions);
+        jButtonExit.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jButtonExit.setText("Exit");
+        jButtonExit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonExitActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -80,15 +80,15 @@ public class ViewLoanAndContributionReport extends javax.swing.JInternalFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButtonExit, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButtonView, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButtonView, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonExit, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 714, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 786, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -96,13 +96,13 @@ public class ViewLoanAndContributionReport extends javax.swing.JInternalFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 419, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jButtonView)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButtonExit))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 387, Short.MAX_VALUE))
+                        .addComponent(jButtonExit)))
                 .addContainerGap())
         );
 
@@ -110,16 +110,16 @@ public class ViewLoanAndContributionReport extends javax.swing.JInternalFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(20, 20, 20))
         );
 
@@ -129,7 +129,7 @@ public class ViewLoanAndContributionReport extends javax.swing.JInternalFrame {
     private void jButtonViewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonViewActionPerformed
         try {
             // TODO add your handling code here:
-            _trey.ViewLoanAndContributionTotals(jTextAreaContributions);
+            _contrib.ViewAllMemberContribuitons(jTextAreaContributions);
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(rootPane, "SQl Error " + ex.getMessage());
             this.dispose();

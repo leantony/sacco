@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.Projectdraft;
+package com.App.gui;
 
-import com.sacco.classes.Application;
+import static com.sacco.classes.Utility.Validation.ValidateEmptyValue;
 import com.sacco.classes.Query;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
@@ -113,7 +113,7 @@ public class SubmittQuery extends javax.swing.JInternalFrame {
     private void JButtonSubmittActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JButtonSubmittActionPerformed
         try {
             // TODO add your handling code here:
-            if (Application.ValidateEmptyValue(jTextAreaQueries, "Please fill in a comment")) {
+            if (ValidateEmptyValue(jTextAreaQueries, "Please fill in a comment")) {
                 _query.setQueryContent(jTextAreaQueries.getText());
                 if (_query.makeQuery()) {
                     JOptionPane.showMessageDialog(rootPane, "Thank you");

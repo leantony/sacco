@@ -1,15 +1,16 @@
 package com.sacco.classes;
 
-import com.sacco.classes.vendor.Bcrypt.BCrypt;
-import java.sql.*;
+import com.sacco.Hashing.BCrypt;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.security.auth.login.AccountException;
-import javax.security.auth.login.LoginException;
-import javax.swing.JOptionPane;
-import javax.swing.JRootPane;
 
 public class Member implements AutoCloseable {
 
@@ -32,10 +33,9 @@ public class Member implements AutoCloseable {
     public static final short ACCOUNT_INACTIVE = 0;
     private static boolean admin = false;
 
-    // define member datatypes as potrayed in the db
-    //static HashSet<Long> loggedInUsers = new HashSet<>();
-    static Map<Long, String> loggedInUsers = new HashMap<>();
     protected List<Member> allMembers = new ArrayList<>();
+    protected static List<String> userEmails = new ArrayList<>();
+    protected static List<Long> userMobile = new ArrayList<>();
 
     // for Database stuff
     PreparedStatement stmt = null;
@@ -56,10 +56,6 @@ public class Member implements AutoCloseable {
 
     protected static void setId(long userid) {
         id = userid;
-    }
-
-    public static boolean CheckLoggedIn() {
-        return loggedInUsers.containsKey(Member.getId());
     }
 
     public String getFirstname() {
@@ -139,58 +135,55 @@ public class Member implements AutoCloseable {
         return AccountStatus;
     }
 
-    // login a member
-    public boolean Login(long memberID, String password) throws SQLException, AccountException, LoginException {
-        if (Member.CheckLoggedIn()) {
-            throw new LoginException("You are already logged in");
-        }
-        this.conn = new Database().getConnection();
+    private void fillEmailList() throws SQLException {
         try {
-            String sql = "SELECT password, firstname, active FROM members WHERE id=?";
+            this.conn = new Database().getConnection();
+            String sql = "SELECT email FROM members";
             stmt = conn.prepareStatement(sql);
-            stmt.setLong(1, memberID);
             result = stmt.executeQuery();
-            if (result.next()) {
-                // check if the account is active or not
-                if (!result.getBoolean("active")) {
-                    throw new AccountException("Your account is not activated. Please contact the administrator to fix this");
-                }
-                // check thi password
-                if (BCrypt.CheckPassword(password, result.getString("password"))) {
-                    Member.setId(memberID);
-                    // reset the login errors variable
-                    // add member details into the hashmap
-                    loggedInUsers.put(memberID, result.getString("firstname"));
-                    return loggedInUsers.containsKey(memberID);
-                } else {
-                    return false;
-                }
+            while (result.next()) {
+                userEmails.add(result.getString("email"));
             }
         } finally {
             close();
         }
-        return false;
     }
 
-    public void getMyLoggedInInfo(JRootPane p) {
-        for (Map.Entry<Long, String> entry : loggedInUsers.entrySet()) {
-            if (loggedInUsers.containsKey(Member.id)) {
-                Long m_id = entry.getKey();
-                String _fname = entry.getValue();
-                JOptionPane.showMessageDialog(p, "<html> <p><b>Your User Id is " + m_id + " </b> </p> <br> <p> <i> You are logged in as " + _fname + "</i> </p> </html>");
+    private void fillMobileNoList() throws SQLException {
+        try {
+            this.conn = new Database().getConnection();
+            String sql = "SELECT mobileno FROM members";
+            stmt = conn.prepareStatement(sql);
+            result = stmt.executeQuery();
+            while (result.next()) {
+                userMobile.add(result.getLong("mobileno"));
             }
-            break;
+        } finally {
+            close();
         }
     }
 
-    // logout the current member
-    public static boolean Logout() {
-        // incase the usr was an admin, unset the admin variable
-        if (isAdmin()) {
-            setAdmin(false);
+    public boolean checkMobileExists(long mno) {
+        try {
+            if (userMobile.isEmpty()) {
+                fillMobileNoList();
+            }
+            return userMobile.contains(mno);
+        } catch (SQLException ex) {
+            return false;
         }
-        loggedInUsers.remove(Member.id);
-        return loggedInUsers.containsKey(Member.id) == false;
+    }
+
+    public boolean checkEmailExists(String email) {
+        try {
+            if (userEmails.isEmpty()) {
+                fillEmailList();
+            }
+            //JOptionPane.showMessageDialog(null, userEmails + " " + email +" "+userEmails.contains(email));
+            return userEmails.contains(email);
+        } catch (SQLException ex) {
+            return false;
+        }
     }
 
     public long AddMember() throws SQLException, AccountException {
@@ -277,69 +270,59 @@ public class Member implements AutoCloseable {
             memberID = Member.getId();
         }
         this.conn = new Database().getConnection();
-        if (CheckLoggedIn()) {
-            try {
-                password = BCrypt.Hash(password, BCrypt.generateSalt());
-                String sql = "UPDATE `members` SET `password`=? WHERE `id`= ?";
-                stmt = conn.prepareStatement(sql);
-                stmt.setString(1, password);
-                stmt.setLong(2, memberID);
-                return stmt.executeUpdate() == 1;
-            } finally {
-                close();
-            }
-        } else {
-            throw new AccountException("You aren't allowed to perform this action");
+        try {
+            password = BCrypt.Hash(password, BCrypt.generateSalt());
+            String sql = "UPDATE `members` SET `password`=? WHERE `id`= ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, password);
+            stmt.setLong(2, memberID);
+            return stmt.executeUpdate() == 1;
+        } finally {
+            close();
         }
     }
 
     public boolean EditMemberInfo(Member m) throws AccountException, SQLException {
         this.conn = new Database().getConnection();
-        if (CheckLoggedIn()) {
-            try {
-                String sql = "UPDATE `members` SET "
-                        + "`firstname`=?, `lastname`=?, `gender`=?, `dob`=?, "
-                        + "`mobileno`=?, `address`=?, `email`=? WHERE  `id`=?";
-                stmt = conn.prepareStatement(sql);
-                stmt.setString(1, m.firstname);
-                stmt.setString(2, m.lastname);
-                stmt.setString(3, m.gender);
-                stmt.setDate(4, m.dob);
-                stmt.setLong(5, m.mobileno);
-                stmt.setString(6, m.address);
-                stmt.setString(7, m.email);
-                stmt.setLong(8, Member.getId());
-                return stmt.executeUpdate() == 1;
-            } finally {
-                close();
-            }
-        } else {
-            throw new AccountException("You aren't allowed to perform this action");
+        try {
+            String sql = "UPDATE `members` SET "
+                    + "`firstname`=?, `lastname`=?, `gender`=?, `dob`=?, "
+                    + "`mobileno`=?, `address`=?, `email`=? WHERE  `id`=?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, m.firstname);
+            stmt.setString(2, m.lastname);
+            stmt.setString(3, m.gender);
+            stmt.setDate(4, m.dob);
+            stmt.setLong(5, m.mobileno);
+            stmt.setString(6, m.address);
+            stmt.setString(7, m.email);
+            stmt.setLong(8, Member.getId());
+            return stmt.executeUpdate() == 1;
+        } finally {
+            close();
         }
     }
 
     public int checkUserPosition() throws SQLException {
         this.conn = new Database().getConnection();
-        if (CheckLoggedIn()) {
-            try {
-                String sql = "SELECT id FROM positions JOIN members_positions ON positions.id = members_positions.position_id AND member_id = ?";
-                stmt = conn.prepareStatement(sql);
-                stmt.setLong(1, Member.getId());
-                result = stmt.executeQuery();
-                while (result.next()) {
-                    if (result.getInt("id") == Admin.ADMIN_POSITION_ID) {
-                        setAdmin(true);
-                        return 1;
-                    }
-                    if (result.getInt("id") == Secretary.SEC_POSITION_ID) {
-                        return 2;
-                    } else {
-                        return result.getInt("id");
-                    }
+        try {
+            String sql = "SELECT id FROM positions JOIN members_positions ON positions.id = members_positions.position_id AND member_id = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setLong(1, Member.getId());
+            result = stmt.executeQuery();
+            while (result.next()) {
+                if (result.getInt("id") == Admin.ADMIN_POSITION_ID) {
+                    setAdmin(true);
+                    return 1;
                 }
-            } finally {
-                close();
+                if (result.getInt("id") == Secretary.SEC_POSITION_ID) {
+                    return 2;
+                } else {
+                    return result.getInt("id");
+                }
             }
+        } finally {
+            close();
         }
         return -1;
     }

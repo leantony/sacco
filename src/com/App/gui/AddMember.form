@@ -74,11 +74,7 @@
                                   <Component id="jXDatePickerDOB" max="32767" attributes="0"/>
                                   <Component id="jTextFieldEmail" alignment="0" max="32767" attributes="0"/>
                                   <Component id="jTextFieldAddress" alignment="0" max="32767" attributes="0"/>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="jLabel3" min="-2" pref="36" max="-2" attributes="0"/>
-                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                      <Component id="jTextFieldMobileNo" min="-2" pref="156" max="-2" attributes="0"/>
-                                  </Group>
+                                  <Component id="jTextFieldMobileNo" min="-2" pref="202" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                           <Component id="jPanel2" alignment="0" max="32767" attributes="0"/>
@@ -158,9 +154,8 @@
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="jLabel7" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="jTextFieldMobileNo" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabel3" alignment="3" min="-2" pref="21" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="-2" pref="39" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="40" max="-2" attributes="0"/>
                       <Component id="jTextFieldAddress" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
@@ -590,11 +585,6 @@
     <Component class="org.jdesktop.swingx.JXDatePicker" name="jXDatePickerDOB">
       <Properties>
         <Property name="toolTipText" type="java.lang.String" value="Select a date of birth between 1950 and 1990"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel3">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="+254"/>
       </Properties>
     </Component>
   </SubComponents>

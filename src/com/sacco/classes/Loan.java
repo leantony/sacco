@@ -19,14 +19,14 @@ public class Loan implements AutoCloseable {
     private String LoanPurpose;
     private String LoanType;
     private Timestamp DateSubmitted;
-    private List<Loan> loanInfo = new ArrayList();
+    public List<Loan> loanInfo = new ArrayList();
     // amounts
     private double AmountToPay; // from the user
     private double AmountPaid; // from db
     // loan constants
     private static double LOAN_INTEREST;
-    private static final short LOAN_CLEARED = 1;
-    private static final short LOAN_NOT_CLEARED = 0;
+    public static final short LOAN_CLEARED = 1;
+    public static final short LOAN_NOT_CLEARED = 0;
     private boolean LOAN_APPROVED = false;
     private static double MIN_LOAN = 5000;
     private static double MAX_LOAN = 1000000;
@@ -38,12 +38,12 @@ public class Loan implements AutoCloseable {
     Connection conn;
     ResultSet result = null;
     Member m;
-    LoanPayment p;
+    LoanPayment _payment;
 
     public Loan() {
         this._contribution = new Contribution();
         this.m = new Member();
-        this.p = new LoanPayment();
+        this._payment = new LoanPayment();
         try {
             Loan.LOAN_INTEREST = getLoanInterestFromDB();
         } catch (SQLException ex) {
@@ -145,19 +145,19 @@ public class Loan implements AutoCloseable {
         return loanInfo;
     }
 
-    private void setPaymentID(long paymentID) {
+    public void setPaymentID(long paymentID) {
         this.paymentID = paymentID;
     }
 
-    public static double getMAX_ALLOWED_PAYMENT() {
+    public static double MAX_ALLOWED_PAYMENT() {
         return MAX_ALLOWED_PAYMENT;
     }
 
-    public static double getMIN_ALLOWED_PAYMENT() {
+    public static double MIN_ALLOWED_PAYMENT() {
         return MIN_ALLOWED_PAYMENT;
     }
 
-    public static double getMIN_LOAN() {
+    public static double MIN_LOAN() {
         return MIN_LOAN;
     }
 
@@ -213,7 +213,7 @@ public class Loan implements AutoCloseable {
     }
 
     // allow members to request loans
-    public long RequestLoan(double amount) throws SQLException, AccountException {
+    public long GetLoan(double amount) throws SQLException, AccountException {
         if (GetMemberLoanCount(LOAN_NOT_CLEARED, true) >= 1) {
             throw new AccountException("You have pending loans to pay. Please clear them first to be able to continue");
         }
@@ -242,130 +242,6 @@ public class Loan implements AutoCloseable {
                 return getId();
             } else {
                 throw new SQLException("The loan couldn't be saved. an ID wasn't obtained");
-            }
-        } finally {
-            close();
-        }
-    }
-
-    // loan payback function
-    public boolean PayBackLoan() throws SQLException, AccountException {
-        // only an uncleared loan should be the one a member should pay for
-        getLoanInfo(LOAN_NOT_CLEARED, false);
-        long l_id = 0;
-        double amount_p = 0;
-        double t_amnt = 0;
-        for (Loan loan : loanInfo) {
-            // implies a loan id couldn't be found
-            if (loan.getId() <= 0) {
-                throw new SQLException("A loan id wasn't obtained");
-            }
-            l_id = loan.getId();
-            amount_p = loan.getAmountPaid();
-            t_amnt = loan.getTotalAmount();
-            break;
-        }
-
-        // a member shouldn't be allowed to pay up above their total. so we notify them if that happens as they keep paying
-        if (amount_p >= t_amnt) {
-            // get their excess payment
-            double excess = amount_p - t_amnt;
-            // clear the loan, since now the user has either overpaid or has equally paid the loan fully
-            clearLoan(excess, l_id);
-            // not really an indication of an error, but since the function return T/F this is the best way to do so
-            throw new AccountException("You loan is fully paid. \nYour overpayment of ksh " + Application.df.format(excess) + " will be added to your contributions");
-        } else {
-            this.conn = new Database().getConnection();
-            // implies that the user hasn't paid enough, so we allow them to pay up
-            try {
-                String sql = "UPDATE `loans` SET `paidAmount`= `paidAmount` + ? WHERE  `id`=?";
-                stmt = conn.prepareStatement(sql);
-                stmt.setDouble(1, getAmountToPay());
-                stmt.setLong(2, l_id);
-                // record payment
-                setPaymentID(p.recordLoanPayment(l_id, getAmountToPay()));
-                // increment paid amount
-                return stmt.executeUpdate() == 1 && getPaymentID() != -1;
-            } finally {
-                close();
-            }
-        }
-    }
-
-    // this shud be calld only after payment >= Loan+interest
-    private boolean clearLoan(double excess, long id) throws SQLException {
-        String sql = "UPDATE `loans` SET cleared = ? WHERE `id`=?";
-        stmt = conn.prepareStatement(sql);
-        stmt.setDouble(1, LOAN_CLEARED);
-        stmt.setLong(2, id);
-        int rows = stmt.executeUpdate();
-        return addExcessToContributions(excess) == rows;
-    }
-
-    private int addExcessToContributions(double excess) throws SQLException {
-        if (excess == 0) {
-            // just do nothing and return 1
-            return 1;
-        }
-        this.conn = new Database().getConnection();
-        String sql = "INSERT INTO `contributions` (`member_id`, `Amount`, `paymentMethod`, `Approved`) VALUES (?, ?, ?, ?)";
-        stmt = conn.prepareStatement(sql);
-        stmt.setLong(1, Member.getId());
-        stmt.setDouble(2, excess);
-        stmt.setString(3, "EXCESS");
-        stmt.setBoolean(4, true);
-        return stmt.executeUpdate();
-    }
-
-    public double GetLoanTotal(int cleared) throws SQLException {
-        String sql;
-        this.conn = new Database().getConnection();
-        if (cleared == 0) {
-            sql = "SELECT SUM(LoanAmount) FROM loans WHERE cleared = 0";
-        } else if (cleared == 1) {
-            sql = "SELECT SUM(LoanAmount) FROM loans WHERE cleared = 1";
-        } else {
-            sql = "SELECT SUM(LoanAmount) FROM loans";
-        }
-        try {
-            stmt = conn.prepareStatement(sql);
-            result = stmt.executeQuery();
-            if (result.next()) {
-                return result.getDouble(1);
-            } else {
-                throw new SQLException("a sum could not be made");
-            }
-        } finally {
-            close();
-        }
-    }
-
-    public double getPaymentsTotal() throws SQLException {
-        this.conn = new Database().getConnection();
-        String sql = "SELECT SUM(paidAmount) FROM loans";
-        try {
-            stmt = conn.prepareStatement(sql);
-            result = stmt.executeQuery();
-            if (result.next()) {
-                return result.getDouble(1);
-            } else {
-                throw new SQLException("a sum could not be made");
-            }
-        } finally {
-            close();
-        }
-    }
-
-    public double getInterestTotal() throws SQLException {
-        this.conn = new Database().getConnection();
-        String sql = "SELECT SUM(TotalAmount) FROM loans WHERE cleared = 1 OR cleared = 0";
-        try {
-            stmt = conn.prepareStatement(sql);
-            result = stmt.executeQuery();
-            if (result.next()) {
-                return result.getDouble(1);
-            } else {
-                throw new SQLException("a sum could not be made");
             }
         } finally {
             close();
@@ -475,12 +351,12 @@ public class Loan implements AutoCloseable {
         Date dt = Date.valueOf(LocalDate.now());
         jt.append("LOAN_AMOUNT\tTOTAL_AMOUNT\tLOAN_PERIOD(Months)\tAPPROVED\tLOAN_TYPE\tPAID_AMOUNT\n \n");
         for (Loan loan : loanInfo) {
-            la = Double.parseDouble(Application.df.format(loan.getLoanAmount()));
-            pa = Double.parseDouble(Application.df.format(loan.getAmountPaid()));
-            ta = Double.parseDouble(Application.df.format(loan.getTotalAmount()));
+            la = Double.parseDouble(Utility.DF.format(loan.getLoanAmount()));
+            pa = Double.parseDouble(Utility.DF.format(loan.getAmountPaid()));
+            ta = Double.parseDouble(Utility.DF.format(loan.getTotalAmount()));
             jt.append(la + "\t\t");
             jt.append(ta + "\t");
-            jt.append("\t\t" + Application.df.format(loan.getPaybackPeriod() * 12) + "\t");
+            jt.append("\t\t" + Utility.DF.format(loan.getPaybackPeriod() * 12) + "\t");
             if (loan.LOAN_APPROVED) {
                 jt.append("YES\t");
             } else {
@@ -495,7 +371,7 @@ public class Loan implements AutoCloseable {
             jt.append("==============================================================================\n\n");
             jt.append("For your selected option, You currently have " + GetMemberLoanCount(cleared, true) + " loans\n");
             jt.append("Regarding your current loan, you've paid ksh " + pa + " since " + dt + "\n");
-            jt.append("You owe the sacco ksh " + Application.df.format(ta - pa) + ". \t Note: A negative value indicates an overpayment\n\n");
+            jt.append("You owe the sacco ksh " + Utility.DF.format(ta - pa) + ". \t Note: A negative value indicates an overpayment\n\n");
             jt.append("LOAN_AMOUNT  ==> represents the amount(s) you took as a loan\n");
             jt.append("TOTAL_AMOUNT ==> loan + interest\n");
             jt.append("PAID_AMOUNT  ==> represents the amount you paid for each loan\n");

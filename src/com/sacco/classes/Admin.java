@@ -1,6 +1,7 @@
 package com.sacco.classes;
 
 import static com.sacco.classes.Member.isAdmin;
+import static com.sacco.classes.Session.loggedInUsers;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.security.auth.login.AccountException;
@@ -23,7 +24,7 @@ public class Admin extends Member {
         // incase the usr was an admin, unset the admin variable
         if (isAdmin()) {
             //setAdmin(false);
-            loggedInUsers.remove(memberID);
+            Session.loggedInUsers.remove(memberID);
             return loggedInUsers.containsKey(memberID) == false;
         } else {
             throw new AccountException("You are not authorized to perform this action");
