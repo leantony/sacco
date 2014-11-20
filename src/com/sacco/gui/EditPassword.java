@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.App.gui;
+package com.sacco.gui;
 
 import static com.sacco.classes.Utility.Validation.CheckPasswordEquality;
 import com.sacco.classes.Member;
@@ -172,9 +172,6 @@ public class EditPassword extends javax.swing.JInternalFrame {
                 JOptionPane.showMessageDialog(rootPane, "Password changed successfully. Please logout to review your changes", "Success", JOptionPane.INFORMATION_MESSAGE);
                 this.dispose();
             }
-        } catch (AccountException ex) {
-            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
-            this.dispose();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(rootPane, "SQL error", "Error", JOptionPane.ERROR_MESSAGE);
             this.dispose();

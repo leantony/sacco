@@ -3,14 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.App.gui;
+package com.sacco.gui;
 
 import com.sacco.classes.Utility;
 import static com.sacco.classes.Utility.Validation.*;
 import com.sacco.classes.Member;
 import java.sql.SQLException;
 import java.time.Instant;
-import javax.security.auth.login.AccountException;
 import javax.swing.JOptionPane;
 
 /**
@@ -27,20 +26,20 @@ public class EditMember extends javax.swing.JInternalFrame {
     public EditMember() {
         try {
             initComponents();
-            _member.getMemberInfo(_member, Member.getId());
-            jTextFieldFname.setText(_member.getFirstname());
-            jTextFieldLname.setText(_member.getLastname());
-
-            // auto mark the gender
-            if (_member.getGender().equals("Male")) {
-                jRadioButtonMale.setSelected(true);
-            } else {
-                jRadioButtonFemale.setSelected(true);
+            for (Member m : _member.select(Member.getId())) {
+                jTextFieldFname.setText(m.getFirstname());
+                jTextFieldLname.setText(m.getLastname());
+                // auto mark the gender
+                if (m.getGender().equals("Male")) {
+                    jRadioButtonMale.setSelected(true);
+                } else {
+                    jRadioButtonFemale.setSelected(true);
+                }
+                jXDatePickerDOB.setDate(m.getDob());
+                jTextFieldMobileNo.setText(String.valueOf(m.getMobileno()));
+                jTextFieldAddress.setText(m.getAddress());
+                jTextFieldEmail.setText(m.getEmail());
             }
-            jXDatePickerDOB.setDate(_member.getDob());
-            jTextFieldMobileNo.setText(String.valueOf(_member.getMobileno()));
-            jTextFieldAddress.setText(_member.getAddress());
-            jTextFieldEmail.setText(_member.getEmail());
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(rootPane, "Encountered an error while trying to get your data. Please try again", "Error", JOptionPane.ERROR_MESSAGE);
             this.dispose();
@@ -340,13 +339,7 @@ public class EditMember extends javax.swing.JInternalFrame {
             jTextFieldMobileNo.requestFocus();
             return;
         }
-        if (_member.checkMobileExists(mobileno)) {
-            JOptionPane.showMessageDialog(rootPane, "Your mobile number is invalid. A user already has it", "Invalid phone number", JOptionPane.ERROR_MESSAGE);
-            jTextFieldMobileNo.requestFocus();
-            return;
-        } else {
-            _member.setMobileno(mobileno);
-        }
+        _member.setMobileno(mobileno);
 
         // the address
         if (ValidateEmptyValue(jTextFieldAddress, "please enter a value for Address")) {
@@ -366,13 +359,11 @@ public class EditMember extends javax.swing.JInternalFrame {
 
         try {
             // edit the info
-            if (_member.EditMemberInfo(_member)) {
+            if (_member.Update(_member)) {
                 JOptionPane.showMessageDialog(rootPane, "Edit was a Success ", "Success", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(rootPane, "No update was made", "Warning", JOptionPane.INFORMATION_MESSAGE);
             }
-        } catch (AccountException ex) {
-            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Access denied", JOptionPane.ERROR_MESSAGE);
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(rootPane, "SQL error ", "Error", JOptionPane.ERROR_MESSAGE);
         }

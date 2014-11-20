@@ -10,9 +10,8 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import javax.security.auth.login.AccountException;
 
-public class Member implements AutoCloseable {
+public class Member implements DatabaseInterface<Member> {
 
     protected static long id;
     private String firstname;
@@ -34,14 +33,14 @@ public class Member implements AutoCloseable {
     private static boolean admin = false;
 
     protected List<Member> allMembers = new ArrayList<>();
-    protected static List<String> userEmails = new ArrayList<>();
-    protected static List<Long> userMobile = new ArrayList<>();
+
 
     // for Database stuff
     PreparedStatement stmt = null;
     Connection conn = null;
     ResultSet result = null;
 
+    // <editor-fold defaultstate="collapsed" desc="the obvious getters and setters">
     protected static void setAdmin(boolean status) {
         admin = status;
     }
@@ -79,7 +78,9 @@ public class Member implements AutoCloseable {
     }
 
     public void setLastname(String lastname) {
+
         this.lastname = lastname;
+
     }
 
     public Date getDob() {
@@ -134,59 +135,34 @@ public class Member implements AutoCloseable {
     public boolean getAccountStatus() {
         return AccountStatus;
     }
-
-    private void fillEmailList() throws SQLException {
-        try {
-            this.conn = new Database().getConnection();
-            String sql = "SELECT email FROM members";
-            stmt = conn.prepareStatement(sql);
-            result = stmt.executeQuery();
-            while (result.next()) {
-                userEmails.add(result.getString("email"));
-            }
-        } finally {
-            close();
-        }
-    }
-
-    private void fillMobileNoList() throws SQLException {
-        try {
-            this.conn = new Database().getConnection();
-            String sql = "SELECT mobileno FROM members";
-            stmt = conn.prepareStatement(sql);
-            result = stmt.executeQuery();
-            while (result.next()) {
-                userMobile.add(result.getLong("mobileno"));
-            }
-        } finally {
-            close();
-        }
-    }
+    //</editor-fold>
 
     public boolean checkMobileExists(long mno) {
         try {
-            if (userMobile.isEmpty()) {
-                fillMobileNoList();
-            }
-            return userMobile.contains(mno);
+            this.conn = new Database().getConnection();
+            String sql = "SELECT mobileno FROM members WHERE mobileno = ?";
+            stmt = conn.prepareStatement(sql);
+            result = stmt.executeQuery();
         } catch (SQLException ex) {
-            return false;
+            //
         }
+        return result == null;
     }
 
     public boolean checkEmailExists(String email) {
         try {
-            if (userEmails.isEmpty()) {
-                fillEmailList();
-            }
-            //JOptionPane.showMessageDialog(null, userEmails + " " + email +" "+userEmails.contains(email));
-            return userEmails.contains(email);
+            this.conn = new Database().getConnection();
+            String sql = "SELECT email FROM members WHERE email = ?";
+            stmt = conn.prepareStatement(sql);
+            result = stmt.executeQuery();
         } catch (SQLException ex) {
-            return false;
+            //
         }
+        return result == null;
     }
 
-    public long AddMember() throws SQLException, AccountException {
+    @Override
+    public long Add(Member value) throws SQLException {
         this.conn = new Database().getConnection();
         try {
             String sql
@@ -195,14 +171,14 @@ public class Member implements AutoCloseable {
                     + " `mobileno`, `address`, `email`, `password`) "
                     + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            stmt.setString(1, getFirstname());
-            stmt.setString(2, getLastname());
-            stmt.setString(3, getGender());
-            stmt.setDate(4, getDob());
-            stmt.setLong(5, getMobileno());
-            stmt.setString(6, getAddress());
-            stmt.setString(7, getEmail());
-            stmt.setString(8, getPassword());
+            stmt.setString(1, value.getFirstname());
+            stmt.setString(2, value.getLastname());
+            stmt.setString(3, value.getGender());
+            stmt.setDate(4, value.getDob());
+            stmt.setLong(5, value.getMobileno());
+            stmt.setString(6, value.getAddress());
+            stmt.setString(7, value.getEmail());
+            stmt.setString(8, value.getPassword());
 
             int rows = stmt.executeUpdate();
             if (rows == 0) {
@@ -220,52 +196,85 @@ public class Member implements AutoCloseable {
         }
     }
 
-    public long getPositionId(String posname) throws SQLException {
+    @Override
+    public boolean Update(Member value) throws SQLException {
         this.conn = new Database().getConnection();
         try {
-            String sql = "SELECT `id` FROM positions WHERE `name` LIKE ? LIMIT 1";
+            String sql = "UPDATE `members` SET "
+                    + "`firstname`=?, `lastname`=?, `gender`=?, `dob`=?, "
+                    + "`mobileno`=?, `address`=?, `email`=? WHERE  `id`=?";
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, "%" + posname + "%");
-            result = stmt.executeQuery();
-            if (result.next()) {
-                return result.getLong("id");
-            }
+            stmt.setString(1, value.getFirstname());
+            stmt.setString(2, value.getLastname());
+            stmt.setString(3, value.getGender());
+            stmt.setDate(4, value.getDob());
+            stmt.setLong(5, value.getMobileno());
+            stmt.setString(6, value.getAddress());
+            stmt.setString(7, value.getEmail());
+            stmt.setLong(8, Member.getId());
+            return stmt.executeUpdate() == 1;
         } finally {
             close();
         }
-        return -1;
     }
 
-    public void getMemberInfo(Member m, long memberID) throws SQLException {
-        // if a user invokes this as a normal user, then we don't need them passing any memberID in. just default to theirs
-        if (!isAdmin()) {
-            memberID = Member.getId();
-        }
+    @Override
+    public boolean Delete(long ID) throws SQLException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<Member> select() throws SQLException {
         this.conn = new Database().getConnection();
+        String sql = "SELECT * FROM members";
         try {
-            String sql = "SELECT * FROM `members` WHERE  `id`=?";
             stmt = conn.prepareStatement(sql);
-            stmt.setLong(1, memberID);
             result = stmt.executeQuery();
             while (result.next()) {
-                m.lastname = result.getString("lastname");
-                m.address = result.getString("address");
-                m.firstname = result.getString("firstname");
-                m.gender = result.getString("gender");
-                m.email = result.getString("email");
-                m.dob = result.getDate("dob");
-                m.mobileno = result.getLong("mobileno");
-                m.password = result.getString("password");
-                m.RegisteredDate = result.getTimestamp("DateRegistered");
-                m.LastModifiedDate = result.getTimestamp("DateModified");
-                m.AccountStatus = result.getBoolean("active");
+                Member m = new Member();
+                m.t_id = result.getLong("id");
+                m.setFirstname(result.getString("firstname"));
+                m.setLastname(result.getString("lastname"));
+                m.setAddress(result.getString("address"));
+                m.setDob(result.getDate("dob"));
+                m.setEmail(result.getString("email"));
+                m.setGender(result.getString("gender"));
+                m.setMobileno(result.getLong("mobileno"));
+                allMembers.add(m);
             }
+            return allMembers;
         } finally {
             close();
         }
     }
 
-    public boolean EditPassword(String password, long memberID) throws AccountException, SQLException {
+    @Override
+    public List<Member> select(long ID) throws SQLException {
+        this.conn = new Database().getConnection();
+        String sql = "SELECT * FROM members WHERE `id` = ?";
+        try {
+            stmt = conn.prepareStatement(sql);
+            stmt.setLong(1, ID);
+            result = stmt.executeQuery();
+            while (result.next()) {
+                Member m = new Member();
+                m.t_id = result.getLong("id");
+                m.setFirstname(result.getString("firstname"));
+                m.setLastname(result.getString("lastname"));
+                m.setAddress(result.getString("address"));
+                m.setDob(result.getDate("dob"));
+                m.setEmail(result.getString("email"));
+                m.setGender(result.getString("gender"));
+                m.setMobileno(result.getLong("mobileno"));
+                allMembers.add(m);
+            }
+            return allMembers;
+        } finally {
+            close();
+        }
+    }
+
+    public boolean EditPassword(String password, long memberID) throws SQLException {
         if (!isAdmin()) {
             memberID = Member.getId();
         }
@@ -280,51 +289,6 @@ public class Member implements AutoCloseable {
         } finally {
             close();
         }
-    }
-
-    public boolean EditMemberInfo(Member m) throws AccountException, SQLException {
-        this.conn = new Database().getConnection();
-        try {
-            String sql = "UPDATE `members` SET "
-                    + "`firstname`=?, `lastname`=?, `gender`=?, `dob`=?, "
-                    + "`mobileno`=?, `address`=?, `email`=? WHERE  `id`=?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, m.firstname);
-            stmt.setString(2, m.lastname);
-            stmt.setString(3, m.gender);
-            stmt.setDate(4, m.dob);
-            stmt.setLong(5, m.mobileno);
-            stmt.setString(6, m.address);
-            stmt.setString(7, m.email);
-            stmt.setLong(8, Member.getId());
-            return stmt.executeUpdate() == 1;
-        } finally {
-            close();
-        }
-    }
-
-    public int checkUserPosition() throws SQLException {
-        this.conn = new Database().getConnection();
-        try {
-            String sql = "SELECT id FROM positions JOIN members_positions ON positions.id = members_positions.position_id AND member_id = ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setLong(1, Member.getId());
-            result = stmt.executeQuery();
-            while (result.next()) {
-                if (result.getInt("id") == Admin.ADMIN_POSITION_ID) {
-                    setAdmin(true);
-                    return 1;
-                }
-                if (result.getInt("id") == Secretary.SEC_POSITION_ID) {
-                    return 2;
-                } else {
-                    return result.getInt("id");
-                }
-            }
-        } finally {
-            close();
-        }
-        return -1;
     }
 
     @Override

@@ -3,14 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.App.gui;
+package com.sacco.gui;
 
 import com.sacco.classes.Admin;
 import static com.sacco.classes.Utility.Validation.*;
-import com.sacco.classes.Utility;
 import com.sacco.classes.Member;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import javax.security.auth.login.AccountException;
 import javax.swing.JOptionPane;
 
@@ -23,6 +24,7 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
     Admin _admin;
     Member _member;
     long selectedMemberID;
+    List<Member> _t = new ArrayList<>();
 
     /**
      * Creates new form NewJInternalFrame
@@ -507,42 +509,47 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
         try {
             // TODO add your handling code here:
             // fill in the textfields
-            _member.getMemberInfo(_member, Long.parseLong(jComboBoxMembers.getSelectedItem().toString()));
-            jTextId.setText(jComboBoxMembers.getSelectedItem().toString());
-            jTextFieldFname.setText(_member.getFirstname());
-            jTextFieldLname.setText(_member.getLastname());
-            jXDatePickerDOB.setDate(_member.getDob());
-            jTextFieldAddress.setText(_member.getAddress());
-            jTextFieldDateRegistered.setText(_member.getRegisteredDate().toString());
-            jTextFieldDateChanged.setText(_member.getLastModifiedDate().toString());
-            jTextFieldMobileNo.setText(Long.toString(_member.getMobileno()));
-            jTextFieldEmail.setText(_member.getEmail());
-            // block or unblock the activate/deactivate account button
-            if (_member.getAccountStatus()) {
-                jButtonActivate.setEnabled(false);
-                jButtonActivate.setToolTipText("The account is already activated");
-                jButtonDeactivate.setEnabled(true);
-                jButtonDelete.setEnabled(true);
-            } else {
-                jButtonActivate.setEnabled(true);
-                jButtonDeactivate.setToolTipText("Account has not been deactivated");
-                jButtonDeactivate.setEnabled(false);
-                jButtonDelete.setEnabled(true);
-            }
-            selectedMemberID = Long.parseLong(jComboBoxMembers.getSelectedItem().toString());
-            if (selectedMemberID == Member.getId()) {
-                jButtonDeactivate.setEnabled(false);
-                jButtonDelete.setEnabled(false);
-                jButtonDelete.setToolTipText("You can delete any other account but not your own");
-                jButtonDeactivate.setToolTipText("You can deactivate any other account but not your own");
-            }
-            // auto mark the gender
-            if (_member.getGender().equals("Male")) {
-                jRadioButtonMale.setSelected(true);
-                jRadioButtonFemale.setSelected(false);
-            } else {
-                jRadioButtonMale.setSelected(false);
-                jRadioButtonFemale.setSelected(true);
+            for (Member m : _member.select(Long.parseLong(jComboBoxMembers.getSelectedItem().toString()))) {
+                jTextFieldFname.setText(m.getFirstname());
+                jTextFieldLname.setText(m.getLastname());
+                jXDatePickerDOB.setDate(m.getDob());
+                jTextFieldAddress.setText(m.getAddress());
+
+                jTextFieldMobileNo.setText(Long.toString(m.getMobileno()));
+                jTextFieldEmail.setText(m.getEmail());
+
+                jTextId.setText(jComboBoxMembers.getSelectedItem().toString());
+
+                // block or unblock the activate/deactivate account button
+                if (m.getAccountStatus()) {
+                    jButtonActivate.setEnabled(false);
+                    jButtonActivate.setToolTipText("The account is already activated");
+                    jButtonDeactivate.setEnabled(true);
+                    jButtonDelete.setEnabled(true);
+                } else {
+                    jButtonActivate.setEnabled(true);
+                    jButtonDeactivate.setToolTipText("Account has not been deactivated");
+                    jButtonDeactivate.setEnabled(false);
+                    jButtonDelete.setEnabled(true);
+                }
+                selectedMemberID = Long.parseLong(jComboBoxMembers.getSelectedItem().toString());
+                if (selectedMemberID == Member.getId()) {
+                    jButtonDeactivate.setEnabled(false);
+                    jButtonDelete.setEnabled(false);
+                    jButtonDelete.setToolTipText("You can delete any other account but not your own");
+                    jButtonDeactivate.setToolTipText("You can deactivate any other account but not your own");
+                }
+                //jTextFieldDateRegistered.setText(m.getRegisteredDate().toString());
+                //jTextFieldDateChanged.setText(m.getLastModifiedDate().toString());
+                // auto mark the gender
+                if (m.getGender().equals("Male")) {
+                    jRadioButtonMale.setSelected(true);
+                    jRadioButtonFemale.setSelected(false);
+                } else {
+                    jRadioButtonMale.setSelected(false);
+                    jRadioButtonFemale.setSelected(true);
+                }
+                break;
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(rootPane, "SQL Error", "Error", JOptionPane.ERROR_MESSAGE);
@@ -576,8 +583,6 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
             } else {
                 JOptionPane.showMessageDialog(rootPane, "Could not save the password. Please try again", "Action failed", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (AccountException ex) {
-            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Not allowed", JOptionPane.WARNING_MESSAGE);
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(rootPane, "SQL Error", "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -629,13 +634,7 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
             jTextFieldMobileNo.requestFocus();
             return;
         }
-        if (_member.checkMobileExists(mobileno)) {
-            JOptionPane.showMessageDialog(rootPane, "change that phone number beacuse it's already in use", "Invalid phone number", JOptionPane.WARNING_MESSAGE);
-            jTextFieldMobileNo.requestFocus();
-            return;
-        } else {
-            _member.setMobileno(mobileno);
-        }
+        _member.setMobileno(mobileno);
 
         // the address
         if (ValidateEmptyValue(jTextFieldAddress, "please enter a value for Address")) {
@@ -655,14 +654,12 @@ public class AdminEditMember extends javax.swing.JInternalFrame {
 
         try {
             // edit the info
-            if (_member.EditMemberInfo(_member)) {
+            if (_member.Update(_member)) {
                 JOptionPane.showMessageDialog(rootPane, "Success ", "Error", JOptionPane.INFORMATION_MESSAGE);
                 _admin.DisplayAllMembers(jComboBoxMembers);
             } else {
                 JOptionPane.showMessageDialog(rootPane, "No update was made", "Warning", JOptionPane.INFORMATION_MESSAGE);
             }
-        } catch (AccountException ex) {
-            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Access denied", JOptionPane.ERROR_MESSAGE);
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(rootPane, "Operation failed " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }

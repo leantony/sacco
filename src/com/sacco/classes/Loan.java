@@ -52,6 +52,7 @@ public class Loan implements AutoCloseable {
         }
     }
 
+    // <editor-fold defaultstate="collapsed" desc="the obvious getters and setters">
     // allow the user to know their pending loan amount to pay, after making a payment to their loan
     public double getPendingAmount() {
         return getTotalAmount() - getAmountPaid();
@@ -185,7 +186,8 @@ public class Loan implements AutoCloseable {
 //        double payment = loanAmnt * Math.pow((1 + arate), getPaybackPeriod());
 //        this.loanAmnt = payment + loanAmnt;
     }
-
+    //</editor-fold>
+    
     public double GetAllowedLoan() throws AccountException, SQLException {
         // we determine their loan amnt based on average contributions and how many times they have validly contributed
         double AvgContribution = _contribution.getAvgContributions(Member.getId(), 2);

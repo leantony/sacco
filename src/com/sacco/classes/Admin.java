@@ -55,30 +55,6 @@ public class Admin extends Member {
         }
     }
 
-    // stores member info in a list to be used later
-    public void getAllMemberInfo() throws SQLException {
-        this.conn = new Database().getConnection();
-        String sql = "SELECT * FROM members";
-        try {
-            stmt = conn.prepareStatement(sql);
-            result = stmt.executeQuery();
-            while (result.next()) {
-                Member m = new Member();
-                m.t_id = result.getLong("id");
-                m.setFirstname(result.getString("firstname"));
-                m.setLastname(result.getString("lastname"));
-                m.setAddress(result.getString("address"));
-                m.setDob(result.getDate("dob"));
-                m.setEmail(result.getString("email"));
-                m.setGender(result.getString("gender"));
-                m.setMobileno(result.getLong("mobileno"));
-                allMembers.add(m);
-            }
-        } finally {
-            close();
-        }
-    }
-
     private ResultSet getAllContributions() throws SQLException {
         this.conn = new Database().getConnection();
         String sql = "SELECT * FROM contributions";
@@ -106,7 +82,7 @@ public class Admin extends Member {
         DefaultComboBoxModel Model = new DefaultComboBoxModel();
         // no need to re-execute the query while we already have a loaded list
         if (allMembers.isEmpty()) {
-            getAllMemberInfo();
+            select();
         }
         try {
             allMembers.stream().map((_member) -> _member.t_id).forEach((memberID) -> {
@@ -122,7 +98,7 @@ public class Admin extends Member {
         jt.setText("");
         // no need to re-execute the query while we already have a loaded list
         if (allMembers.isEmpty()) {
-            getAllMemberInfo();
+            select();
         }
         jt.append("Here are all the members in the sacco \n\n");
         jt.append("MEMBER_ID\t\tFIRSTNAME\t\tLASTNAME\t\tGENDER\t\tDATE_OF_BIRTH\tADDRESS\t\tEMAIL\n\n");
@@ -145,7 +121,7 @@ public class Admin extends Member {
 
     public boolean AlterMemeberPosition(long memberID, String posname, int Action) throws SQLException {
         String sql;
-        long pid = getPositionId(posname);
+        long pid = new Position().getPositionId(posname);
         this.conn = new Database().getConnection();
         // insert position
         if (Action == 1) {

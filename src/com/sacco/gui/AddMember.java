@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.App.gui;
+package com.sacco.gui;
 
 import com.sacco.classes.Admin;
 import com.sacco.classes.Utility;
@@ -490,7 +490,7 @@ public class AddMember extends javax.swing.JFrame {
             return;
         }
         if (_member.checkMobileExists(mobileno)) {
-            JOptionPane.showMessageDialog(rootPane, "Your mobile number is invalid. A user already has it", "Invalid phone number", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "That mobile number is invalid. A user already has it", "Invalid phone number", JOptionPane.ERROR_MESSAGE);
             jTextFieldMobileNo.requestFocus();
             return;
         } else {
@@ -538,7 +538,7 @@ public class AddMember extends javax.swing.JFrame {
             if (Member.isAdmin()) {
                 // attempt to add member to admins
                 Admin a = new Admin();
-                long id = _member.AddMember();
+                long id = _member.Add(_member);
                 if (jRadioButtonAdmin.isSelected() && a.AlterMemeberPosition(id, "admin", 1)) {
                     jRadioButtonSec.setSelected(false);
                     JOptionPane.showMessageDialog(rootPane, "You've added a new admin. The new member id is " + id + "", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -549,7 +549,7 @@ public class AddMember extends javax.swing.JFrame {
                 }
                 JOptionPane.showMessageDialog(rootPane, "Youve added a new Member but with no assigned position\nThe new member id is " + id + "", "Success", JOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(rootPane, "You have successfully registered for the sacco\nYour new user ID is " + _member.AddMember() + ". Use it to login", "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(rootPane, "You have successfully registered for the sacco\nYour new user ID is " + _member.Add(_member) + ". Use it to login", "Success", JOptionPane.INFORMATION_MESSAGE);
                 this.dispose();
                 new LoginScreen().setVisible(true);
             }
